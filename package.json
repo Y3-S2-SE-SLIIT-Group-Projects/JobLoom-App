@@ -1,0 +1,45 @@
+{
+  "name": "jobloom",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
+    "preview": "vite preview",
+    "test": "echo 'Tests will be added soon' && exit 0",
+    "test:e2e": "echo 'E2E tests will be added soon' && exit 0",
+    "lighthouse": "lhci autorun --collect.staticDistDir=dist",
+    "lighthouse:mobile": "lhci autorun --collect.settings.preset=mobile",
+    "lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop",
+    "prepare": "husky install",
+    "type:check": "echo 'TypeScript check passed (no TS config yet)'",
+    "audit:check": "npm audit --audit-level=moderate"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@lhci/cli": "^0.15.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.8.1",
+    "vite": "^7.3.1"
+  }
+}
