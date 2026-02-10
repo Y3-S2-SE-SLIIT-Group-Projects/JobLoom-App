@@ -1,0 +1,32 @@
+# Staging Environment Configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.staging.yml up
+
+version: '3.8'
+
+services:
+  app:
+    container_name: jobloom-staging
+    build:
+      target: production
+      args:
+        - NODE_ENV=staging
+    ports:
+      - '8081:80'
+    environment:
+      - NODE_ENV=staging
+      - VITE_API_URL=https://api-staging.jobloom.com
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 384M
+        reservations:
+          cpus: '0.25'
+          memory: 192M

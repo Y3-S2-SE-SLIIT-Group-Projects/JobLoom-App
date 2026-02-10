@@ -1,0 +1,22 @@
+# Development Environment Configuration
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  app:
+    container_name: jobloom-dev
+    build:
+      target: development
+    ports:
+      - '5173:5173'
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3000
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host
+    stdin_open: true
+    tty: true

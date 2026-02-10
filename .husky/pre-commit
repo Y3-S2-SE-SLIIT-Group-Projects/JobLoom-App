@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+# Pre-commit hook: Run code quality checks
+
+echo "Running pre-commit checks..."
+
+# Run lint-staged for formatting and linting staged files
+echo "Checking code formatting and linting..."
+npx lint-staged
+
+# Run TypeScript type checking
+echo "Checking TypeScript types..."
+npm run type:check
+
+# Run audit check for vulnerabilities
+echo "Checking for package vulnerabilities..."
+npm run audit:check || {
+  echo "⚠️ Warning: Package vulnerabilities detected!"
+  echo "Please review and fix vulnerabilities before pushing to remote."
+  echo "Run 'npm audit' for details and 'npm audit fix' to attempt fixes."
+  # Exit with 1 to block commit if vulnerabilities found
+  exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
