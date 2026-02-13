@@ -218,7 +218,7 @@ const JobDetails = () => {
         {/* Requirements */}
         {job.skillsRequired && job.skillsRequired.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">REQUIREMENTS</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">SKILLS</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, index) => (
                 <li key={index} className="flex items-start gap-2 text-gray-700">

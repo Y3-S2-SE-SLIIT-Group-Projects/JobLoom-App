@@ -637,12 +637,21 @@ const CreateJob = () => {
             cleanedFormData.location = cleanedLocation;
           }
         } else if (key === 'skillsRequired') {
-          // Keep skillsRequired array even if empty
-          cleanedFormData[key] = formData[key];
+          // Always include skillsRequired array if it exists and has items
+          if (Array.isArray(formData[key]) && formData[key].length > 0) {
+            cleanedFormData[key] = formData[key];
+          }
+          // If empty array, don't include it (optional field)
         } else if (formData[key] !== undefined && formData[key] !== null && formData[key] !== '') {
           cleanedFormData[key] = formData[key];
         }
       });
+
+      // Ensure skillsRequired is explicitly included if it has items
+      // This is a safety check to ensure it's not lost in the cleaning process
+      if (formData.skillsRequired && Array.isArray(formData.skillsRequired) && formData.skillsRequired.length > 0) {
+        cleanedFormData.skillsRequired = formData.skillsRequired;
+      }
 
       const submitData = cleanedFormData;
 
@@ -684,7 +693,15 @@ const CreateJob = () => {
       // Remove any undefined values from the entire object
       const cleanSubmitData = JSON.parse(JSON.stringify(submitData));
 
+      // CRITICAL: Ensure skillsRequired is included if it has items
+      // JSON.parse(JSON.stringify()) might remove it, so we explicitly add it back
+      if (formData.skillsRequired && Array.isArray(formData.skillsRequired) && formData.skillsRequired.length > 0) {
+        cleanSubmitData.skillsRequired = formData.skillsRequired;
+      }
+
       console.log('Submitting job data:', JSON.stringify(cleanSubmitData, null, 2));
+      console.log('Skills being sent:', cleanSubmitData.skillsRequired);
+      console.log('Original formData skills:', formData.skillsRequired);
       await createJob(cleanSubmitData);
       navigate('/employer/my-jobs');
     } catch (err) {
