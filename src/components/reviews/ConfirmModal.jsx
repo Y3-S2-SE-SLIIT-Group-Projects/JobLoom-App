@@ -32,17 +32,22 @@ const ConfirmModal = ({
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
-  // Reset input when modal opens
+  // Reset input and focus when modal opens.
+  // Both calls are inside setTimeout so setState is not synchronous in the effect body.
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return;
+    const t = setTimeout(() => {
       setInputValue('');
-      setTimeout(() => inputRef.current?.focus(), 50);
-    }
+      inputRef.current?.focus();
+    }, 0);
+    return () => clearTimeout(t);
   }, [isOpen]);
 
   // Close on Escape key
   useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') onCancel?.(); };
+    const onKey = e => {
+      if (e.key === 'Escape') onCancel?.();
+    };
     if (isOpen) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onCancel]);
@@ -55,9 +60,10 @@ const ConfirmModal = ({
     setInputValue('');
   };
 
-  const confirmClasses = confirmVariant === 'danger'
-    ? 'bg-red-500 hover:bg-red-600 text-white'
-    : 'bg-[#6794D1] hover:opacity-90 text-white';
+  const confirmClasses =
+    confirmVariant === 'danger'
+      ? 'bg-red-500 hover:bg-red-600 text-white'
+      : 'bg-[#6794D1] hover:opacity-90 text-white';
 
   return (
     <div
@@ -66,10 +72,7 @@ const ConfirmModal = ({
       role="dialog"
     >
       {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onCancel}
-      />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
 
       {/* Panel */}
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">

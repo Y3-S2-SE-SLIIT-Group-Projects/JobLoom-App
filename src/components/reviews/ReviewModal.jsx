@@ -62,18 +62,22 @@ const ReviewModal = ({
     return () => clearTimeout(t);
   }, [succeeded]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Close on Escape
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape' && !isSubmitting) handleClose(); };
-    if (isOpen) window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, isSubmitting]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  // Declared before the effect that references it to satisfy the
+  // react-hooks/immutability rule (no access-before-declare).
   const handleClose = () => {
     if (isSubmitting) return;
     resetForm();
     onClose?.();
   };
+
+  // Close on Escape
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape' && !isSubmitting) handleClose();
+    };
+    if (isOpen) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, isSubmitting]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!isOpen) return null;
 
@@ -85,13 +89,15 @@ const ReviewModal = ({
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 z-10 text-center">
-          <FaCheckCircle className="text-5xl text-green-500 mx-auto mb-3" />
+        <div className="relative z-10 w-full max-w-sm p-8 text-center bg-white shadow-2xl rounded-2xl">
+          <FaCheckCircle className="mx-auto mb-3 text-5xl text-green-500" />
           <p className="text-lg font-bold text-[#2B373F]">
             {isEdit ? 'Review updated!' : 'Review submitted!'}
           </p>
-          <p className="text-sm text-gray-500 mt-1">
-            {isEdit ? 'Your changes have been saved.' : `Thanks for reviewing ${revieweeName || 'this user'}.`}
+          <p className="mt-1 text-sm text-gray-500">
+            {isEdit
+              ? 'Your changes have been saved.'
+              : `Thanks for reviewing ${revieweeName || 'this user'}.`}
           </p>
         </div>
       </div>
@@ -100,7 +106,7 @@ const ReviewModal = ({
 
   // ── Form ────────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
 
@@ -109,7 +115,7 @@ const ReviewModal = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
           <div>
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">
+            <p className="text-xs font-medium tracking-wide text-gray-400 uppercase">
               {isEdit ? 'Edit Review' : 'Write a Review'}
             </p>
             <h2 className="text-base font-bold text-[#2B373F] leading-tight">
@@ -123,14 +129,14 @@ const ReviewModal = ({
           </div>
           <button
             onClick={handleClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
+            className="flex items-center justify-center w-8 h-8 text-gray-500 transition-colors bg-gray-100 rounded-full hover:bg-gray-200"
           >
             <FaTimes className="text-sm" />
           </button>
         </div>
 
         {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-6 py-5">
+        <div className="flex-1 px-6 py-5 overflow-y-auto">
           <form id="review-modal-form" onSubmit={handleSubmit} noValidate>
             <div className="space-y-5">
               <AlertBanner type="error" message={submitError} />
@@ -145,7 +151,7 @@ const ReviewModal = ({
 
               {/* Overall Rating */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block mb-2 text-sm font-semibold text-gray-700">
                   Overall Rating <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center gap-3">
@@ -163,11 +169,10 @@ const ReviewModal = ({
 
               {/* Detailed Criteria */}
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-1">
-                  Detailed Ratings{' '}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                <p className="mb-1 text-sm font-semibold text-gray-700">
+                  Detailed Ratings <span className="font-normal text-gray-400">(optional)</span>
                 </p>
-                <div className="rounded-xl border border-gray-200 px-4 py-2">
+                <div className="px-4 py-2 border border-gray-200 rounded-xl">
                   <CriteriaInput
                     label="Work Quality"
                     field="workQuality"
@@ -201,7 +206,7 @@ const ReviewModal = ({
               {/* Comment */}
               <div>
                 <label
-                  className="block text-sm font-semibold text-gray-700 mb-1"
+                  className="block mb-1 text-sm font-semibold text-gray-700"
                   htmlFor="modal-comment"
                 >
                   Comment
@@ -216,9 +221,7 @@ const ReviewModal = ({
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm resize-none focus:outline-none focus:border-[#6794D1]"
                 />
-                <p className="text-xs text-gray-400 mt-1 text-right">
-                  {form.comment.length}/1000
-                </p>
+                <p className="mt-1 text-xs text-right text-gray-400">{form.comment.length}/1000</p>
               </div>
 
               {/* Would Recommend */}
@@ -237,7 +240,7 @@ const ReviewModal = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 shrink-0 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 px-6 py-4 border-t border-gray-100 shrink-0">
           <button
             onClick={handleClose}
             className="text-sm text-gray-500 hover:text-[#6794D1] transition-colors"
@@ -252,8 +255,12 @@ const ReviewModal = ({
           >
             {isSubmitting && <Spinner size="sm" />}
             {isSubmitting
-              ? isEdit ? 'Saving…' : 'Submitting…'
-              : isEdit ? 'Save Changes' : 'Submit Review'}
+              ? isEdit
+                ? 'Saving…'
+                : 'Submitting…'
+              : isEdit
+                ? 'Save Changes'
+                : 'Submit Review'}
           </button>
         </div>
       </div>

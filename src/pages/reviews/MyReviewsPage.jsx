@@ -16,7 +16,7 @@ const PAGE_SIZE = 10;
 
 const TABS = [
   { key: 'received', label: 'Received', icon: <FaInbox /> },
-  { key: 'sent',     label: 'Sent',     icon: <FaPaperPlane /> },
+  { key: 'sent', label: 'Sent', icon: <FaPaperPlane /> },
 ];
 
 /**
@@ -69,11 +69,11 @@ const MyReviewsPage = () => {
     );
   }
 
-  const reviews     = activeTab === 'received' ? receivedReviews  : sentReviews;
-  const pagination  = activeTab === 'received' ? receivedPagination : sentPagination;
-  const isLoading   = activeTab === 'received' ? receivedLoading   : sentLoading;
-  const error       = activeTab === 'received' ? receivedError     : sentError;
-  const totalPages  = pagination?.pages ?? 1;
+  const reviews = activeTab === 'received' ? receivedReviews : sentReviews;
+  const pagination = activeTab === 'received' ? receivedPagination : sentPagination;
+  const isLoading = activeTab === 'received' ? receivedLoading : sentLoading;
+  const error = activeTab === 'received' ? receivedError : sentError;
+  const totalPages = pagination?.pages ?? 1;
 
   const handleTabChange = tab => {
     setActiveTab(tab);
@@ -102,7 +102,6 @@ const MyReviewsPage = () => {
       {/* Body */}
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-
           {/* ── Sidebar ─────────────────────────────────────────────────── */}
           <aside className="lg:w-72 shrink-0 space-y-4">
             {statsLoading ? (
@@ -144,16 +143,20 @@ const MyReviewsPage = () => {
                   {tab.icon}
                   {tab.label}
                   {tab.key === 'received' && receivedPagination?.total != null && (
-                    <span className={`text-xs rounded-full px-1.5 py-0.5 ${
-                      activeTab === 'received' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
-                    }`}>
+                    <span
+                      className={`text-xs rounded-full px-1.5 py-0.5 ${
+                        activeTab === 'received' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
+                      }`}
+                    >
                       {receivedPagination.total}
                     </span>
                   )}
                   {tab.key === 'sent' && sentPagination?.total != null && (
-                    <span className={`text-xs rounded-full px-1.5 py-0.5 ${
-                      activeTab === 'sent' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
-                    }`}>
+                    <span
+                      className={`text-xs rounded-full px-1.5 py-0.5 ${
+                        activeTab === 'sent' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
+                      }`}
+                    >
                       {sentPagination.total}
                     </span>
                   )}
@@ -166,8 +169,14 @@ const MyReviewsPage = () => {
               <ReviewFilterBar
                 reviewerType={reviewerType}
                 sort={sort}
-                onFilterChange={v => { setReviewerType(v); setPage(1); }}
-                onSortChange={v => { setSort(v); setPage(1); }}
+                onFilterChange={v => {
+                  setReviewerType(v);
+                  setPage(1);
+                }}
+                onSortChange={v => {
+                  setSort(v);
+                  setPage(1);
+                }}
               />
             )}
 
@@ -180,7 +189,13 @@ const MyReviewsPage = () => {
               </div>
             ) : reviews.length === 0 ? (
               <EmptyState
-                icon={activeTab === 'received' ? <FaInbox className="text-4xl" /> : <FaPaperPlane className="text-4xl" />}
+                icon={
+                  activeTab === 'received' ? (
+                    <FaInbox className="text-4xl" />
+                  ) : (
+                    <FaPaperPlane className="text-4xl" />
+                  )
+                }
                 title={activeTab === 'received' ? 'No reviews received yet' : 'No reviews sent yet'}
                 description={
                   activeTab === 'received'

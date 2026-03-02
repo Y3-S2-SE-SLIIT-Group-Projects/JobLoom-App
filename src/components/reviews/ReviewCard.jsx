@@ -42,7 +42,7 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
     dispatch(removeReview(review._id));
   };
 
-  const handleReportConfirmed = (reason) => {
+  const handleReportConfirmed = reason => {
     setShowReportConfirm(false);
     dispatch(flagReview({ reviewId: review._id, reason }));
   };
@@ -58,7 +58,9 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
           </div>
           <div className="flex flex-col items-end gap-1">
             <StarRating value={review.rating} size="text-base" />
-            <span className="text-xs text-gray-500 font-medium">{review.rating.toFixed(1)} / 5</span>
+            <span className="text-xs text-gray-500 font-medium">
+              {review.rating.toFixed(1)} / 5
+            </span>
           </div>
         </div>
 
@@ -111,9 +113,7 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
         onClose={() => setShowEditModal(false)}
         existingReview={review}
         revieweeName={
-          review.revieweeId
-            ? `${review.revieweeId.firstName} ${review.revieweeId.lastName}`
-            : ''
+          review.revieweeId ? `${review.revieweeId.firstName} ${review.revieweeId.lastName}` : ''
         }
         jobTitle={review.jobId?.title ?? ''}
       />

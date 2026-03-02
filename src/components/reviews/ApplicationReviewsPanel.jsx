@@ -52,13 +52,15 @@ const ApplicationReviewsPanel = ({
   // Derive which review belongs to which direction
   // seekerReview: job seeker reviewed the employer (reviewerType = 'job_seeker')
   const seekerReview = reviews.find(
-    r => r.reviewerType === 'job_seeker' &&
-         (r.reviewerId?._id ?? r.reviewerId)?.toString() === jobSeekerId?.toString()
+    r =>
+      r.reviewerType === 'job_seeker' &&
+      (r.reviewerId?._id ?? r.reviewerId)?.toString() === jobSeekerId?.toString()
   );
   // employerReview: employer reviewed the job seeker (reviewerType = 'employer')
   const employerReview = reviews.find(
-    r => r.reviewerType === 'employer' &&
-         (r.reviewerId?._id ?? r.reviewerId)?.toString() === employerId?.toString()
+    r =>
+      r.reviewerType === 'employer' &&
+      (r.reviewerId?._id ?? r.reviewerId)?.toString() === employerId?.toString()
   );
 
   // Has the current user already written a review for this job?
@@ -68,11 +70,11 @@ const ApplicationReviewsPanel = ({
 
   // Who is the current user — employer or seeker?
   const isCurrentUserEmployer = currentUserId?.toString() === employerId?.toString();
-  const isCurrentUserSeeker   = currentUserId?.toString() === jobSeekerId?.toString();
+  const isCurrentUserSeeker = currentUserId?.toString() === jobSeekerId?.toString();
   const isParticipant = isCurrentUserEmployer || isCurrentUserSeeker;
 
   // Pre-fill for the modal
-  const modalRevieweeId   = isCurrentUserEmployer ? jobSeekerId : employerId;
+  const modalRevieweeId = isCurrentUserEmployer ? jobSeekerId : employerId;
   const modalRevieweeType = isCurrentUserEmployer ? 'employer' : 'job_seeker';
   const modalRevieweeName = isCurrentUserEmployer ? seekerName : employerName;
 
@@ -83,7 +85,7 @@ const ApplicationReviewsPanel = ({
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FaStar className="text-amber-400 text-sm" />
+          <FaStar className="text-sm text-amber-400" />
           <h3 className="text-sm font-bold text-[#2B373F]">Reviews</h3>
           {reviews.length > 0 && (
             <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
@@ -93,8 +95,9 @@ const ApplicationReviewsPanel = ({
         </div>
 
         {/* Write Review button */}
-        {isAccepted && isParticipant && (
-          canWriteReview ? (
+        {isAccepted &&
+          isParticipant &&
+          (canWriteReview ? (
             <button
               onClick={() => setModalOpen(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[#6794D1] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"
@@ -103,12 +106,11 @@ const ApplicationReviewsPanel = ({
               Write a Review
             </button>
           ) : (
-            <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+            <span className="flex items-center gap-1 text-xs font-medium text-green-600">
               <FaStar className="text-xs" />
               Review submitted
             </span>
-          )
-        )}
+          ))}
 
         {/* Not accepted — show why reviews are locked */}
         {!isAccepted && (
@@ -130,7 +132,7 @@ const ApplicationReviewsPanel = ({
 
       {/* No reviews yet */}
       {!isLoading && reviews.length === 0 && (
-        <p className="text-xs text-gray-400 text-center py-4">
+        <p className="py-4 text-xs text-center text-gray-400">
           {isAccepted
             ? 'No reviews yet for this job. Be the first to leave one!'
             : 'Reviews will be available once the application is accepted.'}
@@ -140,28 +142,20 @@ const ApplicationReviewsPanel = ({
       {/* Seeker → Employer review */}
       {seekerReview && (
         <div>
-          <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wide">
+          <p className="mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase">
             {seekerName}&rsquo;s review of {employerName}
           </p>
-          <ReviewCard
-            review={seekerReview}
-            currentUserId={currentUserId}
-            showActions
-          />
+          <ReviewCard review={seekerReview} currentUserId={currentUserId} showActions />
         </div>
       )}
 
       {/* Employer → Seeker review */}
       {employerReview && (
         <div>
-          <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wide">
+          <p className="mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase">
             {employerName}&rsquo;s review of {seekerName}
           </p>
-          <ReviewCard
-            review={employerReview}
-            currentUserId={currentUserId}
-            showActions
-          />
+          <ReviewCard review={employerReview} currentUserId={currentUserId} showActions />
         </div>
       )}
 
