@@ -1,6 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as reviewApi from '../../services/reviewApi';
 
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Decode JWT payload from localStorage to get the current user's ID. */
+export const getCurrentUserId = () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload?.id ?? null;
+  } catch {
+    return null;
+  }
+};
+
 // ─── Async Thunks ──────────────────────────────────────────────────────────────
 
 export const loadUserReviews = createAsyncThunk(
@@ -75,6 +89,18 @@ export const removeReview = createAsyncThunk(
   }
 );
 
+export const loadSentReviews = createAsyncThunk(
+  'reviews/loadSentReviews',
+  async ({ userId, params }, { rejectWithValue }) => {
+    try {
+      const { data } = await reviewApi.fetchSentReviews(userId, params);
+      return data.data; // { reviews, pagination }
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const flagReview = createAsyncThunk(
   'reviews/flagReview',
   async ({ reviewId, reason }, { rejectWithValue }) => {
@@ -91,12 +117,15 @@ export const flagReview = createAsyncThunk(
 
 const initialState = {
   userReviews: [],
+  sentReviews: [],
   jobReviews: [],
   ratingStats: null,
   pagination: null,
+  sentPagination: null,
 
   loading: {
     userReviews: false,
+    sentReviews: false,
     ratingStats: false,
     jobReviews: false,
     submit: false,
@@ -107,6 +136,7 @@ const initialState = {
 
   error: {
     userReviews: null,
+    sentReviews: null,
     ratingStats: null,
     jobReviews: null,
     submit: null,
@@ -197,6 +227,22 @@ const reviewSlice = createSlice({
         state.error.submit = payload;
       });
 
+    // ── loadSentReviews ──
+    builder
+      .addCase(loadSentReviews.pending, state => {
+        state.loading.sentReviews = true;
+        state.error.sentReviews = null;
+      })
+      .addCase(loadSentReviews.fulfilled, (state, { payload }) => {
+        state.loading.sentReviews = false;
+        state.sentReviews = payload.reviews ?? [];
+        state.sentPagination = payload.pagination ?? null;
+      })
+      .addCase(loadSentReviews.rejected, (state, { payload }) => {
+        state.loading.sentReviews = false;
+        state.error.sentReviews = payload;
+      });
+
     // ── editReview ──
     builder
       .addCase(editReview.pending, state => {
@@ -206,6 +252,7 @@ const reviewSlice = createSlice({
       .addCase(editReview.fulfilled, (state, { payload }) => {
         state.loading.edit = false;
         state.userReviews = state.userReviews.map(r => (r._id === payload._id ? payload : r));
+        state.sentReviews = state.sentReviews.map(r => (r._id === payload._id ? payload : r));
       })
       .addCase(editReview.rejected, (state, { payload }) => {
         state.loading.edit = false;
@@ -221,6 +268,7 @@ const reviewSlice = createSlice({
       .addCase(removeReview.fulfilled, (state, { payload: reviewId }) => {
         state.loading.delete = false;
         state.userReviews = state.userReviews.filter(r => r._id !== reviewId);
+        state.sentReviews = state.sentReviews.filter(r => r._id !== reviewId);
       })
       .addCase(removeReview.rejected, (state, { payload }) => {
         state.loading.delete = false;
@@ -248,9 +296,11 @@ export const { clearSubmitError, clearLastSubmitted, resetReviewState } = review
 // ─── Selectors ─────────────────────────────────────────────────────────────────
 
 export const selectUserReviews = state => state.reviews.userReviews;
+export const selectSentReviews = state => state.reviews.sentReviews;
 export const selectJobReviews = state => state.reviews.jobReviews;
 export const selectRatingStats = state => state.reviews.ratingStats;
 export const selectReviewPagination = state => state.reviews.pagination;
+export const selectSentReviewPagination = state => state.reviews.sentPagination;
 export const selectLastSubmittedReview = state => state.reviews.lastSubmittedReview;
 export const selectReviewLoading = key => state => state.reviews.loading[key];
 export const selectReviewError = key => state => state.reviews.error[key];

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   submitReview,
+  editReview,
   clearSubmitError,
   clearLastSubmitted,
   selectReviewLoading,
@@ -25,17 +26,36 @@ const INITIAL_FORM = {
 
 /**
  * useReviewForm
- * Manages form state and submission for creating a new review.
+ * Manages form state + submission for creating OR editing a review.
  *
- * @param {Object} defaults - Pre-filled values (e.g. jobId, revieweeId from route params)
+ * @param {Object} defaults     - Pre-filled values (jobId, revieweeId from route/props)
+ * @param {Object} [existingReview] - When provided, switches to edit mode
  */
-const useReviewForm = (defaults = {}) => {
+const useReviewForm = (defaults = {}, existingReview = null) => {
   const dispatch = useDispatch();
+  const isEdit = Boolean(existingReview);
 
-  const [form, setForm] = useState({ ...INITIAL_FORM, ...defaults });
+  const initialValues = isEdit
+    ? {
+        ...INITIAL_FORM,
+        revieweeId: existingReview.revieweeId?._id ?? existingReview.revieweeId ?? '',
+        jobId: existingReview.jobId?._id ?? existingReview.jobId ?? '',
+        reviewerType: existingReview.reviewerType ?? 'job_seeker',
+        rating: existingReview.rating ?? 0,
+        comment: existingReview.comment ?? '',
+        workQuality: existingReview.workQuality ?? 0,
+        communication: existingReview.communication ?? 0,
+        punctuality: existingReview.punctuality ?? 0,
+        paymentOnTime: existingReview.paymentOnTime ?? 0,
+        wouldRecommend: existingReview.wouldRecommend ?? true,
+      }
+    : { ...INITIAL_FORM, ...defaults };
 
-  const isSubmitting = useSelector(selectReviewLoading('submit'));
-  const submitError = useSelector(selectReviewError('submit'));
+  const [form, setForm] = useState(initialValues);
+  const [editSuccess, setEditSuccess] = useState(false);
+
+  const isSubmitting = useSelector(selectReviewLoading(isEdit ? 'edit' : 'submit'));
+  const submitError = useSelector(selectReviewError(isEdit ? 'edit' : 'submit'));
   const submittedReview = useSelector(selectLastSubmittedReview);
 
   /** Update a single field */
@@ -47,7 +67,7 @@ const useReviewForm = (defaults = {}) => {
     setField(name, type === 'checkbox' ? checked : value);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e?.preventDefault();
 
     // Strip zero-rated optional criteria so the BE ignores them
@@ -56,13 +76,21 @@ const useReviewForm = (defaults = {}) => {
       if (!payload[k]) delete payload[k];
     });
 
-    dispatch(submitReview(payload));
+    if (isEdit) {
+      const result = await dispatch(
+        editReview({ reviewId: existingReview._id, updateData: payload })
+      );
+      if (!result.error) setEditSuccess(true);
+    } else {
+      dispatch(submitReview(payload));
+    }
   };
 
   const resetForm = () => {
-    setForm({ ...INITIAL_FORM, ...defaults });
+    setForm(initialValues);
+    setEditSuccess(false);
     dispatch(clearSubmitError());
-    dispatch(clearLastSubmitted());
+    if (!isEdit) dispatch(clearLastSubmitted());
   };
 
   return {
@@ -73,7 +101,9 @@ const useReviewForm = (defaults = {}) => {
     resetForm,
     isSubmitting,
     submitError,
-    submittedReview,
+    submittedReview: isEdit ? (editSuccess ? existingReview : null) : submittedReview,
+    editSuccess,
+    isEdit,
   };
 };
 

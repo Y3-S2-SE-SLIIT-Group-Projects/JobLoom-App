@@ -39,3 +39,8 @@ export const deleteReview = reviewId => api.delete(`/reviews/${reviewId}`);
 /** @param {string} reviewId @param {string} reason */
 export const reportReview = (reviewId, reason) =>
   api.post(`/reviews/${reviewId}/report`, { reason });
+
+/** Reviews WRITTEN by a user (they are the reviewer)
+ * @param {string} userId @param {Object} params */
+export const fetchSentReviews = (userId, params = {}) =>
+  api.get(`/reviews/sent/${userId}`, { params });
