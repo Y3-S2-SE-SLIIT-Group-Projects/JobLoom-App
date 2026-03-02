@@ -17,6 +17,7 @@ import {
   FaTrash,
   FaFileAlt,
 } from 'react-icons/fa';
+import { getImageUrl } from '../../../utils/imageUrls';
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -176,8 +177,21 @@ const JobDetails = () => {
         {/* Company Logo/Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <FaBriefcase className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+              {job.employer?.profileImage ? (
+                <img
+                  src={getImageUrl(job.employer.profileImage)}
+                  alt="logo"
+                  className="w-full h-full object-cover"
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : null}
+              <FaBriefcase
+                className={`w-8 h-8 text-gray-400 ${job.employer?.profileImage ? 'hidden' : 'block'}`}
+              />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-1">{job.title}</h1>
