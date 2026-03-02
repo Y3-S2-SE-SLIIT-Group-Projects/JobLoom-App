@@ -267,7 +267,6 @@ const EditProfile = () => {
 
   return (
     <DottedBackground>
-
       <div className="max-w-3xl px-6 py-8 mx-auto">
         {/* Back Button */}
         <Link

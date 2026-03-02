@@ -139,7 +139,6 @@ const UserProfile = () => {
 
   return (
     <DottedBackground>
-
       <div className="max-w-4xl px-6 py-8 mx-auto">
         {/* Profile Header Card */}
         <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 mb-6">
