@@ -140,8 +140,6 @@ const UserProfile = () => {
     );
   }
 
-  const primaryCV = user.cvs?.find(cv => cv.isPrimary) || user.cvs?.[0];
-
   return (
     <DottedBackground>
       <Navbar />

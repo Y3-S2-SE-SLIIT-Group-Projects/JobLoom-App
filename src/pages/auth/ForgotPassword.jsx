@@ -169,7 +169,7 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
 };
 
 // Step 3 - Reset Password
-const ResetStep = ({ phone, resetToken, onBack, loading }) => {
+const ResetStep = ({ phone, resetToken, loading }) => {
   const { t } = useTranslation();
   const { resetPassword } = useUser();
   const navigate = useNavigate();

@@ -77,7 +77,7 @@ export const UserProvider = ({ children }) => {
       // Store token & user on successful verification
       if (data.token) {
         localStorage.setItem('token', data.token);
-        const { token, ...user } = data;
+        const { token: _token, ...user } = data;
         localStorage.setItem('user', JSON.stringify(user));
         setCurrentUser(user);
       }

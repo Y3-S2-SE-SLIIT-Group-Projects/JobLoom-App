@@ -108,7 +108,7 @@ const Register = () => {
       return;
     }
     try {
-      const { confirmPassword, ...submitData } = formData;
+      const { confirmPassword: _confirmPassword, ...submitData } = formData;
       await registerUser(submitData);
       // Redirect to OTP verification with phone number
       navigate('/verify-registration', { state: { phone: formData.phone } });
