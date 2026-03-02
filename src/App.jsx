@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { JobProvider } from './contexts/JobContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import EmployerDashboard from './pages/employer/jobs/EmployerDashboard';
+import PublicDashboard from './pages/dashboard/Dashboard';
 import CreateJob from './pages/employer/jobs/CreateJob';
 import JobList from './pages/employer/jobs/JobList';
 import JobDetails from './pages/employer/jobs/JobDetails';
@@ -15,7 +16,8 @@ function App() {
       <JobProvider>
         <ErrorBoundary>
           <Routes>
-            <Route path="/" element={<Navigate to="/employer/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/jobs" replace />} />
+            <Route path="/jobs" element={<PublicDashboard />} />
             <Route path="/employer/dashboard" element={<EmployerDashboard />} />
             <Route path="/employer/create-job" element={<CreateJob />} />
             <Route path="/employer/my-jobs" element={<JobList />} />

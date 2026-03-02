@@ -133,10 +133,8 @@ const JobList = () => {
       {/* Hero Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Find your dream job</h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Looking for jobs? Browse our latest job openings to view & apply to the best jobs today!
-          </p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">Build Your Dream Team</h1>
+          <p className="text-lg text-gray-600 mb-8">Post Jobs and Reach Qualified Candidates</p>
 
           {/* Search Bar */}
           <div className="flex flex-col md:flex-row gap-4">

@@ -57,9 +57,11 @@ export const JobProvider = ({ children }) => {
 
       setJobs(data.data.jobs);
       setPagination(data.data.pagination);
+      return data.data.jobs || [];
     } catch (err) {
       setError(err.message);
       console.error('Error fetching jobs:', err);
+      return [];
     } finally {
       setLoading(false);
     }

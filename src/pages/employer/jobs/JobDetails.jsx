@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useJobs } from '../../../contexts/JobContext';
 import parse from 'html-react-parser';
 import Navbar from '../../../components/Navbar';
@@ -33,6 +33,9 @@ const JobDetails = () => {
   const [error, setError] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState('');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isPublicView = searchParams.get('public') === 'true';
 
   const loadJob = async () => {
     if (!id) {
@@ -129,11 +132,11 @@ const JobDetails = () => {
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}
         <Link
-          to="/employer/my-jobs"
+          to={isPublicView ? '/jobs' : '/employer/dashboard'}
           className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-6"
         >
           <FaArrowLeft className="w-5 h-5 mr-2" />
-          Back to Jobs
+          {isPublicView ? 'Back to Jobs' : 'Back to Dashboard'}
         </Link>
 
         {/* Company Logo/Header */}
@@ -230,39 +233,41 @@ const JobDetails = () => {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-200">
-          <button
-            onClick={() => navigate(`/employer/jobs/${job._id}/edit`)}
-            className="px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium flex items-center gap-2"
-          >
-            <FaEdit className="w-5 h-5" />
-            Edit Job
-          </button>
-          <button
-            onClick={() => handleAction('close')}
-            disabled={job.status !== 'open'}
-            className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
-          >
-            <FaTimesCircle className="w-5 h-5" />
-            Close Job
-          </button>
-          <button
-            onClick={() => handleAction('filled')}
-            disabled={job.status !== 'open'}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
-          >
-            <FaCheckCircle className="w-5 h-5" />
-            Mark as Filled
-          </button>
-          <button
-            onClick={() => handleAction('delete')}
-            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2 ml-auto"
-          >
-            <FaTrash className="w-5 h-5" />
-            Delete Job
-          </button>
-        </div>
+        {/* Action Buttons (only visible to employers) */}
+        {!isPublicView && (
+          <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-200">
+            <button
+              onClick={() => navigate(`/employer/jobs/${job._id}/edit`)}
+              className="px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium flex items-center gap-2"
+            >
+              <FaEdit className="w-5 h-5" />
+              Edit Job
+            </button>
+            <button
+              onClick={() => handleAction('close')}
+              disabled={job.status !== 'open'}
+              className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+            >
+              <FaTimesCircle className="w-5 h-5" />
+              Close Job
+            </button>
+            <button
+              onClick={() => handleAction('filled')}
+              disabled={job.status !== 'open'}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
+            >
+              <FaCheckCircle className="w-5 h-5" />
+              Mark as Filled
+            </button>
+            <button
+              onClick={() => handleAction('delete')}
+              className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2 ml-auto"
+            >
+              <FaTrash className="w-5 h-5" />
+              Delete Job
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Dialog */}
