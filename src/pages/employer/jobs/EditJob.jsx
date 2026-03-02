@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import { useJobs } from '../../../contexts/JobContext';
-import Navbar from '../../../components/Navbar';
+
 import DottedBackground from '../../../components/DottedBackground';
 import {
   FaArrowLeft,
@@ -517,8 +517,6 @@ const EditJob = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <Link

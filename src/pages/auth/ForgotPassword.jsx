@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../contexts/UserContext';
-import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
 import {
   FaPhone,
@@ -43,13 +42,13 @@ const PhoneStep = ({ onNext, loading }) => {
           <FaPhone className="w-7 h-7 text-[#6794D1]" />
         </div>
       </div>
-      <div className="text-center mb-4">
+      <div className="mb-4 text-center">
         <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.forgot_pwd_title')}</h1>
         <p className="text-[#516876]">{t('auth.forgot_pwd_subtitle')}</p>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
@@ -59,7 +58,7 @@ const PhoneStep = ({ onNext, loading }) => {
           {t('auth.phone_number')}
         </label>
         <div className="relative">
-          <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
           <input
             type="tel"
             value={phone}
@@ -79,7 +78,7 @@ const PhoneStep = ({ onNext, loading }) => {
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
         ) : (
           t('auth.send_otp')
         )}
@@ -148,7 +147,7 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
           <FaShieldAlt className="w-7 h-7 text-[#6794D1]" />
         </div>
       </div>
-      <div className="text-center mb-4">
+      <div className="mb-4 text-center">
         <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.enter_otp')}</h1>
         <p className="text-[#516876]">
           {t('auth.verify_desc')} <span className="font-medium text-[#2B373F]">{phone}</span>
@@ -156,7 +155,7 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
@@ -191,7 +190,7 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
           className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
           ) : (
             t('auth.verify_otp')
           )}
@@ -237,9 +236,9 @@ const ResetStep = ({ phone, resetToken, loading }) => {
 
   if (done) {
     return (
-      <div className="text-center space-y-4 py-4">
+      <div className="py-4 space-y-4 text-center">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
             <FaCheckCircle className="w-8 h-8 text-green-600" />
           </div>
         </div>
@@ -261,13 +260,13 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           <FaLock className="w-7 h-7 text-[#6794D1]" />
         </div>
       </div>
-      <div className="text-center mb-4">
+      <div className="mb-4 text-center">
         <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.set_new_password')}</h1>
         <p className="text-[#516876]">{t('auth.set_new_password_subtitle')}</p>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
@@ -277,7 +276,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           {t('auth.new_password')}
         </label>
         <div className="relative">
-          <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={password}
@@ -291,7 +290,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           <button
             type="button"
             onClick={() => setShowPwd(p => !p)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
           >
             {showPwd ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
           </button>
@@ -303,7 +302,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           {t('auth.confirm_password')}
         </label>
         <div className="relative">
-          <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={confirm}
@@ -323,7 +322,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
         ) : (
           t('auth.reset_password_button')
         )}
@@ -344,9 +343,8 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <Navbar />
       <DottedBackground>
-        <div className="min-h-screen flex items-center justify-center px-4 py-12">
+        <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
             <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
               {/* Step indicator */}

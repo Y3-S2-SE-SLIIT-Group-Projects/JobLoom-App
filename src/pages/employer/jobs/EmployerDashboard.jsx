@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useJobs } from '../../../contexts/JobContext';
-import Navbar from '../../../components/Navbar';
+
 import DottedBackground from '../../../components/DottedBackground';
 import { FaArrowRight, FaUserCircle, FaChartBar } from 'react-icons/fa';
 import createJobImg from '../../../assets/images/create-job.png';
@@ -74,8 +74,6 @@ const EmployerDashboard = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Dashboard Title */}
