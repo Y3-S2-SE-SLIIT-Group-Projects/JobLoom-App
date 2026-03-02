@@ -5,33 +5,26 @@ import { getImageUrl } from '../utils/imageUrls';
 
 import Logo from '/logo.svg';
 
-const Navbar = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
-
-  const LanguageSwitcher = () => (
+const LanguageSwitcher = () => {
+  const { i18n } = useTranslation();
+  return (
     <div className="flex items-center gap-1 border-r border-[#D2D5D9] pr-4 mr-2">
       <FaGlobe className="w-4 h-4 text-[#516876] mr-1" />
       <div className="flex gap-2 text-xs font-bold">
-        <button 
-          onClick={() => changeLanguage('en')} 
+        <button
+          onClick={() => i18n.changeLanguage('en')}
           className={`px-1.5 py-0.5 rounded transition-colors ${i18n.language.startsWith('en') ? 'bg-[#6794D1] text-white' : 'text-[#516876] hover:bg-gray-100'}`}
         >
           EN
         </button>
-        <button 
-          onClick={() => changeLanguage('si')} 
+        <button
+          onClick={() => i18n.changeLanguage('si')}
           className={`px-1.5 py-0.5 rounded transition-colors ${i18n.language === 'si' ? 'bg-[#6794D1] text-white' : 'text-[#516876] hover:bg-gray-100'}`}
         >
           සිං
         </button>
-        <button 
-          onClick={() => changeLanguage('ta')} 
+        <button
+          onClick={() => i18n.changeLanguage('ta')}
           className={`px-1.5 py-0.5 rounded transition-colors ${i18n.language === 'ta' ? 'bg-[#6794D1] text-white' : 'text-[#516876] hover:bg-gray-100'}`}
         >
           தம
@@ -39,6 +32,12 @@ const Navbar = () => {
       </div>
     </div>
   );
+};
+
+const Navbar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Read current user from localStorage
   const currentUser = (() => {
