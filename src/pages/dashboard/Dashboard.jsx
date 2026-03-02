@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
+import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../contexts/JobContext';
 import JobCard from './JobCard';
 import {
@@ -23,7 +24,7 @@ const normalizeRegionName = value =>
 // ------------------------------------------------------------------
 // PlacesInput defined OUTSIDE Dashboard so React doesn't remount it
 // ------------------------------------------------------------------
-const PlacesInput = ({ value, onChange }) => {
+const PlacesInput = ({ value, onChange, t }) => {
   const {
     value: v,
     suggestions: { status, data },
@@ -115,7 +116,7 @@ const PlacesInput = ({ value, onChange }) => {
         <input
           value={v}
           onChange={handleInput}
-          placeholder="Anywhere"
+          placeholder={t('dashboard.location_placeholder')}
           className="w-full outline-none text-gray-700 bg-transparent text-sm placeholder:text-sm"
         />
       </div>
@@ -185,6 +186,7 @@ const SALARY_RANGES = [
 // ---------------------------------------------------------------
 const Dashboard = () => {
   const { fetchJobs, jobs, loading } = useJobs();
+  const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
   // Ref to scroll to the search/results section
@@ -379,12 +381,13 @@ const Dashboard = () => {
             Sri Lanka's Job Platform
           </span>
           <h1 className="text-5xl font-extrabold text-[#1F2A37] leading-tight mb-3">
-            Take the Next Step in Your Career.
+            {t('dashboard.hero_title')}
           </h1>
-          <p className="text-2xl font-semibold text-[#6794D1] mb-5">Let’s Get You Hired.</p>
+          <p className="text-2xl font-semibold text-[#6794D1] mb-5">
+            {t('dashboard.hero_subtitle')}
+          </p>
           <p className="text-gray-500 mb-8 max-w-md leading-relaxed">
-            Browse thousands of jobs across Sri Lanka. Connect with employers, apply with ease, and
-            take the next step in your career today.
+            {t('dashboard.hero_description')}
           </p>
 
           <div className="flex flex-wrap gap-3 mb-6">
@@ -392,7 +395,7 @@ const Dashboard = () => {
               onClick={() => searchRef.current?.scrollIntoView({ behavior: 'smooth' })}
               className="flex items-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg font-medium hover:bg-[#5a83c0] transition-colors"
             >
-              Explore Jobs <FaArrowRight className="w-4 h-4" />
+              {t('dashboard.explore_jobs')} <FaArrowRight className="w-4 h-4" />
             </button>
           </div>
 
@@ -422,7 +425,7 @@ const Dashboard = () => {
               <input
                 value={query}
                 onChange={e => setQuery(e.target.value)}
-                placeholder="Job title or keywords"
+                placeholder={t('dashboard.job_title_placeholder')}
                 className="w-full outline-none text-gray-700 text-sm"
               />
             </div>
@@ -431,6 +434,7 @@ const Dashboard = () => {
             <div className="md:w-72 flex items-center border border-gray-200 rounded-xl px-4 py-3 relative">
               <PlacesInput
                 value={locationLabel}
+                t={t}
                 onChange={val => {
                   setLocationLabel(val.address || '');
                   setLocationObj(val);
@@ -444,7 +448,7 @@ const Dashboard = () => {
                 type="submit"
                 className="px-6 py-3 bg-[#6794D1] text-white rounded-xl font-medium hover:bg-[#5a83c0] transition-colors"
               >
-                Search
+                {t('dashboard.search_button')}
               </button>
               <button
                 type="button"
@@ -454,7 +458,9 @@ const Dashboard = () => {
                 className="flex items-center gap-2 px-4 py-3 bg-[#E8F0FB] text-[#6794D1] rounded-xl font-medium hover:bg-[#d4e5f7] transition-colors disabled:opacity-60"
               >
                 <FaLocationArrow className="w-4 h-4" />
-                <span className="hidden sm:inline">{nearbyLoading ? 'Locating…' : 'Nearby'}</span>
+                <span className="hidden sm:inline">
+                  {nearbyLoading ? t('dashboard.nearby_locating') : t('dashboard.nearby_button')}
+                </span>
               </button>
             </div>
           </div>
@@ -467,7 +473,7 @@ const Dashboard = () => {
               className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50"
             >
               <FaSlidersH className="w-3.5 h-3.5" />
-              Filters
+              {t('dashboard.filters_button')}
               {(category || employmentType || province || salaryRangeKey !== 'Any') && (
                 <span className="w-2 h-2 rounded-full bg-[#6794D1] inline-block"></span>
               )}
@@ -484,12 +490,12 @@ const Dashboard = () => {
                 onClick={clearFilters}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-400 hover:text-red-600"
               >
-                <FaTimes className="w-3 h-3" /> Clear all
+                <FaTimes className="w-3 h-3" /> {t('dashboard.clear_filters')}
               </button>
             )}
             {isNearbyResult && (
               <span className="px-3 py-1.5 bg-[#E8F0FB] text-[#6794D1] text-xs font-semibold rounded-full">
-                Nearby jobs
+                {t('dashboard.nearby_jobs_badge')}
               </span>
             )}
           </div>
@@ -498,13 +504,15 @@ const Dashboard = () => {
             <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
               {/* Category */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Category</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.category_label')}
+                </label>
                 <select
                   value={category}
                   onChange={e => setCategory(e.target.value)}
                   className="w-full p-2.5 border border-gray-200 rounded-lg text-sm"
                 >
-                  <option value="">All categories</option>
+                  <option value="">{t('dashboard.all_categories')}</option>
                   {JOB_CATEGORIES.map(c => (
                     <option key={c.value} value={c.value}>
                       {c.label}
@@ -515,32 +523,38 @@ const Dashboard = () => {
 
               {/* Employment type (client-side) */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Employment Type</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.employment_type_label')}
+                </label>
                 <select
                   value={employmentType}
                   onChange={e => setEmploymentType(e.target.value)}
                   className="w-full p-2.5 border border-gray-200 rounded-lg text-sm"
                 >
-                  <option value="">All types</option>
-                  <option value="full-time">Full-Time</option>
-                  <option value="part-time">Part-Time</option>
-                  <option value="contract">Contract</option>
-                  <option value="temporary">Temporary</option>
-                  <option value="internship">Internship</option>
-                  <option value="seasonal">Seasonal</option>
-                  <option value="freelance">Freelance</option>
+                  <option value="">{t('dashboard.all_types')}</option>
+                  <option value="full-time">{t('employment_types.full_time', 'Full-Time')}</option>
+                  <option value="part-time">{t('employment_types.part_time', 'Part-Time')}</option>
+                  <option value="contract">{t('employment_types.contract', 'Contract')}</option>
+                  <option value="temporary">{t('employment_types.temporary', 'Temporary')}</option>
+                  <option value="internship">
+                    {t('employment_types.internship', 'Internship')}
+                  </option>
+                  <option value="seasonal">{t('employment_types.seasonal', 'Seasonal')}</option>
+                  <option value="freelance">{t('employment_types.freelance', 'Freelance')}</option>
                 </select>
               </div>
 
               {/* Province */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Province</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.province_label')}
+                </label>
                 <select
                   value={province}
                   onChange={e => setProvince(e.target.value)}
                   className="w-full p-2.5 border border-gray-200 rounded-lg text-sm"
                 >
-                  <option value="">All provinces</option>
+                  <option value="">{t('dashboard.all_provinces')}</option>
                   {PROVINCES.map(p => (
                     <option key={p} value={p}>
                       {p}
@@ -551,7 +565,9 @@ const Dashboard = () => {
 
               {/* Salary range */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Salary (LKR)</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.salary_label')}
+                </label>
                 <select
                   value={salaryRangeKey}
                   onChange={e => setSalaryRangeKey(e.target.value)}
@@ -579,8 +595,8 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-semibold text-[#1F2A37]">
             {isNearbyResult
-              ? `${displayJobs.length} nearby job${displayJobs.length !== 1 ? 's' : ''}`
-              : `${displayJobs.length} total job${displayJobs.length !== 1 ? 's' : ''}`}
+              ? t('dashboard.results_count_nearby', { count: displayJobs.length })
+              : t('dashboard.results_count_total', { count: displayJobs.length })}
           </span>
         </div>
 
@@ -588,13 +604,11 @@ const Dashboard = () => {
         {(loading || nearbyLoading) && (
           <div className="text-center py-16">
             <div className="w-10 h-10 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p className="text-gray-500 text-sm">Loading jobs…</p>
+            <p className="text-gray-500 text-sm">{t('dashboard.loading_jobs')}</p>
           </div>
         )}
         {!loading && !nearbyLoading && displayJobs.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            No jobs found. Try adjusting your search.
-          </div>
+          <div className="text-center py-16 text-gray-400">{t('dashboard.no_jobs_found')}</div>
         )}
         {!loading && !nearbyLoading && displayJobs.map(job => <JobCard key={job._id} job={job} />)}
       </div>

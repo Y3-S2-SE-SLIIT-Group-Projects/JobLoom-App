@@ -16,6 +16,7 @@ import {
   FaTrash,
   FaClock,
 } from 'react-icons/fa';
+import { getImageUrl } from '../../../utils/imageUrls';
 
 const JobList = () => {
   const navigate = useNavigate();
@@ -209,8 +210,21 @@ const JobList = () => {
               >
                 <div className="flex items-start gap-6">
                   {/* Company Logo */}
-                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FaBriefcase className="w-8 h-8 text-white" />
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-100">
+                    {job.employer?.profileImage ? (
+                      <img
+                        src={getImageUrl(job.employer.profileImage)}
+                        alt="logo"
+                        className="w-full h-full object-cover"
+                        onError={e => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : null}
+                    <FaBriefcase
+                      className={`w-8 h-8 text-gray-400 ${job.employer?.profileImage ? 'hidden' : 'block'}`}
+                    />
                   </div>
 
                   {/* Job Info */}
