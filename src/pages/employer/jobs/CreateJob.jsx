@@ -649,7 +649,11 @@ const CreateJob = () => {
 
       // Ensure skillsRequired is explicitly included if it has items
       // This is a safety check to ensure it's not lost in the cleaning process
-      if (formData.skillsRequired && Array.isArray(formData.skillsRequired) && formData.skillsRequired.length > 0) {
+      if (
+        formData.skillsRequired &&
+        Array.isArray(formData.skillsRequired) &&
+        formData.skillsRequired.length > 0
+      ) {
         cleanedFormData.skillsRequired = formData.skillsRequired;
       }
 
@@ -695,7 +699,11 @@ const CreateJob = () => {
 
       // CRITICAL: Ensure skillsRequired is included if it has items
       // JSON.parse(JSON.stringify()) might remove it, so we explicitly add it back
-      if (formData.skillsRequired && Array.isArray(formData.skillsRequired) && formData.skillsRequired.length > 0) {
+      if (
+        formData.skillsRequired &&
+        Array.isArray(formData.skillsRequired) &&
+        formData.skillsRequired.length > 0
+      ) {
         cleanSubmitData.skillsRequired = formData.skillsRequired;
       }
 
