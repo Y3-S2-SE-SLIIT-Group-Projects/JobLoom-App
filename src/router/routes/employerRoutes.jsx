@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import ComingSoon from '../../components/ComingSoon';
+import ComingSoon from '../../pages/ComingSoon';
 
 const EmployerDashboard = lazy(() => import('../../pages/employer/jobs/EmployerDashboard'));
 const CreateJob = lazy(() => import('../../pages/employer/jobs/CreateJob'));
