@@ -25,6 +25,7 @@
     ]
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.7.5",
     "@tailwindcss/postcss": "^4.1.18",
     "@tiptap/extension-placeholder": "^3.19.0",
     "@tiptap/extension-text-align": "^3.19.0",
