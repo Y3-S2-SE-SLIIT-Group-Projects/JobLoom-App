@@ -93,6 +93,36 @@ export const JobProvider = ({ children }) => {
   };
 
   /**
+   * Fetch recommended jobs for current user
+   */
+  const fetchRecommendedJobs = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/jobs/recommendations`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch recommendations');
+      }
+
+      return data.data;
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching recommendations:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Fetch employer's jobs
    */
   const fetchMyJobs = async (options = {}) => {
@@ -108,7 +138,12 @@ export const JobProvider = ({ children }) => {
         queryParams.append('status', options.status);
       }
 
-      const response = await fetch(`${API_URL}/jobs/employer/my-jobs?${queryParams}`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/jobs/employer/my-jobs?${queryParams}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -133,7 +168,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/jobs/employer/stats`);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/jobs/employer/stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -158,10 +198,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(jobData),
       });
@@ -190,10 +232,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/${jobId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updates),
       });
@@ -222,8 +266,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/${jobId}/close`, {
         method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -250,8 +298,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/${jobId}/filled`, {
         method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -278,8 +330,12 @@ export const JobProvider = ({ children }) => {
     setError(null);
 
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/${jobId}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -337,6 +393,7 @@ export const JobProvider = ({ children }) => {
     closeJob,
     markJobAsFilled,
     deleteJob,
+    fetchRecommendedJobs,
     updateFilters,
     resetFilters,
   };

@@ -68,7 +68,7 @@ const EmployerDashboard = () => {
       color: 'text-[#516876]',
       borderColor: 'border-l-[#516876]',
       linkColor: 'text-[#516876]',
-      link: '/employer/profile',
+      link: '/profile',
     },
   ];
 

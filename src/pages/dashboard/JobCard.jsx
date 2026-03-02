@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaBriefcase, FaDollarSign } from 'react-icons/fa';
+import { getImageUrl } from '../../utils/imageUrls';
 
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
@@ -54,8 +55,20 @@ const JobCard = ({ job }) => {
       className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-4 cursor-pointer hover:shadow-md transition-shadow"
     >
       <div className="flex items-start gap-4">
-        <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-xl font-bold text-gray-600">
-          {companyInitial}
+        <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-xl font-bold text-gray-600 overflow-hidden border border-gray-100">
+          {job.employer?.profileImage ? (
+            <img
+              src={getImageUrl(job.employer.profileImage)}
+              alt={companyName}
+              className="w-full h-full object-cover"
+              onError={e => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <span>{companyInitial}</span>
+          )}
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-[#1F2A37]">{job?.title}</h3>
