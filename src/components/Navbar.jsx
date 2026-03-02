@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaBell, FaUserCircle, FaSignOutAlt, FaGlobe } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { getImageUrl } from '../utils/imageUrls';
 
 import Logo from '/logo.svg';
 
@@ -108,8 +109,20 @@ const Navbar = () => {
                 </button>
                 {currentUser ? (
                   <div className="flex items-center gap-2">
-                    <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors">
-                      <FaUserCircle className="w-5 h-5 text-[#516876]" />
+                    <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors p-1">
+                      {currentUser.profileImage ? (
+                        <img 
+                          src={getImageUrl(currentUser.profileImage)} 
+                          alt="avatar" 
+                          className="w-8 h-8 rounded-full object-cover border border-[#D2D5D9]"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                          }}
+                        />
+                      ) : null}
+                      <FaUserCircle className={`w-5 h-5 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`} />
                       <span className="font-medium text-[#2B373F] max-w-[120px] truncate text-sm">
                         {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
                       </span>
@@ -133,8 +146,20 @@ const Navbar = () => {
               <Link to="/employer/dashboard" className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors">{t('navbar.post_job')}</Link>
               {currentUser ? (
                 <div className="flex items-center gap-2">
-                  <Link to="/profile" className="flex items-center gap-2 px-4 py-2 border border-[#D2D5D9] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm">
-                    <FaUserCircle className="w-4 h-4 text-[#516876]" />
+                  <Link to="/profile" className="flex items-center gap-2 px-2 py-2 border border-[#D2D5D9] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm">
+                    {currentUser.profileImage ? (
+                      <img 
+                        src={getImageUrl(currentUser.profileImage)} 
+                        alt="avatar" 
+                        className="w-6 h-6 rounded-full object-cover border border-[#D2D5D9]"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                        }}
+                      />
+                    ) : null}
+                    <FaUserCircle className={`w-4 h-4 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`} />
                     <span className="text-[#2B373F] font-medium">
                       {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
                     </span>
@@ -154,8 +179,20 @@ const Navbar = () => {
               <Link to="/jobs" className="px-3 py-2 text-sm text-[#516876] hover:text-[#6794D1]">{t('navbar.browse_jobs')}</Link>
               {currentUser ? (
                 <div className="flex items-center gap-2">
-                  <Link to="/profile" className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${isActive('/profile') ? 'bg-[#6794D1]/10 text-[#6794D1]' : 'bg-[#F4F6F9] hover:bg-[#D2D5D9] text-[#2B373F]'}`}>
-                    <FaUserCircle className="w-4 h-4" />
+                  <Link to="/profile" className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-colors text-sm font-medium ${isActive('/profile') ? 'bg-[#6794D1]/10 text-[#6794D1]' : 'bg-[#F4F6F9] hover:bg-[#D2D5D9] text-[#2B373F]'}`}>
+                    {currentUser.profileImage ? (
+                      <img 
+                        src={getImageUrl(currentUser.profileImage)} 
+                        alt="avatar" 
+                        className="w-6 h-6 rounded-full object-cover border border-[#D2D5D9]"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.style.display = 'none';
+                          if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                        }}
+                      />
+                    ) : null}
+                    <FaUserCircle className={`w-4 h-4 ${currentUser.profileImage ? 'hidden' : 'block'}`} />
                     {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
                   </Link>
                   <button onClick={handleLogout} className="p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors" title={t('navbar.sign_out')}>
