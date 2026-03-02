@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
 import {
   FaArrowLeft,
@@ -259,8 +258,7 @@ const EditProfile = () => {
   if (loadingProfile) {
     return (
       <DottedBackground>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="w-12 h-12 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin"></div>
         </div>
       </DottedBackground>
@@ -269,9 +267,8 @@ const EditProfile = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="max-w-3xl px-6 py-8 mx-auto">
         {/* Back Button */}
         <Link
           to="/profile"
@@ -291,12 +288,12 @@ const EditProfile = () => {
 
         {/* Alerts */}
         {apiError && (
-          <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50">
             <p className="text-sm text-red-700">{apiError}</p>
           </div>
         )}
         {successMsg && (
-          <div className="mb-5 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+          <div className="flex items-center gap-2 p-4 mb-5 border border-green-200 rounded-lg bg-green-50">
             <FaCheckCircle className="w-4 h-4 text-green-600" />
             <p className="text-sm text-green-700">{successMsg}</p>
           </div>
@@ -362,7 +359,7 @@ const EditProfile = () => {
               <FaUser className="w-5 h-5 text-[#6794D1]" />
               Personal Information
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
@@ -399,10 +396,10 @@ const EditProfile = () => {
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
                   Email address{' '}
-                  <span className="text-xs text-gray-400 font-normal">(cannot be changed)</span>
+                  <span className="text-xs font-normal text-gray-400">(cannot be changed)</span>
                 </label>
                 <div className="relative">
-                  <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                  <FaEnvelope className="absolute w-4 h-4 text-gray-300 -translate-y-1/2 left-3 top-1/2" />
                   <input
                     type="email"
                     disabled
@@ -417,7 +414,7 @@ const EditProfile = () => {
                   Phone Number <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                   <input
                     type="tel"
                     name="phone"
@@ -438,13 +435,13 @@ const EditProfile = () => {
               <FaMapMarkerAlt className="w-5 h-5 text-[#6794D1]" />
               Location
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
                   Village / Town <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <FaMapMarkerAlt className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <FaMapMarkerAlt className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                   <input
                     type="text"
                     name="location.village"
@@ -543,7 +540,7 @@ const EditProfile = () => {
                     Company Website
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                    <span className="absolute text-sm text-gray-400 -translate-y-1/2 left-3 top-1/2">
                       https://
                     </span>
                     <input
@@ -630,7 +627,7 @@ const EditProfile = () => {
 
                 {/* Skill Suggestions */}
                 <div>
-                  <p className="text-xs text-gray-400 mb-2">Suggestions:</p>
+                  <p className="mb-2 text-xs text-gray-400">Suggestions:</p>
                   <div className="flex flex-wrap gap-2">
                     {SKILL_SUGGESTIONS.filter(s => !formData.skills.includes(s))
                       .slice(0, 12)
@@ -667,7 +664,7 @@ const EditProfile = () => {
 
                 {formData.experience.length === 0 ? (
                   <div className="text-center py-8 text-[#516876]">
-                    <FaBriefcase className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                    <FaBriefcase className="w-10 h-10 mx-auto mb-3 text-gray-200" />
                     <p className="text-sm">
                       No experience added yet. Click &quot;Add Experience&quot; to get started.
                     </p>
@@ -679,11 +676,11 @@ const EditProfile = () => {
                         <button
                           type="button"
                           onClick={() => removeExperience(index)}
-                          className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+                          className="absolute text-gray-400 transition-colors top-3 right-3 hover:text-red-500"
                         >
                           <FaTimes className="w-4 h-4" />
                         </button>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pr-8">
+                        <div className="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-2">
                           <div>
                             <label className="block text-xs font-medium text-[#516876] mb-1">
                               Job Title
@@ -750,7 +747,7 @@ const EditProfile = () => {
                   onClick={() => cvInputRef.current?.click()}
                   className="border-2 border-dashed border-[#D2D5D9] rounded-xl p-8 text-center cursor-pointer hover:border-[#6794D1] hover:bg-[#6794D1]/5 transition-all"
                 >
-                  <FaFileUpload className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                  <FaFileUpload className="w-10 h-10 mx-auto mb-3 text-gray-300" />
                   <p className="text-[#2B373F] font-medium mb-1">
                     Drop files here or click to upload
                   </p>
@@ -775,7 +772,7 @@ const EditProfile = () => {
                         className="flex items-center justify-between p-3 bg-[#F4F6F9] rounded-lg"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                          <div className="flex items-center justify-center w-8 h-8 bg-red-100 rounded-lg">
                             <FaFileUpload className="w-4 h-4 text-red-600" />
                           </div>
                           <div>
@@ -788,7 +785,7 @@ const EditProfile = () => {
                         <button
                           type="button"
                           onClick={() => removeCv(index)}
-                          className="text-gray-400 hover:text-red-500 transition-colors"
+                          className="text-gray-400 transition-colors hover:text-red-500"
                         >
                           <FaTrash className="w-4 h-4" />
                         </button>
@@ -814,7 +811,7 @@ const EditProfile = () => {
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
               ) : (
                 <>
                   <FaSave className="w-4 h-4" />

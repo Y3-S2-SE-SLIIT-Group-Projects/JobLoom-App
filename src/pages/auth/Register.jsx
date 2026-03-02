@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../contexts/UserContext';
-import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
 import {
   FaUser,
@@ -137,9 +136,8 @@ const Register = () => {
 
   return (
     <>
-      <Navbar />
       <DottedBackground>
-        <div className="min-h-screen flex items-center justify-center px-4 py-12">
+        <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-lg">
             {/* Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
@@ -170,7 +168,7 @@ const Register = () => {
               </div>
 
               {apiError && (
-                <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50">
                   <p className="text-sm text-red-700">{apiError}</p>
                 </div>
               )}
@@ -212,7 +210,7 @@ const Register = () => {
                         {t('auth.first_name')}
                       </label>
                       <div className="relative">
-                        <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <FaUser className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                         <input
                           type="text"
                           name="firstName"
@@ -246,12 +244,12 @@ const Register = () => {
 
                   {/* Company Name (Employer only) */}
                   {formData.role === 'employer' && (
-                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="duration-300 animate-in fade-in slide-in-from-top-2">
                       <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
                         {t('auth.company_name')}
                       </label>
                       <div className="relative">
-                        <FaBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <FaBriefcase className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                         <input
                           type="text"
                           name="companyName"
@@ -273,7 +271,7 @@ const Register = () => {
                       {t('auth.email')}
                     </label>
                     <div className="relative">
-                      <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <FaEnvelope className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                       <input
                         type="email"
                         name="email"
@@ -292,7 +290,7 @@ const Register = () => {
                       {t('auth.phone_number')}
                     </label>
                     <div className="relative">
-                      <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                       <input
                         type="text"
                         name="phone"
@@ -311,7 +309,7 @@ const Register = () => {
                       {t('auth.password')}
                     </label>
                     <div className="relative">
-                      <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         name="password"
@@ -323,7 +321,7 @@ const Register = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(p => !p)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
                       >
                         {showPassword ? (
                           <FaEyeSlash className="w-4 h-4" />
@@ -343,7 +341,7 @@ const Register = () => {
                       {t('auth.confirm_password')}
                     </label>
                     <div className="relative">
-                      <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                       <input
                         type={showConfirm ? 'text' : 'password'}
                         name="confirmPassword"
@@ -355,7 +353,7 @@ const Register = () => {
                       <button
                         type="button"
                         onClick={() => setShowConfirm(p => !p)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
                       >
                         {showConfirm ? (
                           <FaEyeSlash className="w-4 h-4" />
@@ -388,7 +386,7 @@ const Register = () => {
                       {t('auth.village_town')}
                     </label>
                     <div className="relative">
-                      <FaMapMarkerAlt className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <FaMapMarkerAlt className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                       <input
                         type="text"
                         name="location.village"
@@ -460,7 +458,7 @@ const Register = () => {
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {loading ? (
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
                       ) : (
                         <>{t('auth.create_account')}</>
                       )}

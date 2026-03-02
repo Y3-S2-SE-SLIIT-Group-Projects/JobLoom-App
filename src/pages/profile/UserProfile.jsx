@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
 import AutoTranslate from '../../components/AutoTranslate';
@@ -111,8 +110,7 @@ const UserProfile = () => {
   if (loading && !user) {
     return (
       <DottedBackground>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center justify-center min-h-screen">
           <div className="w-12 h-12 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin"></div>
         </div>
       </DottedBackground>
@@ -122,10 +120,9 @@ const UserProfile = () => {
   if (error || !user) {
     return (
       <DottedBackground>
-        <Navbar />
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full text-center">
-            <FaTimesCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="w-full max-w-md p-6 text-center bg-white border border-red-200 shadow-sm rounded-xl">
+            <FaTimesCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
             <h2 className="text-xl font-bold text-[#2B373F] mb-2">{t('profile.unable_to_load')}</h2>
             <p className="text-[#516876] mb-4">{error || t('profile.sign_in_to_view')}</p>
             <Link
@@ -142,12 +139,11 @@ const UserProfile = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl px-6 py-8 mx-auto">
         {/* Profile Header Card */}
         <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 mb-6">
-          <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="flex flex-col items-start gap-6 sm:flex-row">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               {user.profileImage && !imgError ? (
@@ -183,7 +179,7 @@ const UserProfile = () => {
 
             {/* Info */}
             <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h1 className="text-3xl font-bold text-[#2B373F] mb-1">
                     {user.firstName} {user.lastName}
@@ -195,7 +191,7 @@ const UserProfile = () => {
                       {getRoleLabel(user.role)}
                     </span>
                     {user.role === 'employer' && user.industry && (
-                      <span className="px-3 py-1 text-xs font-medium rounded-full border bg-gray-100 text-gray-700">
+                      <span className="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 border rounded-full">
                         <AutoTranslate>{user.industry}</AutoTranslate>
                       </span>
                     )}
@@ -204,7 +200,7 @@ const UserProfile = () => {
                         <FaCheckCircle className="w-3 h-3" /> {t('profile.verified')}
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs text-orange-500 font-medium">
+                      <span className="flex items-center gap-1 text-xs font-medium text-orange-500">
                         <FaTimesCircle className="w-3 h-3" /> {t('profile.not_verified')}
                       </span>
                     )}
@@ -232,7 +228,7 @@ const UserProfile = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 flex-shrink-0">
+                <div className="flex flex-shrink-0 gap-2">
                   <Link
                     to="/profile/edit"
                     className="flex items-center gap-2 px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium"
@@ -253,9 +249,9 @@ const UserProfile = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Employer: Company about */}
             {user.role === 'employer' && (
               <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 text-center sm:text-left">
@@ -268,7 +264,7 @@ const UserProfile = () => {
                 <div className="space-y-4">
                   {user.companyName && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
                         {t('profile.company_name')}
                       </h3>
                       <p className="text-lg font-bold text-[#2B373F]">{user.companyName}</p>
@@ -276,7 +272,7 @@ const UserProfile = () => {
                   )}
                   {user.industry && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
                         {t('profile.industry')}
                       </h3>
                       <p className="text-[#2B373F] font-medium">
@@ -286,7 +282,7 @@ const UserProfile = () => {
                   )}
                   {user.companyWebsite && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
                         {t('profile.website')}
                       </h3>
                       <a
@@ -305,7 +301,7 @@ const UserProfile = () => {
                   )}
                   {user.companyDescription && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
                         {t('auth.company_description')}
                       </h3>
                       <p className="text-[#516876] leading-relaxed whitespace-pre-line">
@@ -315,7 +311,7 @@ const UserProfile = () => {
                   )}
                   {!user.companyName && !user.industry && !user.companyDescription && (
                     <div className="py-4 text-center">
-                      <p className="text-gray-400 italic">{t('profile.no_company_details')}</p>
+                      <p className="italic text-gray-400">{t('profile.no_company_details')}</p>
                       <Link
                         to="/profile/edit"
                         className="text-[#6794D1] text-sm font-medium mt-2 inline-block"
@@ -351,7 +347,7 @@ const UserProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-400 italic text-sm">{t('profile.no_skills')}</p>
+                    <p className="text-sm italic text-gray-400">{t('profile.no_skills')}</p>
                   )}
                 </div>
 
@@ -387,14 +383,14 @@ const UserProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-400 italic text-sm">No experience added yet.</p>
+                    <p className="text-sm italic text-gray-400">No experience added yet.</p>
                   )}
                 </div>
 
                 {/* CVs */}
                 <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
                   <h2 className="text-xl font-bold text-[#2B373F] mb-4 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50">
                       <FaFileAlt className="w-4 h-4 text-purple-600" />
                     </div>
                     Uploaded CVs
@@ -407,7 +403,7 @@ const UserProfile = () => {
                           className="flex items-center justify-between p-4 bg-[#F4F6F9] rounded-lg border border-[#D2D5D9] hover:border-[#6794D1] transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg">
                               <FaFileAlt className="w-5 h-5 text-red-600" />
                             </div>
                             <div>
@@ -435,7 +431,7 @@ const UserProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-400 italic text-sm">No CVs uploaded yet.</p>
+                    <p className="text-sm italic text-gray-400">No CVs uploaded yet.</p>
                   )}
                 </div>
               </>
@@ -462,7 +458,7 @@ const UserProfile = () => {
                     {user.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2">
+                <div className="flex items-center justify-between py-2">
                   <span className="text-sm text-[#516876]">Verification</span>
                   <span
                     className={`text-sm font-medium ${user.isVerified ? 'text-[#2CD2BD]' : 'text-orange-500'}`}
@@ -493,7 +489,7 @@ const UserProfile = () => {
                 </button>
                 <button
                   onClick={() => setShowDeleteDialog(true)}
-                  className="flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full text-left text-sm"
+                  className="flex items-center w-full gap-3 p-3 text-sm text-left text-red-600 transition-colors rounded-lg hover:bg-red-50"
                 >
                   <FaTrash className="w-4 h-4" />
                   Delete Account
@@ -506,10 +502,10 @@ const UserProfile = () => {
 
       {/* Delete Account Dialog */}
       {showDeleteDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
                 <FaTrash className="w-5 h-5 text-red-600" />
               </div>
               <h3 className="text-lg font-semibold text-[#2B373F]">Delete Account</h3>
@@ -519,7 +515,7 @@ const UserProfile = () => {
               confirm.
             </p>
             {deleteError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
                 <p className="text-sm text-red-700">{deleteError}</p>
               </div>
             )}
@@ -547,10 +543,10 @@ const UserProfile = () => {
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {deleteLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
                 ) : (
                   'Delete Account'
                 )}
