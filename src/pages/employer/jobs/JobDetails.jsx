@@ -100,6 +100,40 @@ const JobDetails = () => {
     return `${currency} ${amount.toLocaleString()} / ${type}`;
   };
 
+  const employerCompanyName =
+    job?.employer?.companyName ||
+    job?.employerId?.companyName ||
+    [job?.employer?.firstName, job?.employer?.lastName].filter(Boolean).join(' ').trim() ||
+    [job?.employerId?.firstName, job?.employerId?.lastName].filter(Boolean).join(' ').trim() ||
+    job?.employer?.email ||
+    job?.employerId?.email ||
+    'Unknown employer';
+
+  const locationText =
+    job?.location?.fullAddress ||
+    [job?.location?.village, job?.location?.district, job?.location?.province]
+      .filter(Boolean)
+      .join(', ') ||
+    'Location not specified';
+
+  const openLocationInGoogleMaps = () => {
+    if (!job?.location) return;
+
+    const coordinates = job.location?.coordinates?.coordinates;
+    let mapsUrl = '';
+
+    if (Array.isArray(coordinates) && coordinates.length === 2) {
+      const [lng, lat] = coordinates;
+      mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+    } else if (locationText && locationText !== 'Location not specified') {
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationText)}`;
+    }
+
+    if (mapsUrl) {
+      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -162,6 +196,7 @@ const JobDetails = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-1">{job.title}</h1>
               <p className="text-lg text-gray-600">{job.jobRole || 'Job Position'}</p>
+              <p className="text-sm text-gray-500 mt-1">{employerCompanyName}</p>
             </div>
           </div>
         </div>
@@ -174,9 +209,14 @@ const JobDetails = () => {
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <FaGlobe className="w-5 h-5 text-gray-400" />
-            <span>
-              {job.location.village}, {job.location.district}
-            </span>
+            <button
+              type="button"
+              onClick={openLocationInGoogleMaps}
+              className="text-left hover:text-[#6794D1] hover:underline transition-colors"
+              title="Open location in Google Maps"
+            >
+              {locationText}
+            </button>
           </div>
           <div className="flex items-center gap-2 text-gray-700">
             <FaDollarSign className="w-5 h-5 text-gray-400" />
@@ -190,6 +230,10 @@ const JobDetails = () => {
         <div className="bg-gray-50 rounded-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">JOB INFORMATION</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Employer</p>
+              <p className="font-medium text-gray-900">{employerCompanyName}</p>
+            </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">Category</p>
               <p className="font-medium text-gray-900 capitalize">{job.category}</p>

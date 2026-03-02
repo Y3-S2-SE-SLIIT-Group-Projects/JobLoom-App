@@ -13,12 +13,26 @@ const JobCard = ({ job }) => {
 
   const getCompanyName = () => {
     if (!job) return 'Unknown employer';
+    if (job.employerId && typeof job.employerId === 'object') {
+      return (
+        job.employerId.companyName ||
+        [job.employerId.firstName, job.employerId.lastName].filter(Boolean).join(' ').trim() ||
+        job.employerId.email ||
+        'Unknown employer'
+      );
+    }
     if (typeof job.company === 'string') return job.company;
     if (job.company && typeof job.company === 'object') {
       return job.company.name || job.company.companyName || job.company.title || 'Unknown employer';
     }
     if (job.employer && typeof job.employer === 'object')
-      return job.employer.name || job.employer.companyName || 'Unknown employer';
+      return (
+        job.employer.name ||
+        job.employer.companyName ||
+        [job.employer.firstName, job.employer.lastName].filter(Boolean).join(' ').trim() ||
+        job.employer.email ||
+        'Unknown employer'
+      );
     return 'Unknown employer';
   };
 
