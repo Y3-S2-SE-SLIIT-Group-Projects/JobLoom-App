@@ -155,7 +155,7 @@ const UserProfile = () => {
                   src={getImageUrl(user.profileImage)}
                   alt={`${user.firstName} ${user.lastName}`}
                   className="w-24 h-24 rounded-full object-cover border-4 border-[#D2D5D9]"
-                  onError={(e) => {
+                  onError={e => {
                     e.currentTarget.onerror = null;
                     setImgError(true);
                   }}
@@ -163,9 +163,12 @@ const UserProfile = () => {
               ) : (
                 <div className="w-24 h-24 bg-gradient-to-br from-[#6794D1] to-[#5a83c0] rounded-full flex items-center justify-center border-4 border-[#6794D1]/20">
                   <span className="text-3xl font-bold text-white">
-                    {user.role === 'employer' ? <FaBriefcase className="w-10 h-10" /> : (
+                    {user.role === 'employer' ? (
+                      <FaBriefcase className="w-10 h-10" />
+                    ) : (
                       <>
-                        {user.firstName?.[0]?.toUpperCase()}{user.lastName?.[0]?.toUpperCase()}
+                        {user.firstName?.[0]?.toUpperCase()}
+                        {user.lastName?.[0]?.toUpperCase()}
                       </>
                     )}
                   </span>
@@ -186,15 +189,17 @@ const UserProfile = () => {
                     {user.firstName} {user.lastName}
                   </h1>
                   <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getRoleBadge(user.role)}`}>
-                        {getRoleLabel(user.role)}
+                    <span
+                      className={`px-3 py-1 text-xs font-medium rounded-full border ${getRoleBadge(user.role)}`}
+                    >
+                      {getRoleLabel(user.role)}
+                    </span>
+                    {user.role === 'employer' && user.industry && (
+                      <span className="px-3 py-1 text-xs font-medium rounded-full border bg-gray-100 text-gray-700">
+                        <AutoTranslate>{user.industry}</AutoTranslate>
                       </span>
-                      {user.role === 'employer' && user.industry && (
-                        <span className="px-3 py-1 text-xs font-medium rounded-full border bg-gray-100 text-gray-700">
-                          <AutoTranslate>{user.industry}</AutoTranslate>
-                        </span>
-                      )}
-                      {user.isVerified ? (
+                    )}
+                    {user.isVerified ? (
                       <span className="flex items-center gap-1 text-xs text-[#2CD2BD] font-medium">
                         <FaCheckCircle className="w-3 h-3" /> {t('profile.verified')}
                       </span>
@@ -263,21 +268,33 @@ const UserProfile = () => {
                 <div className="space-y-4">
                   {user.companyName && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('profile.company_name')}</h3>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                        {t('profile.company_name')}
+                      </h3>
                       <p className="text-lg font-bold text-[#2B373F]">{user.companyName}</p>
                     </div>
                   )}
                   {user.industry && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('profile.industry')}</h3>
-                      <p className="text-[#2B373F] font-medium"><AutoTranslate>{user.industry}</AutoTranslate></p>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                        {t('profile.industry')}
+                      </h3>
+                      <p className="text-[#2B373F] font-medium">
+                        <AutoTranslate>{user.industry}</AutoTranslate>
+                      </p>
                     </div>
                   )}
                   {user.companyWebsite && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('profile.website')}</h3>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                        {t('profile.website')}
+                      </h3>
                       <a
-                        href={user.companyWebsite.startsWith('http') ? user.companyWebsite : `https://${user.companyWebsite}`}
+                        href={
+                          user.companyWebsite.startsWith('http')
+                            ? user.companyWebsite
+                            : `https://${user.companyWebsite}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[#6794D1] hover:underline font-medium"
@@ -288,7 +305,9 @@ const UserProfile = () => {
                   )}
                   {user.companyDescription && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('auth.company_description')}</h3>
+                      <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                        {t('auth.company_description')}
+                      </h3>
                       <p className="text-[#516876] leading-relaxed whitespace-pre-line">
                         <AutoTranslate>{user.companyDescription}</AutoTranslate>
                       </p>
@@ -297,7 +316,12 @@ const UserProfile = () => {
                   {!user.companyName && !user.industry && !user.companyDescription && (
                     <div className="py-4 text-center">
                       <p className="text-gray-400 italic">{t('profile.no_company_details')}</p>
-                      <Link to="/profile/edit" className="text-[#6794D1] text-sm font-medium mt-2 inline-block">{t('profile.add_company_info')}</Link>
+                      <Link
+                        to="/profile/edit"
+                        className="text-[#6794D1] text-sm font-medium mt-2 inline-block"
+                      >
+                        {t('profile.add_company_info')}
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -390,7 +414,9 @@ const UserProfile = () => {
                               <p className="font-medium text-[#2B373F] text-sm">{cv.name}</p>
                               <div className="flex items-center gap-2">
                                 {cv.isPrimary && (
-                                  <span className="text-xs text-[#6794D1] font-medium">Primary</span>
+                                  <span className="text-xs text-[#6794D1] font-medium">
+                                    Primary
+                                  </span>
                                 )}
                                 <p className="text-xs text-gray-400">{formatDate(cv.createdAt)}</p>
                               </div>
@@ -424,17 +450,23 @@ const UserProfile = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-[#F4F6F9]">
                   <span className="text-sm text-[#516876]">Member since</span>
-                  <span className="text-sm font-medium text-[#2B373F]">{formatDate(user.createdAt)}</span>
+                  <span className="text-sm font-medium text-[#2B373F]">
+                    {formatDate(user.createdAt)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-[#F4F6F9]">
                   <span className="text-sm text-[#516876]">Account status</span>
-                  <span className={`text-sm font-medium ${user.isActive ? 'text-[#2CD2BD]' : 'text-red-500'}`}>
+                  <span
+                    className={`text-sm font-medium ${user.isActive ? 'text-[#2CD2BD]' : 'text-red-500'}`}
+                  >
                     {user.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-sm text-[#516876]">Verification</span>
-                  <span className={`text-sm font-medium ${user.isVerified ? 'text-[#2CD2BD]' : 'text-orange-500'}`}>
+                  <span
+                    className={`text-sm font-medium ${user.isVerified ? 'text-[#2CD2BD]' : 'text-orange-500'}`}
+                  >
                     {user.isVerified ? 'Verified' : 'Pending'}
                   </span>
                 </div>
@@ -483,7 +515,8 @@ const UserProfile = () => {
               <h3 className="text-lg font-semibold text-[#2B373F]">Delete Account</h3>
             </div>
             <p className="text-[#516876] mb-4">
-              This action is <strong>permanent</strong> and cannot be undone. Enter your password to confirm.
+              This action is <strong>permanent</strong> and cannot be undone. Enter your password to
+              confirm.
             </p>
             {deleteError && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -493,13 +526,20 @@ const UserProfile = () => {
             <input
               type="password"
               value={deletePassword}
-              onChange={e => { setDeletePassword(e.target.value); setDeleteError(''); }}
+              onChange={e => {
+                setDeletePassword(e.target.value);
+                setDeleteError('');
+              }}
               placeholder="Enter your password"
               className="w-full px-4 py-3 border border-[#D2D5D9] rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none mb-4"
             />
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => { setShowDeleteDialog(false); setDeletePassword(''); setDeleteError(''); }}
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setDeletePassword('');
+                  setDeleteError('');
+                }}
                 className="px-4 py-2 text-[#516876] hover:bg-[#F4F6F9] rounded-lg transition-colors"
               >
                 Cancel

@@ -36,7 +36,7 @@ export const UserProvider = ({ children }) => {
   /**
    * Register a new user
    */
-  const registerUser = async (userData) => {
+  const registerUser = async userData => {
     setLoading(true);
     setError(null);
     try {
@@ -134,7 +134,7 @@ export const UserProvider = ({ children }) => {
   /**
    * Forgot password - send OTP
    */
-  const forgotPassword = async (phone) => {
+  const forgotPassword = async phone => {
     setLoading(true);
     setError(null);
     try {
@@ -232,7 +232,7 @@ export const UserProvider = ({ children }) => {
   /**
    * Get user profile by ID
    */
-  const getUserProfile = async (id) => {
+  const getUserProfile = async id => {
     setLoading(true);
     setError(null);
     try {
@@ -255,7 +255,7 @@ export const UserProvider = ({ children }) => {
   /**
    * Update user profile (supports file uploads)
    */
-  const updateUserProfile = async (updates) => {
+  const updateUserProfile = async updates => {
     setLoading(true);
     setError(null);
     try {
@@ -292,7 +292,7 @@ export const UserProvider = ({ children }) => {
   /**
    * Delete user account
    */
-  const deleteAccount = async (password) => {
+  const deleteAccount = async password => {
     setLoading(true);
     setError(null);
     try {

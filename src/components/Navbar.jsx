@@ -87,51 +87,98 @@ const Navbar = () => {
           {isAuthPage ? (
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
-              <Link to="/login" className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]">{t('navbar.sign_in')}</Link>
-              <Link to="/register" className="px-4 py-2 bg-white border border-[#6794D1] rounded-lg text-sm text-[#6794D1]">{t('navbar.register')}</Link>
+              <Link to="/login" className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]">
+                {t('navbar.sign_in')}
+              </Link>
+              <Link
+                to="/register"
+                className="px-4 py-2 bg-white border border-[#6794D1] rounded-lg text-sm text-[#6794D1]"
+              >
+                {t('navbar.register')}
+              </Link>
             </div>
           ) : isEmployerSection ? (
             <>
               {/* Employer Nav */}
               <nav className="hidden md:flex items-center gap-6">
-                <Link to="/employer/dashboard" className={`font-medium transition-colors pb-1 ${isActive('/employer/dashboard') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}>{t('navbar.dashboard')}</Link>
-                <Link to="/employer/my-jobs" className={`font-medium transition-colors pb-1 ${isActive('/employer/my-jobs') || isActive('/employer/jobs') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}>{t('navbar.jobs')}</Link>
-                <Link to="/employer/applications" className={`font-medium transition-colors pb-1 ${isActive('/employer/applications') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}>{t('navbar.applications')}</Link>
-                <Link to="/employer/analytics" className={`font-medium transition-colors pb-1 ${isActive('/employer/analytics') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}>{t('navbar.analytics')}</Link>
+                <Link
+                  to="/employer/dashboard"
+                  className={`font-medium transition-colors pb-1 ${isActive('/employer/dashboard') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}
+                >
+                  {t('navbar.dashboard')}
+                </Link>
+                <Link
+                  to="/employer/my-jobs"
+                  className={`font-medium transition-colors pb-1 ${isActive('/employer/my-jobs') || isActive('/employer/jobs') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}
+                >
+                  {t('navbar.jobs')}
+                </Link>
+                <Link
+                  to="/employer/applications"
+                  className={`font-medium transition-colors pb-1 ${isActive('/employer/applications') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}
+                >
+                  {t('navbar.applications')}
+                </Link>
+                <Link
+                  to="/employer/analytics"
+                  className={`font-medium transition-colors pb-1 ${isActive('/employer/analytics') ? 'text-[#6794D1] border-b-2 border-[#6794D1]' : 'text-[#516876] hover:text-[#6794D1]'}`}
+                >
+                  {t('navbar.analytics')}
+                </Link>
               </nav>
               <div className="flex items-center gap-4">
                 <LanguageSwitcher />
-                <Link to="/employer/create-job" className="hidden md:inline-block px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors">{t('navbar.post_job')}</Link>
+                <Link
+                  to="/employer/create-job"
+                  className="hidden md:inline-block px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
+                >
+                  {t('navbar.post_job')}
+                </Link>
                 <button className="relative p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors">
                   <FaBell className="w-6 h-6 text-[#516876]" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
                 {currentUser ? (
                   <div className="flex items-center gap-2">
-                    <Link to="/profile" className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors p-1">
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors p-1"
+                    >
                       {currentUser.profileImage ? (
-                        <img 
-                          src={getImageUrl(currentUser.profileImage)} 
-                          alt="avatar" 
+                        <img
+                          src={getImageUrl(currentUser.profileImage)}
+                          alt="avatar"
                           className="w-8 h-8 rounded-full object-cover border border-[#D2D5D9]"
-                          onError={(e) => {
+                          onError={e => {
                             e.currentTarget.onerror = null;
                             e.currentTarget.style.display = 'none';
-                            if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                            if (e.currentTarget.nextSibling)
+                              e.currentTarget.nextSibling.style.display = 'block';
                           }}
                         />
                       ) : null}
-                      <FaUserCircle className={`w-5 h-5 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`} />
+                      <FaUserCircle
+                        className={`w-5 h-5 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`}
+                      />
                       <span className="font-medium text-[#2B373F] max-w-[120px] truncate text-sm">
-                        {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
+                        {currentUser.role === 'employer'
+                          ? currentUser.companyName || currentUser.firstName
+                          : currentUser.firstName}
                       </span>
                     </Link>
-                    <button onClick={handleLogout} className="p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors" title={t('navbar.sign_out')}>
+                    <button
+                      onClick={handleLogout}
+                      className="p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors"
+                      title={t('navbar.sign_out')}
+                    >
                       <FaSignOutAlt className="w-5 h-5 text-[#516876]" />
                     </button>
                   </div>
                 ) : (
-                  <Link to="/login" className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors">
+                  <Link
+                    to="/login"
+                    className="flex items-center gap-2 px-4 py-2 bg-[#F4F6F9] hover:bg-[#D2D5D9] rounded-lg transition-colors"
+                  >
                     <FaUserCircle className="w-6 h-6 text-[#516876]" />
                     <span className="font-medium text-[#2B373F]">{t('navbar.sign_in')}</span>
                   </Link>
@@ -142,32 +189,55 @@ const Navbar = () => {
             /* Public Nav */
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
-              <Link to="/employer/dashboard" className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors">{t('navbar.post_job')}</Link>
+              <Link
+                to="/employer/dashboard"
+                className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
+              >
+                {t('navbar.post_job')}
+              </Link>
               {currentUser ? (
                 <div className="flex items-center gap-2">
-                  <Link to="/profile" className="flex items-center gap-2 px-2 py-2 border border-[#D2D5D9] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-2 py-2 border border-[#D2D5D9] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm"
+                  >
                     {currentUser.profileImage ? (
-                      <img 
-                        src={getImageUrl(currentUser.profileImage)} 
-                        alt="avatar" 
+                      <img
+                        src={getImageUrl(currentUser.profileImage)}
+                        alt="avatar"
                         className="w-6 h-6 rounded-full object-cover border border-[#D2D5D9]"
-                        onError={(e) => {
+                        onError={e => {
                           e.currentTarget.onerror = null;
                           e.currentTarget.style.display = 'none';
-                          if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                          if (e.currentTarget.nextSibling)
+                            e.currentTarget.nextSibling.style.display = 'block';
                         }}
                       />
                     ) : null}
-                    <FaUserCircle className={`w-4 h-4 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`} />
+                    <FaUserCircle
+                      className={`w-4 h-4 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`}
+                    />
                     <span className="text-[#2B373F] font-medium">
-                      {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
+                      {currentUser.role === 'employer'
+                        ? currentUser.companyName || currentUser.firstName
+                        : currentUser.firstName}
                     </span>
                   </Link>
                 </div>
               ) : (
                 <>
-                  <Link to="/login" className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]">{t('navbar.sign_in')}</Link>
-                  <Link to="/register" className="px-4 py-2 bg-white border border-[#6794D1] rounded-lg text-sm text-[#6794D1]">{t('navbar.register')}</Link>
+                  <Link
+                    to="/login"
+                    className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]"
+                  >
+                    {t('navbar.sign_in')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-white border border-[#6794D1] rounded-lg text-sm text-[#6794D1]"
+                  >
+                    {t('navbar.register')}
+                  </Link>
                 </>
               )}
             </div>
@@ -175,33 +245,57 @@ const Navbar = () => {
             /* Profile / other pages nav */
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
-              <Link to="/jobs" className="px-3 py-2 text-sm text-[#516876] hover:text-[#6794D1]">{t('navbar.browse_jobs')}</Link>
+              <Link to="/jobs" className="px-3 py-2 text-sm text-[#516876] hover:text-[#6794D1]">
+                {t('navbar.browse_jobs')}
+              </Link>
               {currentUser ? (
                 <div className="flex items-center gap-2">
-                  <Link to="/profile" className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-colors text-sm font-medium ${isActive('/profile') ? 'bg-[#6794D1]/10 text-[#6794D1]' : 'bg-[#F4F6F9] hover:bg-[#D2D5D9] text-[#2B373F]'}`}>
+                  <Link
+                    to="/profile"
+                    className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-colors text-sm font-medium ${isActive('/profile') ? 'bg-[#6794D1]/10 text-[#6794D1]' : 'bg-[#F4F6F9] hover:bg-[#D2D5D9] text-[#2B373F]'}`}
+                  >
                     {currentUser.profileImage ? (
-                      <img 
-                        src={getImageUrl(currentUser.profileImage)} 
-                        alt="avatar" 
+                      <img
+                        src={getImageUrl(currentUser.profileImage)}
+                        alt="avatar"
                         className="w-6 h-6 rounded-full object-cover border border-[#D2D5D9]"
-                        onError={(e) => {
+                        onError={e => {
                           e.currentTarget.onerror = null;
                           e.currentTarget.style.display = 'none';
-                          if (e.currentTarget.nextSibling) e.currentTarget.nextSibling.style.display = 'block';
+                          if (e.currentTarget.nextSibling)
+                            e.currentTarget.nextSibling.style.display = 'block';
                         }}
                       />
                     ) : null}
-                    <FaUserCircle className={`w-4 h-4 ${currentUser.profileImage ? 'hidden' : 'block'}`} />
-                    {currentUser.role === 'employer' ? (currentUser.companyName || currentUser.firstName) : currentUser.firstName}
+                    <FaUserCircle
+                      className={`w-4 h-4 ${currentUser.profileImage ? 'hidden' : 'block'}`}
+                    />
+                    {currentUser.role === 'employer'
+                      ? currentUser.companyName || currentUser.firstName
+                      : currentUser.firstName}
                   </Link>
-                  <button onClick={handleLogout} className="p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors" title={t('navbar.sign_out')}>
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors"
+                    title={t('navbar.sign_out')}
+                  >
                     <FaSignOutAlt className="w-5 h-5 text-[#516876]" />
                   </button>
                 </div>
               ) : (
                 <>
-                  <Link to="/login" className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]">{t('navbar.sign_in')}</Link>
-                  <Link to="/register" className="px-4 py-2 bg-[#6794D1] text-white rounded-lg text-sm hover:bg-[#5a83c0]">{t('navbar.register')}</Link>
+                  <Link
+                    to="/login"
+                    className="px-3 py-2 text-sm text-[#6794D1] hover:text-[#2B373F]"
+                  >
+                    {t('navbar.sign_in')}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="px-4 py-2 bg-[#6794D1] text-white rounded-lg text-sm hover:bg-[#5a83c0]"
+                  >
+                    {t('navbar.register')}
+                  </Link>
                 </>
               )}
             </div>

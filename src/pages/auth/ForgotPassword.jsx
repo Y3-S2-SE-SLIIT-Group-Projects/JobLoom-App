@@ -24,7 +24,10 @@ const PhoneStep = ({ onNext, loading }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!phone.trim()) { setError(t('errors.phone_required', 'Phone number is required')); return; }
+    if (!phone.trim()) {
+      setError(t('errors.phone_required', 'Phone number is required'));
+      return;
+    }
     try {
       await forgotPassword(phone.trim());
       onNext(phone.trim());
@@ -52,13 +55,18 @@ const PhoneStep = ({ onNext, loading }) => {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">{t('auth.phone_number')}</label>
+        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+          {t('auth.phone_number')}
+        </label>
         <div className="relative">
           <FaPhone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="tel"
             value={phone}
-            onChange={e => { setPhone(e.target.value); setError(''); }}
+            onChange={e => {
+              setPhone(e.target.value);
+              setError('');
+            }}
             placeholder={t('auth.phone_placeholder')}
             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
           />
@@ -70,7 +78,11 @@ const PhoneStep = ({ onNext, loading }) => {
         disabled={loading}
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : t('auth.send_otp')}
+        {loading ? (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : (
+          t('auth.send_otp')
+        )}
       </button>
     </form>
   );
@@ -84,7 +96,9 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
   const [error, setError] = useState('');
   const inputRefs = useRef([]);
 
-  useEffect(() => { inputRefs.current[0]?.focus(); }, []);
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
 
   const handleChange = (index, value) => {
     if (!/^\d*$/.test(value)) return;
@@ -104,7 +118,9 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
     if (pasted) {
       const newOtp = [...otp];
-      pasted.split('').forEach((char, i) => { if (i < 6) newOtp[i] = char; });
+      pasted.split('').forEach((char, i) => {
+        if (i < 6) newOtp[i] = char;
+      });
       setOtp(newOtp);
       inputRefs.current[Math.min(pasted.length, 5)]?.focus();
     }
@@ -113,7 +129,10 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     const otpString = otp.join('');
-    if (otpString.length < 6) { setError(t('auth.error_otp_incomplete')); return; }
+    if (otpString.length < 6) {
+      setError(t('auth.error_otp_incomplete'));
+      return;
+    }
     try {
       const data = await verifyPasswordReset(phone, otpString);
       onNext(data.resetToken);
@@ -131,7 +150,9 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
       </div>
       <div className="text-center mb-4">
         <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.enter_otp')}</h1>
-        <p className="text-[#516876]">{t('auth.verify_desc')} <span className="font-medium text-[#2B373F]">{phone}</span></p>
+        <p className="text-[#516876]">
+          {t('auth.verify_desc')} <span className="font-medium text-[#2B373F]">{phone}</span>
+        </p>
       </div>
 
       {error && (
@@ -157,11 +178,23 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
       </div>
 
       <div className="flex gap-3">
-        <button type="button" onClick={onBack} className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] transition-colors font-medium">
+        <button
+          type="button"
+          onClick={onBack}
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] transition-colors font-medium"
+        >
           <FaArrowLeft className="w-4 h-4" /> {t('common.back')}
         </button>
-        <button type="submit" disabled={loading || otp.join('').length < 6} className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed">
-          {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : t('auth.verify_otp')}
+        <button
+          type="submit"
+          disabled={loading || otp.join('').length < 6}
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            t('auth.verify_otp')
+          )}
         </button>
       </div>
     </form>
@@ -181,9 +214,18 @@ const ResetStep = ({ phone, resetToken, loading }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!password) { setError(t('errors.password_required')); return; }
-    if (password.length < 6) { setError(t('errors.password_min_length')); return; }
-    if (password !== confirm) { setError(t('errors.passwords_dont_match')); return; }
+    if (!password) {
+      setError(t('errors.password_required'));
+      return;
+    }
+    if (password.length < 6) {
+      setError(t('errors.password_min_length'));
+      return;
+    }
+    if (password !== confirm) {
+      setError(t('errors.passwords_dont_match'));
+      return;
+    }
     try {
       await resetPassword(phone, resetToken, password);
       setDone(true);
@@ -202,7 +244,12 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           </div>
         </div>
         <h2 className="text-2xl font-bold text-[#2B373F]">{t('auth.password_reset_success')}</h2>
-        <p className="text-[#516876]">{t('auth.password_reset_success_desc', 'Your password has been updated. Redirecting to login...')}</p>
+        <p className="text-[#516876]">
+          {t(
+            'auth.password_reset_success_desc',
+            'Your password has been updated. Redirecting to login...'
+          )}
+        </p>
       </div>
     );
   }
@@ -226,30 +273,44 @@ const ResetStep = ({ phone, resetToken, loading }) => {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">{t('auth.new_password')}</label>
+        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+          {t('auth.new_password')}
+        </label>
         <div className="relative">
           <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={password}
-            onChange={e => { setPassword(e.target.value); setError(''); }}
+            onChange={e => {
+              setPassword(e.target.value);
+              setError('');
+            }}
             placeholder={t('errors.password_min_length', 'Min. 6 characters')}
             className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
           />
-          <button type="button" onClick={() => setShowPwd(p => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <button
+            type="button"
+            onClick={() => setShowPwd(p => !p)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+          >
             {showPwd ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">{t('auth.confirm_password')}</label>
+        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+          {t('auth.confirm_password')}
+        </label>
         <div className="relative">
           <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={confirm}
-            onChange={e => { setConfirm(e.target.value); setError(''); }}
+            onChange={e => {
+              setConfirm(e.target.value);
+              setError('');
+            }}
             placeholder={t('auth.confirm_password_placeholder')}
             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
           />
@@ -261,7 +322,11 @@ const ResetStep = ({ phone, resetToken, loading }) => {
         disabled={loading}
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : t('auth.reset_password_button')}
+        {loading ? (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        ) : (
+          t('auth.reset_password_button')
+        )}
       </button>
     </form>
   );
@@ -281,61 +346,79 @@ const ForgotPassword = () => {
     <>
       <Navbar />
       <DottedBackground>
-      <div className="min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-
-
-          <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
-            {/* Step indicator */}
-            <div className="flex items-center gap-2 mb-8">
-              {steps.map((s, i) => (
-                <div key={s} className="flex items-center flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${i + 1 <= step ? 'bg-[#6794D1] text-white' : 'bg-[#F4F6F9] text-[#516876]'}`}>
-                      {i + 1 < step ? '✓' : i + 1}
+        <div className="min-h-screen flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-md">
+            <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
+              {/* Step indicator */}
+              <div className="flex items-center gap-2 mb-8">
+                {steps.map((s, i) => (
+                  <div key={s} className="flex items-center flex-1">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${i + 1 <= step ? 'bg-[#6794D1] text-white' : 'bg-[#F4F6F9] text-[#516876]'}`}
+                      >
+                        {i + 1 < step ? '✓' : i + 1}
+                      </div>
+                      <span
+                        className={`text-xs font-medium hidden sm:block ${i + 1 <= step ? 'text-[#6794D1]' : 'text-[#516876]'}`}
+                      >
+                        {i === 0
+                          ? t('auth.phone_number')
+                          : i === 1
+                            ? t('auth.enter_otp')
+                            : t('common.reset')}
+                      </span>
                     </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i + 1 <= step ? 'text-[#6794D1]' : 'text-[#516876]'}`}>
-                      {i === 0 ? t('auth.phone_number') : i === 1 ? t('auth.enter_otp') : t('common.reset')}
-                    </span>
+                    {i < steps.length - 1 && (
+                      <div
+                        className={`flex-1 h-1 rounded-full mx-2 ${i + 2 <= step ? 'bg-[#6794D1]' : 'bg-[#D2D5D9]'}`}
+                      />
+                    )}
                   </div>
-                  {i < steps.length - 1 && <div className={`flex-1 h-1 rounded-full mx-2 ${i + 2 <= step ? 'bg-[#6794D1]' : 'bg-[#D2D5D9]'}`} />}
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {step === 1 && (
+                <PhoneStep
+                  loading={loading}
+                  onNext={p => {
+                    setPhone(p);
+                    setStep(2);
+                  }}
+                />
+              )}
+              {step === 2 && (
+                <OtpStep
+                  phone={phone}
+                  loading={loading}
+                  onNext={token => {
+                    setResetToken(token);
+                    setStep(3);
+                  }}
+                  onBack={() => setStep(1)}
+                />
+              )}
+              {step === 3 && (
+                <ResetStep
+                  phone={phone}
+                  resetToken={resetToken}
+                  loading={loading}
+                  onBack={() => setStep(2)}
+                />
+              )}
+
+              {step === 1 && (
+                <p className="mt-6 text-center text-sm text-[#516876]">
+                  {t('auth.remembered_password')}{' '}
+                  <Link to="/login" className="text-[#6794D1] font-medium hover:underline">
+                    {t('navbar.sign_in')}
+                  </Link>
+                </p>
+              )}
             </div>
-
-            {step === 1 && (
-              <PhoneStep
-                loading={loading}
-                onNext={p => { setPhone(p); setStep(2); }}
-              />
-            )}
-            {step === 2 && (
-              <OtpStep
-                phone={phone}
-                loading={loading}
-                onNext={token => { setResetToken(token); setStep(3); }}
-                onBack={() => setStep(1)}
-              />
-            )}
-            {step === 3 && (
-              <ResetStep
-                phone={phone}
-                resetToken={resetToken}
-                loading={loading}
-                onBack={() => setStep(2)}
-              />
-            )}
-
-            {step === 1 && (
-              <p className="mt-6 text-center text-sm text-[#516876]">
-                {t('auth.remembered_password')}{' '}
-                <Link to="/login" className="text-[#6794D1] font-medium hover:underline">{t('navbar.sign_in')}</Link>
-              </p>
-            )}
           </div>
         </div>
-      </div>
-    </DottedBackground>
+      </DottedBackground>
     </>
   );
 };

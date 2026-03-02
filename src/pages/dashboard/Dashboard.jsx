@@ -383,7 +383,9 @@ const Dashboard = () => {
           <h1 className="text-5xl font-extrabold text-[#1F2A37] leading-tight mb-3">
             {t('dashboard.hero_title')}
           </h1>
-          <p className="text-2xl font-semibold text-[#6794D1] mb-5">{t('dashboard.hero_subtitle')}</p>
+          <p className="text-2xl font-semibold text-[#6794D1] mb-5">
+            {t('dashboard.hero_subtitle')}
+          </p>
           <p className="text-gray-500 mb-8 max-w-md leading-relaxed">
             {t('dashboard.hero_description')}
           </p>
@@ -456,7 +458,9 @@ const Dashboard = () => {
                 className="flex items-center gap-2 px-4 py-3 bg-[#E8F0FB] text-[#6794D1] rounded-xl font-medium hover:bg-[#d4e5f7] transition-colors disabled:opacity-60"
               >
                 <FaLocationArrow className="w-4 h-4" />
-                <span className="hidden sm:inline">{nearbyLoading ? t('dashboard.nearby_locating') : t('dashboard.nearby_button')}</span>
+                <span className="hidden sm:inline">
+                  {nearbyLoading ? t('dashboard.nearby_locating') : t('dashboard.nearby_button')}
+                </span>
               </button>
             </div>
           </div>
@@ -500,7 +504,9 @@ const Dashboard = () => {
             <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
               {/* Category */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">{t('dashboard.category_label')}</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.category_label')}
+                </label>
                 <select
                   value={category}
                   onChange={e => setCategory(e.target.value)}
@@ -517,7 +523,9 @@ const Dashboard = () => {
 
               {/* Employment type (client-side) */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">{t('dashboard.employment_type_label')}</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.employment_type_label')}
+                </label>
                 <select
                   value={employmentType}
                   onChange={e => setEmploymentType(e.target.value)}
@@ -528,7 +536,9 @@ const Dashboard = () => {
                   <option value="part-time">{t('employment_types.part_time', 'Part-Time')}</option>
                   <option value="contract">{t('employment_types.contract', 'Contract')}</option>
                   <option value="temporary">{t('employment_types.temporary', 'Temporary')}</option>
-                  <option value="internship">{t('employment_types.internship', 'Internship')}</option>
+                  <option value="internship">
+                    {t('employment_types.internship', 'Internship')}
+                  </option>
                   <option value="seasonal">{t('employment_types.seasonal', 'Seasonal')}</option>
                   <option value="freelance">{t('employment_types.freelance', 'Freelance')}</option>
                 </select>
@@ -536,7 +546,9 @@ const Dashboard = () => {
 
               {/* Province */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">{t('dashboard.province_label')}</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.province_label')}
+                </label>
                 <select
                   value={province}
                   onChange={e => setProvince(e.target.value)}
@@ -553,7 +565,9 @@ const Dashboard = () => {
 
               {/* Salary range */}
               <div>
-                <label className="block text-xs text-gray-500 mb-1">{t('dashboard.salary_label')}</label>
+                <label className="block text-xs text-gray-500 mb-1">
+                  {t('dashboard.salary_label')}
+                </label>
                 <select
                   value={salaryRangeKey}
                   onChange={e => setSalaryRangeKey(e.target.value)}
@@ -594,9 +608,7 @@ const Dashboard = () => {
           </div>
         )}
         {!loading && !nearbyLoading && displayJobs.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
-            {t('dashboard.no_jobs_found')}
-          </div>
+          <div className="text-center py-16 text-gray-400">{t('dashboard.no_jobs_found')}</div>
         )}
         {!loading && !nearbyLoading && displayJobs.map(job => <JobCard key={job._id} job={job} />)}
       </div>

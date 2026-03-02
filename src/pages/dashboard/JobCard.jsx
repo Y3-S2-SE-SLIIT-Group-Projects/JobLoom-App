@@ -57,11 +57,11 @@ const JobCard = ({ job }) => {
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-xl font-bold text-gray-600 overflow-hidden border border-gray-100">
           {job.employer?.profileImage ? (
-            <img 
-              src={getImageUrl(job.employer.profileImage)} 
-              alt={companyName} 
+            <img
+              src={getImageUrl(job.employer.profileImage)}
+              alt={companyName}
               className="w-full h-full object-cover"
-              onError={(e) => {
+              onError={e => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.style.display = 'none';
               }}

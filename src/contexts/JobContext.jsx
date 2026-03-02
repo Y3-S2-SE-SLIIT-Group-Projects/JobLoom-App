@@ -103,8 +103,8 @@ export const JobProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/recommendations`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json();
 
@@ -141,8 +141,8 @@ export const JobProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/employer/my-jobs?${queryParams}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json();
 
@@ -171,8 +171,8 @@ export const JobProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/jobs/employer/stats`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = await response.json();
 
@@ -203,7 +203,7 @@ export const JobProvider = ({ children }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(jobData),
       });
@@ -237,7 +237,7 @@ export const JobProvider = ({ children }) => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updates),
       });
@@ -270,8 +270,8 @@ export const JobProvider = ({ children }) => {
       const response = await fetch(`${API_URL}/jobs/${jobId}/close`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -302,8 +302,8 @@ export const JobProvider = ({ children }) => {
       const response = await fetch(`${API_URL}/jobs/${jobId}/filled`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -334,8 +334,8 @@ export const JobProvider = ({ children }) => {
       const response = await fetch(`${API_URL}/jobs/${jobId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
