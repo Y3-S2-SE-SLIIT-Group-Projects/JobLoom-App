@@ -1,0 +1,294 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useJobs } from '../../contexts/JobContext';
+import {
+  ArrowLeft,
+  Briefcase,
+  MapPin,
+  DollarSign,
+  Users,
+  Calendar,
+  Edit,
+  XCircle,
+  CheckCircle,
+  Trash2,
+  Filter,
+  AlertCircle,
+} from 'lucide-react';
+
+const MyJobs = () => {
+  const { fetchMyJobs, closeJob, markJobAsFilled, deleteJob, loading } = useJobs();
+  const [jobs, setJobs] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [actionType, setActionType] = useState('');
+  const [error, setError] = useState('');
+
+  const loadJobs = async () => {
+    try {
+      const data = await fetchMyJobs();
+      setJobs(data);
+    } catch (err) {
+      setError('Failed to load jobs');
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const filteredJobs =
+    filterStatus === 'all' ? jobs : jobs.filter(job => job.status === filterStatus);
+
+  const handleAction = (job, action) => {
+    setSelectedJob(job);
+    setActionType(action);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmAction = async () => {
+    try {
+      if (actionType === 'close') {
+        await closeJob(selectedJob._id);
+      } else if (actionType === 'filled') {
+        await markJobAsFilled(selectedJob._id);
+      } else if (actionType === 'delete') {
+        await deleteJob(selectedJob._id);
+      }
+      await loadJobs();
+      setShowConfirmDialog(false);
+      setSelectedJob(null);
+      setActionType('');
+    } catch (err) {
+      setError(err.message || 'Action failed');
+      setShowConfirmDialog(false);
+    }
+  };
+
+  const getStatusBadge = status => {
+    const styles = {
+      open: 'bg-green-100 text-green-700 border-green-200',
+      closed: 'bg-red-100 text-red-700 border-red-200',
+      filled: 'bg-blue-100 text-blue-700 border-blue-200',
+    };
+    return styles[status] || styles.open;
+  };
+
+  const formatDate = dateString => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+  const formatSalary = (amount, type) => {
+    return `LKR ${amount.toLocaleString()} / ${type}`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link
+                to="/employer/dashboard"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </Link>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">My Jobs</h1>
+                  <p className="text-sm text-gray-500">{filteredJobs.length} jobs found</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Filter className="w-5 h-5 text-gray-400" />
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              >
+                <option value="all">All Jobs</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+                <option value="filled">Filled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+            <AlertCircle className="w-5 h-5 mr-2" />
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
+            <p className="text-gray-600 mb-6">
+              {filterStatus === 'all'
+                ? "You haven't posted any jobs yet."
+                : `No ${filterStatus} jobs found.`}
+            </p>
+            <Link
+              to="/employer/create-job"
+              className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Briefcase className="w-4 h-4 mr-2" />
+              Create Your First Job
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredJobs.map(job => (
+              <div
+                key={job._id}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+              >
+                {/* Card Header */}
+                <div className="p-6 border-b border-gray-100">
+                  <div className="flex items-start justify-between mb-3">
+                    <Link
+                      to={`/employer/jobs/${job._id}`}
+                      className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1 hover:text-blue-600 transition-colors cursor-pointer"
+                    >
+                      {job.title}
+                    </Link>
+                    <span
+                      className={`ml-2 px-3 py-1 text-xs font-medium rounded-full border ${getStatusBadge(job.status)}`}
+                    >
+                      {job.status}
+                    </span>
+                  </div>
+                  <Link to={`/employer/jobs/${job._id}`} className="block">
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3 hover:text-gray-800 transition-colors">
+                      {job.description
+                        ? job.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
+                        : 'No description'}
+                    </p>
+                  </Link>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                      {job.category}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-6 space-y-3">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                    {job.location.village}, {job.location.district}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <DollarSign className="w-4 h-4 mr-2 text-gray-400" />
+                    {formatSalary(job.salaryAmount, job.salaryType)}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="w-4 h-4 mr-2 text-gray-400" />
+                    {job.positions} position{job.positions > 1 ? 's' : ''} ·{' '}
+                    {job.applicantsCount || 0} applicants
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                    Posted {formatDate(job.createdAt)}
+                  </div>
+                </div>
+
+                {/* Card Footer */}
+                <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleAction(job, 'close')}
+                      disabled={job.status !== 'open'}
+                      className="px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      <XCircle className="w-4 h-4 mr-1" />
+                      Close
+                    </button>
+                    <button
+                      onClick={() => handleAction(job, 'filled')}
+                      disabled={job.status !== 'open'}
+                      className="px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Filled
+                    </button>
+                    <button
+                      onClick={() => handleAction(job, 'delete')}
+                      className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center"
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </button>
+                    <button
+                      disabled
+                      className="px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Confirmation Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirm Action</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to {actionType} the job "{selectedJob?.title}"?
+              {actionType === 'delete' && ' This action cannot be undone.'}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmAction}
+                className={`px-4 py-2 text-white rounded-lg transition-colors ${
+                  actionType === 'delete'
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MyJobs;
