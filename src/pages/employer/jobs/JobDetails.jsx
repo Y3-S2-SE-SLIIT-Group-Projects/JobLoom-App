@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useJobs } from '../../../contexts/JobContext';
 import parse from 'html-react-parser';
-import Navbar from '../../../components/Navbar';
+
 import DottedBackground from '../../../components/DottedBackground';
 import {
   FaArrowLeft,
@@ -127,8 +127,6 @@ const JobDetails = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Back Button */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Navbar from '../../components/Navbar';
+
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../contexts/JobContext';
@@ -371,8 +371,6 @@ const Dashboard = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       {/* ── HERO SECTION ─────────────────────────────────────────── */}
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-16 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* Left */}
