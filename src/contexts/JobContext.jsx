@@ -344,7 +344,7 @@ export const JobProvider = ({ children }) => {
   /**
    * Generate job description with third-party AI
    */
-  const generateJobDescription = async (draftData) => {
+  const generateJobDescription = async draftData => {
     setError(null);
 
     try {

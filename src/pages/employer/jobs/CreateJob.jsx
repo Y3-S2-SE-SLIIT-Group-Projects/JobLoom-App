@@ -853,7 +853,6 @@ const CreateJob = () => {
                   <p className="mt-1 text-sm text-red-600">{errors.employmentType}</p>
                 )}
               </div>
-
             </div>
           </div>
 
