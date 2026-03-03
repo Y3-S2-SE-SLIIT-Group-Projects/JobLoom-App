@@ -279,6 +279,8 @@ const CreateJob = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const todayDate = new Date().toISOString().split('T')[0];
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Load Google Maps script
   useEffect(() => {
@@ -500,6 +502,30 @@ const CreateJob = () => {
     setIsGeneratingDescription(true);
 
     try {
+      const missingFields = [];
+      if (!formData.title?.trim()) missingFields.push('Job Title');
+      if (!formData.category) missingFields.push('Category');
+      if (!formData.jobRole?.trim()) missingFields.push('Job Role');
+      if (!formData.employmentType) missingFields.push('Employment Type');
+      if (!formData.skillsRequired?.length) missingFields.push('Required Skills');
+      if (!formData.salaryAmount || Number(formData.salaryAmount) <= 0)
+        missingFields.push('Salary Amount');
+
+      const hasAddressData = Boolean(
+        formData.location?.fullAddress?.trim() ||
+        formData.location?.district?.trim() ||
+        formData.location?.province?.trim()
+      );
+      if (!hasAddressData) missingFields.push('Location (district/province or map address)');
+
+      if (missingFields.length > 0) {
+        setError(
+          `Details are not enough to generate a good description. Please provide: ${missingFields.join(', ')}.`
+        );
+        scrollToTop();
+        return;
+      }
+
       const result = await generateJobDescription({
         title: formData.title,
         category: formData.category,
@@ -522,6 +548,7 @@ const CreateJob = () => {
       );
     } catch (err) {
       setError(err.message || 'Failed to generate description.');
+      scrollToTop();
     } finally {
       setIsGeneratingDescription(false);
     }
@@ -556,6 +583,18 @@ const CreateJob = () => {
       newErrors.salaryAmount = 'Salary amount must be greater than 0 if provided';
     }
 
+    if (formData.startDate && formData.startDate < todayDate) {
+      newErrors.startDate = 'Start date cannot be in the past';
+    }
+
+    if (formData.endDate && formData.endDate < todayDate) {
+      newErrors.endDate = 'End date cannot be in the past';
+    }
+
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = 'End date must be the same day or after start date';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -565,6 +604,7 @@ const CreateJob = () => {
     setError('');
 
     if (!validate()) {
+      scrollToTop();
       return;
     }
 
@@ -749,6 +789,7 @@ const CreateJob = () => {
       navigate('/employer/my-jobs');
     } catch (err) {
       setError(err.message || 'Failed to create job. Please try again.');
+      scrollToTop();
     } finally {
       setLoading(false);
     }
@@ -1117,6 +1158,7 @@ const CreateJob = () => {
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleChange}
+                  min={todayDate}
                   className={`w-full px-4 py-2 border ${errors.startDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
                 {errors.startDate && (
@@ -1133,9 +1175,14 @@ const CreateJob = () => {
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleChange}
-                  min={formData.startDate}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  min={
+                    formData.startDate && formData.startDate > todayDate
+                      ? formData.startDate
+                      : todayDate
+                  }
+                  className={`w-full px-4 py-2 border ${errors.endDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
+                {errors.endDate && <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>}
               </div>
             </div>
           </div>

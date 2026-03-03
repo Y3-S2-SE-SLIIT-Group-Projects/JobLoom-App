@@ -1,427 +1,171 @@
-import { createContext, useContext, useState } from 'react';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  closeJobThunk,
+  createJobThunk,
+  deleteJobThunk,
+  fetchEmployerStatsThunk,
+  fetchJobByIdThunk,
+  fetchJobsThunk,
+  fetchMyJobsThunk,
+  fetchRecommendedJobsThunk,
+  generateJobDescriptionThunk,
+  markJobAsFilledThunk,
+  resetFilters as resetJobFilters,
+  selectJobFilters,
+  selectJobPagination,
+  selectJobs,
+  selectJobsError,
+  selectJobsLoading,
+  updateFilters as updateJobFilters,
+  updateJobThunk,
+} from '../store/slices/jobSlice';
 
-const JobContext = createContext();
+const normalizeError = err => {
+  if (err instanceof Error) return err;
+  return new Error(typeof err === 'string' ? err : 'Request failed');
+};
+
+// Backward-compatible provider so existing tree structure remains unchanged.
+export const JobProvider = ({ children }) => children;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useJobs = () => {
-  const context = useContext(JobContext);
-  if (!context) {
-    throw new Error('useJobs must be used within a JobProvider');
-  }
-  return context;
-};
+  const dispatch = useDispatch();
+  const jobs = useSelector(selectJobs);
+  const loading = useSelector(selectJobsLoading);
+  const error = useSelector(selectJobsError);
+  const filters = useSelector(selectJobFilters);
+  const pagination = useSelector(selectJobPagination);
 
-export const JobProvider = ({ children }) => {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({
-    category: '',
-    status: '',
-    search: '',
-    minSalary: '',
-    maxSalary: '',
-    district: '',
-    province: '',
-    page: 1,
-    limit: 20,
-  });
-  const [pagination, setPagination] = useState(null);
+  const fetchJobs = useCallback(
+    async (customFilters = {}) => {
+      try {
+        const result = await dispatch(fetchJobsThunk(customFilters)).unwrap();
+        return result.jobs || [];
+      } catch {
+        return [];
+      }
+    },
+    [dispatch]
+  );
 
-  // API base URL from environment variables
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const fetchJobById = useCallback(
+    async jobId => {
+      try {
+        return await dispatch(fetchJobByIdThunk(jobId)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
+      }
+    },
+    [dispatch]
+  );
 
-  const getAuthHeaders = (includeContentType = false) => {
-    const token =
-      localStorage.getItem('token') ||
-      localStorage.getItem('authToken') ||
-      localStorage.getItem('jobloom_token');
-
-    const headers = {};
-    if (includeContentType) {
-      headers['Content-Type'] = 'application/json';
-    }
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    return headers;
-  };
-
-  /**
-   * Fetch all jobs with filters
-   */
-  const fetchJobs = async (customFilters = {}) => {
-    setLoading(true);
-    setError(null);
-
+  const fetchRecommendedJobs = useCallback(async () => {
     try {
-      const mergedFilters = { ...filters, ...customFilters };
-      const queryParams = new URLSearchParams();
-
-      Object.entries(mergedFilters).forEach(([key, value]) => {
-        if (value) {
-          queryParams.append(key, value);
-        }
-      });
-
-      const response = await fetch(`${API_URL}/jobs?${queryParams}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch jobs');
-      }
-
-      setJobs(data.data.jobs);
-      setPagination(data.data.pagination);
-      return data.data.jobs || [];
+      return await dispatch(fetchRecommendedJobsThunk()).unwrap();
     } catch (err) {
-      setError(err.message);
-      console.error('Error fetching jobs:', err);
-      return [];
-    } finally {
-      setLoading(false);
+      throw normalizeError(err);
     }
-  };
+  }, [dispatch]);
 
-  /**
-   * Fetch single job by ID
-   */
-  const fetchJobById = async jobId => {
-    setLoading(true);
-    setError(null);
+  const fetchMyJobs = useCallback(
+    async (options = {}) => {
+      try {
+        return await dispatch(fetchMyJobsThunk(options)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
+      }
+    },
+    [dispatch]
+  );
 
+  const fetchEmployerStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/jobs/${jobId}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch job');
-      }
-
-      return data.data;
+      return await dispatch(fetchEmployerStatsThunk()).unwrap();
     } catch (err) {
-      setError(err.message);
-      console.error('Error fetching job:', err);
-      throw err;
-    } finally {
-      setLoading(false);
+      throw normalizeError(err);
     }
-  };
+  }, [dispatch]);
 
-  /**
-   * Fetch recommended jobs for current user
-   */
-  const fetchRecommendedJobs = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/recommendations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch recommendations');
+  const createJob = useCallback(
+    async jobData => {
+      try {
+        return await dispatch(createJobThunk(jobData)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
+    },
+    [dispatch]
+  );
 
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching recommendations:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Fetch employer's jobs
-   */
-  const fetchMyJobs = async (options = {}) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const queryParams = new URLSearchParams();
-      if (options.includeInactive) {
-        queryParams.append('includeInactive', 'true');
+  const updateJob = useCallback(
+    async (jobId, updates) => {
+      try {
+        return await dispatch(updateJobThunk({ jobId, updates })).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
-      if (options.status) {
-        queryParams.append('status', options.status);
+    },
+    [dispatch]
+  );
+
+  const closeJob = useCallback(
+    async jobId => {
+      try {
+        return await dispatch(closeJobThunk(jobId)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
+    },
+    [dispatch]
+  );
 
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/employer/my-jobs?${queryParams}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch jobs');
+  const markJobAsFilled = useCallback(
+    async jobId => {
+      try {
+        return await dispatch(markJobAsFilledThunk(jobId)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
+    },
+    [dispatch]
+  );
 
-      return data.data.jobs;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching my jobs:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Fetch employer statistics
-   */
-  const fetchEmployerStats = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/employer/stats`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch stats');
+  const deleteJob = useCallback(
+    async jobId => {
+      try {
+        return await dispatch(deleteJobThunk(jobId)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
+    },
+    [dispatch]
+  );
 
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error fetching stats:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Create a new job
-   */
-  const createJob = async jobData => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(jobData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create job');
+  const generateJobDescription = useCallback(
+    async draftData => {
+      try {
+        return await dispatch(generateJobDescriptionThunk(draftData)).unwrap();
+      } catch (err) {
+        throw normalizeError(err);
       }
+    },
+    [dispatch]
+  );
 
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error creating job:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const updateFilters = useCallback(
+    newFilters => {
+      dispatch(updateJobFilters(newFilters));
+    },
+    [dispatch]
+  );
 
-  /**
-   * Update a job
-   */
-  const updateJob = async (jobId, updates) => {
-    setLoading(true);
-    setError(null);
+  const resetFilters = useCallback(() => {
+    dispatch(resetJobFilters());
+  }, [dispatch]);
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/${jobId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updates),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update job');
-      }
-
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error updating job:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Close a job
-   */
-  const closeJob = async jobId => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/${jobId}/close`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to close job');
-      }
-
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error closing job:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Mark job as filled
-   */
-  const markJobAsFilled = async jobId => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/${jobId}/filled`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to mark job as filled');
-      }
-
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error marking job as filled:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Delete a job
-   */
-  const deleteJob = async jobId => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/jobs/${jobId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete job');
-      }
-
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error deleting job:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Update filters
-   */
-  const updateFilters = newFilters => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  };
-
-  /**
-   * Reset filters
-   */
-  const resetFilters = () => {
-    setFilters({
-      category: '',
-      status: '',
-      search: '',
-      minSalary: '',
-      maxSalary: '',
-      district: '',
-      province: '',
-      page: 1,
-      limit: 20,
-    });
-  };
-
-  /**
-   * Generate job description with third-party AI
-   */
-  const generateJobDescription = async draftData => {
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_URL}/jobs/generate-description`, {
-        method: 'POST',
-        headers: getAuthHeaders(true),
-        body: JSON.stringify(draftData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to generate job description');
-      }
-
-      return data.data;
-    } catch (err) {
-      setError(err.message);
-      console.error('Error generating job description:', err);
-      throw err;
-    }
-  };
-
-  const value = {
+  return {
     jobs,
     loading,
     error,
@@ -441,8 +185,6 @@ export const JobProvider = ({ children }) => {
     updateFilters,
     resetFilters,
   };
-
-  return <JobContext.Provider value={value}>{children}</JobContext.Provider>;
 };
 
-export default JobContext;
+export default null;

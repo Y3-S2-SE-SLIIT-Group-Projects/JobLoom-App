@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../contexts/JobContext';
+import { useUser } from '../../contexts/UserContext';
 import JobCard from './JobCard';
 import {
   FaSearch,
@@ -185,9 +186,13 @@ const SALARY_RANGES = [
 // Main Dashboard component
 // ---------------------------------------------------------------
 const Dashboard = () => {
-  const { fetchJobs, jobs, loading } = useJobs();
+  const { fetchJobs, fetchRecommendedJobs, jobs, loading } = useJobs();
+  const { currentUser } = useUser();
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
+  const isJobSeeker = currentUser?.role === 'job_seeker';
+  const shouldShowRecommendations = isLoggedIn && isJobSeeker;
 
   // Ref to scroll to the search/results section
   const searchRef = useRef(null);
@@ -208,6 +213,8 @@ const Dashboard = () => {
   const [nearbyJobs, setNearbyJobs] = useState(null);
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [nearbyError, setNearbyError] = useState('');
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [recommendedLoading, setRecommendedLoading] = useState(false);
 
   // Google Maps loader
   useEffect(() => {
@@ -222,9 +229,51 @@ const Dashboard = () => {
 
   // Initial load
   useEffect(() => {
-    fetchJobs();
+    fetchJobs({ status: 'open' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load recommendations only for logged-in job seekers
+  useEffect(() => {
+    if (!shouldShowRecommendations) {
+      setRecommendedJobs([]);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    const loadRecommendations = async () => {
+      setRecommendedLoading(true);
+      try {
+        const recommendationData = await fetchRecommendedJobs();
+        const recommendations = Array.isArray(recommendationData?.jobs)
+          ? recommendationData.jobs
+          : Array.isArray(recommendationData)
+            ? recommendationData
+            : [];
+
+        if (isMounted) {
+          setRecommendedJobs(recommendations);
+        }
+      } catch {
+        if (isMounted) {
+          setRecommendedJobs([]);
+        }
+      } finally {
+        if (isMounted) {
+          setRecommendedLoading(false);
+        }
+      }
+    };
+
+    loadRecommendations();
+
+    return () => {
+      isMounted = false;
+    };
+    // fetchRecommendedJobs is provided by context and may have unstable identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldShowRecommendations]);
 
   // Build and fire the search
   const runSearch = async (extra = {}) => {
@@ -240,6 +289,7 @@ const Dashboard = () => {
     const prov = normalizeRegionName(locationObj?.province || province || undefined);
 
     const filters = {
+      status: 'open',
       search: query || undefined,
       category: category || undefined,
       district,
@@ -313,7 +363,7 @@ const Dashboard = () => {
     setSalaryRangeKey('Any');
     setNearbyJobs(null);
     setNearbyError('');
-    await fetchJobs({});
+    await fetchJobs({ status: 'open' });
   };
 
   // Client-side employment type filter (backend doesn't support this param)
@@ -586,6 +636,26 @@ const Dashboard = () => {
         {nearbyError && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
             {nearbyError}
+          </div>
+        )}
+
+        {/* Results header */}
+        {shouldShowRecommendations && (
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-[#1F2A37] mb-3">Recommended for you</h2>
+            {recommendedLoading && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
+                Finding matches for your profile...
+              </div>
+            )}
+            {!recommendedLoading && recommendedJobs.length === 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
+                No recommendations yet. Add more skills to your profile to improve matching.
+              </div>
+            )}
+            {!recommendedLoading &&
+              recommendedJobs.length > 0 &&
+              recommendedJobs.map(job => <JobCard key={`recommended-${job._id}`} job={job} />)}
           </div>
         )}
 
