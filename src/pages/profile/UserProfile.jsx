@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
 import AutoTranslate from '../../components/AutoTranslate';

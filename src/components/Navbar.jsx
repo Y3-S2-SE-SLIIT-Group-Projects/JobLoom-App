@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaBell, FaUserCircle, FaSignOutAlt, FaGlobe } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { useUser } from '../hooks/useUser';
 import { getImageUrl } from '../utils/imageUrls';
 
 import Logo from '/logo.svg';
@@ -38,16 +39,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  // Read current user from localStorage
-  const currentUser = (() => {
-    try {
-      const stored = localStorage.getItem('user');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  })();
+  const { currentUser, logoutUser } = useUser();
 
   const isActive = path => {
     if (path === '/employer/dashboard') {
@@ -63,8 +55,7 @@ const Navbar = () => {
   );
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    logoutUser();
     navigate('/login');
   };
 
@@ -190,7 +181,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
               <Link
-                to="/employer/dashboard"
+                to="/register?role=employer"
                 className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
               >
                 {t('navbar.post_job')}

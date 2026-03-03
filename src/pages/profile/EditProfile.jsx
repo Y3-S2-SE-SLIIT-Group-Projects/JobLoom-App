@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import {
   FaArrowLeft,
@@ -62,7 +63,8 @@ const SKILL_SUGGESTIONS = [
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const { getMyProfile, updateUserProfile, loading } = useUser();
+  const { t } = useTranslation();
+  const { currentUser, getMyProfile, updateUserProfile, loading } = useUser();
   const fileInputRef = useRef(null);
   const cvInputRef = useRef(null);
 
@@ -125,12 +127,8 @@ const EditProfile = () => {
 
   const [currentRole, setCurrentRole] = useState('job_seeker');
   useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) {
-      const u = JSON.parse(stored);
-      setCurrentRole(u.role || 'job_seeker');
-    }
-  }, []);
+    setCurrentRole(currentUser?.role || 'job_seeker');
+  }, [currentUser]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -199,14 +197,24 @@ const EditProfile = () => {
 
   const validate = () => {
     const errs = {};
-    if (!formData.firstName.trim()) errs.firstName = 'First name is required';
-    if (!formData.lastName.trim()) errs.lastName = 'Last name is required';
-    if (!formData.phone.trim()) errs.phone = 'Phone number is required';
-    if (!formData.location.province.trim()) errs['location.province'] = 'Province is required';
+    if (!formData.firstName.trim()) errs.firstName = t('errors.first_name_required');
+    if (!formData.lastName.trim()) errs.lastName = t('errors.last_name_required');
+    if (!formData.phone.trim()) errs.phone = t('errors.phone_required');
+    else {
+      const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
+      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+        errs.phone = t('errors.invalid_phone');
+      }
+    }
+    if (!formData.location.province.trim())
+      errs['location.province'] = t('errors.province_required');
+    if (!formData.location.village.trim()) errs['location.village'] = t('errors.village_required');
+    if (!formData.location.district.trim())
+      errs['location.district'] = t('errors.district_required');
 
     if (currentRole === 'employer') {
-      if (!formData.companyName.trim()) errs.companyName = 'Company name is required';
-      if (!formData.industry.trim()) errs.industry = 'Industry is required';
+      if (!formData.companyName.trim()) errs.companyName = t('errors.company_name_required');
+      if (!formData.industry.trim()) errs.industry = t('errors.industry_required');
     }
     return errs;
   };
@@ -245,7 +253,7 @@ const EditProfile = () => {
       }
 
       await updateUserProfile(fd);
-      setSuccessMsg('Profile updated successfully!');
+      setSuccessMsg(t('profile.update_success'));
       setCvFiles([]);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => navigate('/profile'), 1500);
@@ -274,15 +282,13 @@ const EditProfile = () => {
           className="inline-flex items-center text-[#516876] hover:text-[#6794D1] transition-colors mb-6"
         >
           <FaArrowLeft className="w-4 h-4 mr-2" />
-          Back to Profile
+          {t('common.back')}
         </Link>
 
         {/* Page Title */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-[#2B373F] mb-1">Edit Profile</h1>
-          <p className="text-[#516876]">
-            Keep your profile up to date to attract the right opportunities
-          </p>
+          <h1 className="text-3xl font-bold text-[#2B373F] mb-1">{t('profile.edit_profile')}</h1>
+          <p className="text-[#516876]">{t('profile.complete_profile_desc')}</p>
         </div>
 
         {/* Alerts */}
@@ -303,7 +309,9 @@ const EditProfile = () => {
           <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
             <h2 className="text-lg font-semibold text-[#2B373F] mb-4 flex items-center gap-2">
               <FaCamera className="w-5 h-5 text-[#6794D1]" />
-              {currentRole === 'employer' ? 'Company Logo / Profile Photo' : 'Profile Photo'}
+              {currentRole === 'employer'
+                ? t('profile.edit_profile_photo')
+                : t('profile.edit_profile_photo')}
             </h2>
             <div className="flex items-center gap-6">
               <div className="relative">
@@ -338,7 +346,7 @@ const EditProfile = () => {
                   className="flex items-center gap-2 px-4 py-2 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm font-medium mb-2"
                 >
                   <FaCamera className="w-4 h-4" />
-                  Change Photo
+                  {t('profile.change_photo')}
                 </button>
                 <p className="text-xs text-gray-400">JPG, PNG up to 5MB</p>
                 <input
@@ -356,13 +364,13 @@ const EditProfile = () => {
           <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
             <h2 className="text-lg font-semibold text-[#2B373F] mb-4 flex items-center gap-2">
               <FaUser className="w-5 h-5 text-[#6794D1]" />
-              Personal Information
+              {t('auth.step_create_account')}
             </h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {/* First Name */}
               <div>
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  First Name <span className="text-red-500">*</span>
+                  {t('profile.first_name')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -379,7 +387,7 @@ const EditProfile = () => {
               {/* Last Name */}
               <div>
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  Last Name <span className="text-red-500">*</span>
+                  {t('profile.last_name')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -394,8 +402,8 @@ const EditProfile = () => {
               {/* Email (read-only) */}
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  Email address{' '}
-                  <span className="text-xs font-normal text-gray-400">(cannot be changed)</span>
+                  {t('auth.email')}{' '}
+                  <span className="text-xs font-normal text-gray-400">{t('common.optional')}</span>
                 </label>
                 <div className="relative">
                   <FaEnvelope className="absolute w-4 h-4 text-gray-300 -translate-y-1/2 left-3 top-1/2" />
@@ -410,7 +418,7 @@ const EditProfile = () => {
               {/* Phone */}
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  Phone Number <span className="text-red-500">*</span>
+                  {t('profile.phone')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
@@ -432,12 +440,12 @@ const EditProfile = () => {
           <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
             <h2 className="text-lg font-semibold text-[#2B373F] mb-4 flex items-center gap-2">
               <FaMapMarkerAlt className="w-5 h-5 text-[#6794D1]" />
-              Location
+              {t('profile.location')}
             </h2>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  Village / Town <span className="text-red-500">*</span>
+                  {t('profile.village')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <FaMapMarkerAlt className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
@@ -456,7 +464,7 @@ const EditProfile = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  District <span className="text-red-500">*</span>
+                  {t('profile.district')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -472,7 +480,7 @@ const EditProfile = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                  Province <span className="text-red-500">*</span>
+                  {t('profile.province')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="location.province"
@@ -480,7 +488,7 @@ const EditProfile = () => {
                   onChange={handleChange}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${errors['location.province'] ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
                 >
-                  <option value="">Select province</option>
+                  <option value="">{t('auth.select_province')}</option>
                   {PROVINCES.map(p => (
                     <option key={p} value={p}>
                       {p}
@@ -499,12 +507,12 @@ const EditProfile = () => {
             <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
               <h2 className="text-lg font-semibold text-[#2B373F] mb-4 flex items-center gap-2">
                 <FaBriefcase className="w-5 h-5 text-[#6794D1]" />
-                Company Details
+                {t('profile.company_overview')}
               </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                    Company Name <span className="text-red-500">*</span>
+                    {t('profile.company_name')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -520,7 +528,7 @@ const EditProfile = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                    Industry <span className="text-red-500">*</span>
+                    {t('profile.company_industry')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -536,7 +544,7 @@ const EditProfile = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                    Company Website
+                    {t('profile.company_website')}
                   </label>
                   <div className="relative">
                     <span className="absolute text-sm text-gray-400 -translate-y-1/2 left-3 top-1/2">
@@ -554,7 +562,7 @@ const EditProfile = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
-                    About Company
+                    {t('profile.about_company')}
                   </label>
                   <textarea
                     name="companyDescription"
@@ -649,7 +657,7 @@ const EditProfile = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-[#2B373F] flex items-center gap-2">
                     <FaBriefcase className="w-5 h-5 text-[#6794D1]" />
-                    Work Experience
+                    {t('profile.experience')}
                   </h2>
                   <button
                     type="button"
@@ -657,7 +665,7 @@ const EditProfile = () => {
                     className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#6794D1] border border-[#6794D1] rounded-lg hover:bg-[#6794D1]/5 transition-colors"
                   >
                     <FaPlus className="w-3 h-3" />
-                    Add Experience
+                    {t('profile.add_experience')}
                   </button>
                 </div>
 
@@ -682,7 +690,7 @@ const EditProfile = () => {
                         <div className="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-2">
                           <div>
                             <label className="block text-xs font-medium text-[#516876] mb-1">
-                              Job Title
+                              {t('profile.job_title')}
                             </label>
                             <input
                               type="text"
@@ -694,7 +702,7 @@ const EditProfile = () => {
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-[#516876] mb-1">
-                              Company / Organization
+                              {t('profile.company')}
                             </label>
                             <input
                               type="text"
@@ -706,7 +714,7 @@ const EditProfile = () => {
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-[#516876] mb-1">
-                              Duration
+                              {t('profile.duration')}
                             </label>
                             <input
                               type="text"
@@ -718,7 +726,7 @@ const EditProfile = () => {
                           </div>
                           <div>
                             <label className="block text-xs font-medium text-[#516876] mb-1">
-                              Description
+                              {t('profile.description')}
                             </label>
                             <input
                               type="text"
@@ -739,7 +747,7 @@ const EditProfile = () => {
               <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
                 <h2 className="text-lg font-semibold text-[#2B373F] mb-4 flex items-center gap-2">
                   <FaFileUpload className="w-5 h-5 text-[#6794D1]" />
-                  Upload CV / Resume
+                  {t('profile.step_cv')}
                 </h2>
 
                 <div
@@ -747,12 +755,8 @@ const EditProfile = () => {
                   className="border-2 border-dashed border-[#D2D5D9] rounded-xl p-8 text-center cursor-pointer hover:border-[#6794D1] hover:bg-[#6794D1]/5 transition-all"
                 >
                   <FaFileUpload className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                  <p className="text-[#2B373F] font-medium mb-1">
-                    Drop files here or click to upload
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    PDF, DOC, DOCX up to 10MB each (max 5 files)
-                  </p>
+                  <p className="text-[#2B373F] font-medium mb-1">{t('profile.upload_cv_desc')}</p>
+                  <p className="text-sm text-gray-400">{t('profile.upload_cv_limit')}</p>
                   <input
                     ref={cvInputRef}
                     type="file"
