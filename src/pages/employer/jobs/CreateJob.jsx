@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useJobs } from '../../../contexts/JobContext';
-import Navbar from '../../../components/Navbar';
+
 import DottedBackground from '../../../components/DottedBackground';
 import {
   FaArrowLeft,
@@ -245,9 +245,11 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded }) => {
 
 const CreateJob = () => {
   const navigate = useNavigate();
-  const { createJob } = useJobs();
+  const { createJob, generateJobDescription } = useJobs();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [generationMessage, setGenerationMessage] = useState('');
   const [skillInput, setSkillInput] = useState('');
   const [useMapLocation, setUseMapLocation] = useState(false);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
@@ -492,6 +494,39 @@ const CreateJob = () => {
     }));
   };
 
+  const handleGenerateDescription = async () => {
+    setError('');
+    setGenerationMessage('');
+    setIsGeneratingDescription(true);
+
+    try {
+      const result = await generateJobDescription({
+        title: formData.title,
+        category: formData.category,
+        jobRole: formData.jobRole,
+        employmentType: formData.employmentType,
+        salaryType: formData.salaryType,
+        salaryAmount: formData.salaryAmount,
+        skillsRequired: formData.skillsRequired,
+        experienceRequired: formData.experienceRequired,
+        positions: formData.positions,
+        location: formData.location,
+      });
+
+      const generatedDescription = result?.description || '';
+      setFormData(prev => ({ ...prev, description: generatedDescription }));
+      setGenerationMessage(
+        result?.source === 'ai'
+          ? 'Description generated using third-party AI.'
+          : 'Description generated using template fallback (AI key is missing or request failed).'
+      );
+    } catch (err) {
+      setError(err.message || 'Failed to generate description.');
+    } finally {
+      setIsGeneratingDescription(false);
+    }
+  };
+
   const validate = () => {
     const newErrors = {};
 
@@ -721,8 +756,6 @@ const CreateJob = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Job</h1>
@@ -817,186 +850,6 @@ const CreateJob = () => {
                 {errors.employmentType && (
                   <p className="mt-1 text-sm text-red-600">{errors.employmentType}</p>
                 )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Job Description
-                </label>
-                <div
-                  className={`border ${errors.description ? 'border-red-300' : 'border-gray-300'} rounded-lg overflow-hidden bg-white`}
-                >
-                  {/* Toolbar */}
-                  <div className="border-b border-gray-200 bg-gray-50 px-3 py-2">
-                    <div className="flex flex-wrap gap-1 items-center">
-                      {/* Text Formatting */}
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleBold().run()}
-                          className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bold') ? 'bg-gray-300' : ''}`}
-                          title="Bold"
-                        >
-                          B
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleItalic().run()}
-                          className={`px-2 py-1.5 text-sm italic rounded hover:bg-gray-200 transition-colors ${editor?.isActive('italic') ? 'bg-gray-300' : ''}`}
-                          title="Italic"
-                        >
-                          I
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleUnderline().run()}
-                          className={`px-2 py-1.5 text-sm underline rounded hover:bg-gray-200 transition-colors ${editor?.isActive('underline') ? 'bg-gray-300' : ''}`}
-                          title="Underline"
-                        >
-                          U
-                        </button>
-                      </div>
-
-                      {/* Headings */}
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-300' : ''}`}
-                          title="Heading 1"
-                        >
-                          H1
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-300' : ''}`}
-                          title="Heading 2"
-                        >
-                          H2
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-300' : ''}`}
-                          title="Heading 3"
-                        >
-                          H3
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().setParagraph().run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-gray-300' : ''}`}
-                          title="Paragraph"
-                        >
-                          P
-                        </button>
-                      </div>
-
-                      {/* Alignment */}
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-300' : ''}`}
-                          title="Align Left"
-                        >
-                          ⬅
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-300' : ''}`}
-                          title="Align Center"
-                        >
-                          ⬌
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-300' : ''}`}
-                          title="Align Right"
-                        >
-                          ➡
-                        </button>
-                      </div>
-
-                      {/* Lists */}
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-300' : ''}`}
-                          title="Bullet List"
-                        >
-                          •
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-gray-300' : ''}`}
-                          title="Numbered List"
-                        >
-                          1.
-                        </button>
-                      </div>
-
-                      {/* Undo/Redo */}
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().undo().run()}
-                          disabled={!editor?.can().undo()}
-                          className="px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Undo"
-                        >
-                          ↶
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => editor?.chain().focus().redo().run()}
-                          disabled={!editor?.can().redo()}
-                          className="px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Redo"
-                        >
-                          ↷
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Editor Content */}
-                  <div className="min-h-[200px] max-h-[400px] overflow-y-auto">
-                    <EditorContent editor={editor} />
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  {errors.description ? (
-                    <p className="text-sm text-red-600">{errors.description}</p>
-                  ) : (
-                    <p className="text-sm text-gray-500">
-                      {charCount > 0 && charCount < 20
-                        ? `Minimum ${20 - charCount} more characters recommended`
-                        : charCount >= 20
-                          ? 'Use formatting tools to make your description stand out'
-                          : 'Description is optional'}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-400">{charCount} characters</p>
-                </div>
-                <div className="mt-2 p-3 bg-[#6794D1]/10 rounded-lg border border-[#6794D1]/20">
-                  <p className="text-xs text-[#6794D1] font-medium mb-1">
-                    💡 Tips for a great job description:
-                  </p>
-                  <ul className="text-xs text-[#516876] space-y-1 list-disc list-inside">
-                    <li>
-                      Use <strong>bold</strong> and <em>italic</em> to highlight important
-                      information
-                    </li>
-                    <li>Create lists for responsibilities and requirements</li>
-                    <li>Use headings to organize sections</li>
-                    <li>Be clear and detailed about expectations</li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
@@ -1284,6 +1137,187 @@ const CreateJob = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Job Description */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Job Description</h2>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={isGeneratingDescription}
+                className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isGeneratingDescription ? 'Generating...' : 'Generate Description'}
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-3">
+              Use the details above, then generate and edit the description before creating the job.
+            </p>
+
+            {generationMessage && (
+              <div className="mb-3 p-3 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm">
+                {generationMessage}
+              </div>
+            )}
+
+            <div
+              className={`border ${errors.description ? 'border-red-300' : 'border-gray-300'} rounded-lg overflow-hidden bg-white`}
+            >
+              <div className="border-b border-gray-200 bg-gray-50 px-3 py-2">
+                <div className="flex flex-wrap gap-1 items-center">
+                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleBold().run()}
+                      className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bold') ? 'bg-gray-300' : ''}`}
+                      title="Bold"
+                    >
+                      B
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleItalic().run()}
+                      className={`px-2 py-1.5 text-sm italic rounded hover:bg-gray-200 transition-colors ${editor?.isActive('italic') ? 'bg-gray-300' : ''}`}
+                      title="Italic"
+                    >
+                      I
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleUnderline().run()}
+                      className={`px-2 py-1.5 text-sm underline rounded hover:bg-gray-200 transition-colors ${editor?.isActive('underline') ? 'bg-gray-300' : ''}`}
+                      title="Underline"
+                    >
+                      U
+                    </button>
+                  </div>
+
+                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-300' : ''}`}
+                      title="Heading 1"
+                    >
+                      H1
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-300' : ''}`}
+                      title="Heading 2"
+                    >
+                      H2
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-300' : ''}`}
+                      title="Heading 3"
+                    >
+                      H3
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().setParagraph().run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-gray-300' : ''}`}
+                      title="Paragraph"
+                    >
+                      P
+                    </button>
+                  </div>
+
+                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-300' : ''}`}
+                      title="Align Left"
+                    >
+                      Left
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-300' : ''}`}
+                      title="Align Center"
+                    >
+                      Center
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-300' : ''}`}
+                      title="Align Right"
+                    >
+                      Right
+                    </button>
+                  </div>
+
+                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-300' : ''}`}
+                      title="Bullet List"
+                    >
+                      UL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-gray-300' : ''}`}
+                      title="Numbered List"
+                    >
+                      OL
+                    </button>
+                  </div>
+
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().undo().run()}
+                      disabled={!editor?.can().undo()}
+                      className="px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Undo"
+                    >
+                      Undo
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => editor?.chain().focus().redo().run()}
+                      disabled={!editor?.can().redo()}
+                      className="px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Redo"
+                    >
+                      Redo
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="min-h-[220px] max-h-[420px] overflow-y-auto">
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mt-2">
+              {errors.description ? (
+                <p className="text-sm text-red-600">{errors.description}</p>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  {charCount > 0 && charCount < 20
+                    ? `Minimum ${20 - charCount} more characters recommended`
+                    : charCount >= 20
+                      ? 'Use formatting tools to make your description stand out'
+                      : 'Description is optional'}
+                </p>
+              )}
+              <p className="text-xs text-gray-400">{charCount} characters</p>
             </div>
           </div>
 

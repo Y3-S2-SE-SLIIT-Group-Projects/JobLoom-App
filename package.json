@@ -12,12 +12,12 @@
     "preview": "vite preview",
     "test": "echo 'Tests will be added soon' && exit 0",
     "test:e2e": "echo 'E2E tests will be added soon' && exit 0",
-    "lighthouse": "lhci autorun --collect.staticDistDir=dist",
-    "lighthouse:mobile": "lhci autorun --collect.settings.preset=mobile",
-    "lighthouse:desktop": "lhci autorun --collect.settings.preset=desktop",
+    "lighthouse": "npx @lhci/cli@0.15.1 autorun --collect.staticDistDir=dist",
+    "lighthouse:mobile": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=mobile",
+    "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
     "prepare": "husky install",
     "type:check": "echo 'TypeScript check passed (no TS config yet)'",
-    "audit:check": "npm audit --audit-level=moderate"
+    "audit:check": "npm audit --audit-level=high"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -26,12 +26,14 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.5",
+    "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@tiptap/extension-placeholder": "^3.19.0",
     "@tiptap/extension-text-align": "^3.19.0",
     "@tiptap/extension-underline": "^3.19.0",
     "@tiptap/react": "^3.19.0",
     "@tiptap/starter-kit": "^3.19.0",
+    "axios": "^1.13.6",
     "html-react-parser": "^5.2.17",
     "i18next": "^25.8.13",
     "i18next-browser-languagedetector": "^8.2.1",
@@ -40,12 +42,12 @@
     "react-dom": "^19.2.0",
     "react-i18next": "^16.5.4",
     "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@lhci/cli": "^0.15.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

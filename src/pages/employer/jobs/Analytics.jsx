@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useJobs } from '../../../contexts/JobContext';
-import Navbar from '../../../components/Navbar';
+
 import DottedBackground from '../../../components/DottedBackground';
 import {
   FaBriefcase,
@@ -67,8 +67,6 @@ const Analytics = () => {
 
   return (
     <DottedBackground>
-      <Navbar />
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Page Title */}

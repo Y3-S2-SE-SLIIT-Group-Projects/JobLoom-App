@@ -31,6 +31,22 @@ export const JobProvider = ({ children }) => {
   // API base URL from environment variables
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+  const getAuthHeaders = (includeContentType = false) => {
+    const token =
+      localStorage.getItem('token') ||
+      localStorage.getItem('authToken') ||
+      localStorage.getItem('jobloom_token');
+
+    const headers = {};
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
+  };
+
   /**
    * Fetch all jobs with filters
    */
@@ -378,6 +394,33 @@ export const JobProvider = ({ children }) => {
     });
   };
 
+  /**
+   * Generate job description with third-party AI
+   */
+  const generateJobDescription = async draftData => {
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/jobs/generate-description`, {
+        method: 'POST',
+        headers: getAuthHeaders(true),
+        body: JSON.stringify(draftData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to generate job description');
+      }
+
+      return data.data;
+    } catch (err) {
+      setError(err.message);
+      console.error('Error generating job description:', err);
+      throw err;
+    }
+  };
+
   const value = {
     jobs,
     loading,
@@ -394,6 +437,7 @@ export const JobProvider = ({ children }) => {
     markJobAsFilled,
     deleteJob,
     fetchRecommendedJobs,
+    generateJobDescription,
     updateFilters,
     resetFilters,
   };

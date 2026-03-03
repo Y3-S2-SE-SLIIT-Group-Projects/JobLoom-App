@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../contexts/UserContext';
-import Navbar from '../../components/Navbar';
 import DottedBackground from '../../components/DottedBackground';
 import { FaShieldAlt, FaArrowLeft } from 'react-icons/fa';
 import Logo from '/logo.svg';
@@ -80,9 +79,8 @@ const VerifyRegistration = () => {
 
   return (
     <>
-      <Navbar />
       <DottedBackground>
-        <div className="min-h-screen flex items-center justify-center px-4 py-12">
+        <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
             <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
               {/* Icon */}
@@ -92,7 +90,7 @@ const VerifyRegistration = () => {
                 </div>
               </div>
 
-              <div className="text-center mb-6">
+              <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold text-[#2B373F] mb-2">{t('auth.verify_title')}</h1>
                 <p className="text-[#516876]">
                   {t('auth.verify_desc')}{' '}
@@ -101,13 +99,13 @@ const VerifyRegistration = () => {
               </div>
 
               {error && (
-                <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50">
                   <p className="text-sm text-red-700">{error}</p>
                 </div>
               )}
 
               {success && (
-                <div className="mb-5 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="p-4 mb-5 border border-green-200 rounded-lg bg-green-50">
                   <p className="text-sm text-green-700">{success}</p>
                 </div>
               )}
@@ -138,14 +136,14 @@ const VerifyRegistration = () => {
                   className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
                   ) : (
                     t('auth.verify_button')
                   )}
                 </button>
               </form>
 
-              <div className="mt-6 flex items-center justify-between">
+              <div className="flex items-center justify-between mt-6">
                 <Link
                   to="/register"
                   className="flex items-center gap-2 text-sm text-[#516876] hover:text-[#2B373F]"
