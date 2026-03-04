@@ -25,6 +25,7 @@ import {
   FaShieldAlt,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
+import ProfileRecommendations from '../../components/reviews/ProfileRecommendations';
 
 const getRoleBadge = role => {
   const styles = {
@@ -496,6 +497,10 @@ const UserProfile = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="mt-6">
+          <ProfileRecommendations />
         </div>
       </div>
 
