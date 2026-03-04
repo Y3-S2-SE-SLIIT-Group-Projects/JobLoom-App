@@ -1,12 +1,12 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { UserProvider } from './contexts/UserContext';
-import ErrorBoundary from './components/ErrorBoundary';
-import store from './store/index.js';
-import './i18n';
-import App from './App.jsx';
-import './index.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { UserProvider } from "./contexts/UserContext";
+import ErrorBoundary from "./components/ErrorBoundary";
+import store from "./store/index.js";
+import "./i18n";
+import App from "./App.jsx";
+import "./index.css";
 
 /**
  * Global provider stack — order matters:
@@ -16,7 +16,7 @@ import './index.css';
  * 4. UserProvider — auth/user context consumed throughout the app
  * 5. App — mounts the router
  */
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
