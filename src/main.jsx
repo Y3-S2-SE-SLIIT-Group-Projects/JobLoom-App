@@ -1,8 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { UserProvider } from './contexts/UserContext';
-import { JobProvider } from './contexts/JobContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import store from './store/index.js';
 import './i18n';
@@ -22,12 +20,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <UserProvider>
-          <App />
-        </UserProvider>
-        <JobProvider>
-          <App />
-        </JobProvider>
+ 
       </Provider>
     </ErrorBoundary>
   </StrictMode>
