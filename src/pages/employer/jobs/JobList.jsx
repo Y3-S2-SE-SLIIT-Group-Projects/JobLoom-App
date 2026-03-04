@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useJobs } from '../../../hooks/useJobs';
+import { loadAllJobStats, selectJobStatsMap } from '../../../store/slices/applicationSlice';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {
@@ -15,12 +17,15 @@ import {
   FaCheckCircle,
   FaTrash,
   FaClock,
+  FaClipboardList,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../../utils/imageUrls';
 
 const JobList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { fetchMyJobs, closeJob, markJobAsFilled, deleteJob, loading } = useJobs();
+  const jobStatsMap = useSelector(selectJobStatsMap);
   const [jobs, setJobs] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,6 +46,10 @@ const JobList = () => {
     loadJobs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (jobs.length) dispatch(loadAllJobStats(jobs.map(j => j._id)));
+  }, [dispatch, jobs]);
 
   const filteredJobs = jobs.filter(job => {
     const matchesStatus = filterStatus === 'all' || job.status === filterStatus;
@@ -83,6 +92,12 @@ const JobList = () => {
       filled: 'bg-blue-100 text-blue-700 border-blue-200',
     };
     return styles[status] || styles.open;
+  };
+
+  const getApplicantCount = jobId => {
+    const stats = jobStatsMap[jobId];
+    if (!stats || typeof stats !== 'object') return 0;
+    return Object.values(stats).reduce((s, n) => s + (typeof n === 'number' ? n : 0), 0);
   };
 
   const getJobTypeColor = type => {
@@ -327,6 +342,22 @@ const JobList = () => {
                         <FaCheckCircle className="w-4 h-4" />
                         Mark Filled
                       </button>
+                      <Link
+                        to={`/employer/applications/job/${job._id}`}
+                        onClick={e => e.stopPropagation()}
+                        className="px-4 py-2 text-sm font-medium text-[#6794D1] hover:bg-[#6794D1]/10 rounded-lg transition-colors flex items-center gap-2"
+                      >
+                        <FaClipboardList className="w-4 h-4" />
+                        Applications
+                        {(() => {
+                          const n = getApplicantCount(job._id);
+                          return n > 0 ? (
+                            <span className="ml-1 text-xs font-semibold px-1.5 py-0.5 bg-[#6794D1]/20 rounded-full">
+                              {n}
+                            </span>
+                          ) : null;
+                        })()}
+                      </Link>
                       <button
                         onClick={e => {
                           e.stopPropagation();
