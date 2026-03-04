@@ -44,12 +44,16 @@ const authHeaders = token => {
 
 const storeAuthFromResponse = data => {
   const token = data?.token || null;
-  const user = data?.user || (data && typeof data === 'object' ? (() => {
-    // Common pattern: { token, ...userFields }
-     
-    const { token: _token, ...rest } = data;
-    return rest;
-  })() : null);
+  const user =
+    data?.user ||
+    (data && typeof data === 'object'
+      ? (() => {
+          // Common pattern: { token, ...userFields }
+
+          const { token: _token, ...rest } = data;
+          return rest;
+        })()
+      : null);
 
   if (token) {
     localStorage.setItem('token', token);
@@ -62,20 +66,23 @@ const storeAuthFromResponse = data => {
   return { token, user };
 };
 
-export const registerUser = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${API_URL}/users/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData),
-    });
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data));
-    return data;
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Registration failed');
+export const registerUser = createAsyncThunk(
+  'user/register',
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(toErrorMessage(data));
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Registration failed');
+    }
   }
-});
+);
 
 export const verifyRegistration = createAsyncThunk(
   'user/verifyRegistration',
@@ -97,37 +104,43 @@ export const verifyRegistration = createAsyncThunk(
   }
 );
 
-export const loginUser = createAsyncThunk('user/login', async ({ email, password }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${API_URL}/users/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Login failed');
+export const loginUser = createAsyncThunk(
+  'user/login',
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Login failed');
 
-    const { token, user } = storeAuthFromResponse(data);
-    return { data, token, user };
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Login failed');
+      const { token, user } = storeAuthFromResponse(data);
+      return { data, token, user };
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Login failed');
+    }
   }
-});
+);
 
-export const forgotPassword = createAsyncThunk('user/forgotPassword', async ({ phone }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`${API_URL}/users/forgot-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone }),
-    });
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to send OTP');
-    return data;
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Failed to send OTP');
+export const forgotPassword = createAsyncThunk(
+  'user/forgotPassword',
+  async ({ phone }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/users/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to send OTP');
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Failed to send OTP');
+    }
   }
-});
+);
 
 export const verifyPasswordReset = createAsyncThunk(
   'user/verifyPasswordReset',
@@ -165,39 +178,46 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-export const getMyProfile = createAsyncThunk('user/getMyProfile', async (_, { getState, dispatch, rejectWithValue }) => {
-  try {
-    const token = getState()?.user?.token || loadStoredToken();
-    const response = await fetch(`${API_URL}/users/me`, {
-      headers: authHeaders(token),
-    });
+export const getMyProfile = createAsyncThunk(
+  'user/getMyProfile',
+  async (_, { getState, dispatch, rejectWithValue }) => {
+    try {
+      const token = getState()?.user?.token || loadStoredToken();
+      const response = await fetch(`${API_URL}/users/me`, {
+        headers: authHeaders(token),
+      });
 
-    if (response.status === 401) {
-      dispatch(logoutUserAction());
-      return rejectWithValue('Session expired. Please login again.');
+      if (response.status === 401) {
+        dispatch(logoutUserAction());
+        return rejectWithValue('Session expired. Please login again.');
+      }
+
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to fetch profile');
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Failed to fetch profile');
     }
-
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to fetch profile');
-    return data;
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Failed to fetch profile');
   }
-});
+);
 
-export const getUserProfile = createAsyncThunk('user/getUserProfile', async (id, { getState, rejectWithValue }) => {
-  try {
-    const token = getState()?.user?.token || loadStoredToken();
-    const response = await fetch(`${API_URL}/users/profile/${id}`, {
-      headers: authHeaders(token),
-    });
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to fetch user profile');
-    return data;
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Failed to fetch user profile');
+export const getUserProfile = createAsyncThunk(
+  'user/getUserProfile',
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const token = getState()?.user?.token || loadStoredToken();
+      const response = await fetch(`${API_URL}/users/profile/${id}`, {
+        headers: authHeaders(token),
+      });
+      const data = await response.json();
+      if (!response.ok)
+        return rejectWithValue(toErrorMessage(data) || 'Failed to fetch user profile');
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Failed to fetch user profile');
+    }
   }
-});
+);
 
 export const updateUserProfile = createAsyncThunk(
   'user/updateUserProfile',
@@ -228,24 +248,27 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-export const deleteAccount = createAsyncThunk('user/deleteAccount', async ({ password }, { getState, rejectWithValue }) => {
-  try {
-    const token = getState()?.user?.token || loadStoredToken();
-    const response = await fetch(`${API_URL}/users/account`, {
-      method: 'DELETE',
-      headers: authHeaders(token),
-      body: JSON.stringify({ password }),
-    });
-    const data = await response.json();
-    if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to delete account');
+export const deleteAccount = createAsyncThunk(
+  'user/deleteAccount',
+  async ({ password }, { getState, rejectWithValue }) => {
+    try {
+      const token = getState()?.user?.token || loadStoredToken();
+      const response = await fetch(`${API_URL}/users/account`, {
+        method: 'DELETE',
+        headers: authHeaders(token),
+        body: JSON.stringify({ password }),
+      });
+      const data = await response.json();
+      if (!response.ok) return rejectWithValue(toErrorMessage(data) || 'Failed to delete account');
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    return data;
-  } catch (err) {
-    return rejectWithValue(err?.message || 'Failed to delete account');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.message || 'Failed to delete account');
+    }
   }
-});
+);
 
 const initialState = {
   currentUser: loadStoredUser(),
