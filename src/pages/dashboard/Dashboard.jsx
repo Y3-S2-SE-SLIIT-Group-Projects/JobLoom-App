@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../hooks/useJobs';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../hooks/useUser';
 import JobCard from './JobCard';
 import {
   FaSearch,
