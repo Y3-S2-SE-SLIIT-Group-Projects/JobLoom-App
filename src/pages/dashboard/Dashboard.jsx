@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
-import { useJobs } from '../../contexts/JobContext';
+import { useJobs } from '../../hooks/useJobs';
 import { useUser } from '../../contexts/UserContext';
 import JobCard from './JobCard';
 import {
@@ -186,7 +186,7 @@ const SALARY_RANGES = [
 // Main Dashboard component
 // ---------------------------------------------------------------
 const Dashboard = () => {
-  const { fetchJobs, fetchRecommendedJobs, jobs, loading } = useJobs();
+  const { fetchJobs, fetchRecommendedJobs, jobs, loading, pagination } = useJobs();
   const { currentUser } = useUser();
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
@@ -215,6 +215,7 @@ const Dashboard = () => {
   const [nearbyError, setNearbyError] = useState('');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [recommendedLoading, setRecommendedLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Google Maps loader
   useEffect(() => {
@@ -279,6 +280,7 @@ const Dashboard = () => {
   const runSearch = async (extra = {}) => {
     setNearbyJobs(null);
     setNearbyError('');
+    const page = extra.page || 1;
     const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
     const locationParts = locationLabel
       .split(',')
@@ -296,6 +298,7 @@ const Dashboard = () => {
       province: prov,
       minSalary: selectedRange.min || undefined,
       maxSalary: selectedRange.max || undefined,
+      page,
       ...extra,
     };
     // Remove undefined keys so they don't appear in query string
@@ -363,7 +366,22 @@ const Dashboard = () => {
     setSalaryRangeKey('Any');
     setNearbyJobs(null);
     setNearbyError('');
+    setCurrentPage(1);
     await fetchJobs({ status: 'open' });
+  };
+
+  useEffect(() => {
+    if (!pagination) return;
+    const pageFromApi =
+      pagination.page || pagination.currentPage || pagination.current_page || pagination.current;
+    if (pageFromApi) setCurrentPage(pageFromApi);
+  }, [pagination]);
+
+  const changePage = async newPage => {
+    if (!newPage || newPage === currentPage) return;
+    const pageNum = Number(newPage);
+    setCurrentPage(pageNum);
+    await runSearch({ page: pageNum });
   };
 
   // Client-side employment type filter (backend doesn't support this param)
@@ -662,9 +680,18 @@ const Dashboard = () => {
         {/* Results header */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-semibold text-[#1F2A37]">
-            {isNearbyResult
-              ? t('dashboard.results_count_nearby', { count: displayJobs.length })
-              : t('dashboard.results_count_total', { count: displayJobs.length })}
+            {(() => {
+              const total =
+                pagination?.total ||
+                pagination?.totalCount ||
+                pagination?.total_count ||
+                pagination?.totalItems ||
+                pagination?.total_items ||
+                displayJobs.length;
+              return isNearbyResult
+                ? t('dashboard.results_count_nearby', { count: displayJobs.length })
+                : t('dashboard.results_count_total', { count: total });
+            })()}
           </span>
         </div>
 
@@ -679,6 +706,48 @@ const Dashboard = () => {
           <div className="text-center py-16 text-gray-400">{t('dashboard.no_jobs_found')}</div>
         )}
         {!loading && !nearbyLoading && displayJobs.map(job => <JobCard key={job._id} job={job} />)}
+
+        {/* Pagination controls (only when not using nearby results) */}
+        {!isNearbyResult &&
+          pagination &&
+          (() => {
+            const total =
+              pagination?.total ||
+              pagination?.totalCount ||
+              pagination?.total_count ||
+              pagination?.totalItems ||
+              pagination?.total_items ||
+              0;
+            const limit = pagination?.limit || pagination?.perPage || pagination?.pageSize || 20;
+            const totalPages = Math.max(1, Math.ceil((total || 0) / limit));
+            if (total <= limit) return null;
+            return (
+              <div className="max-w-7xl mx-auto px-6 mt-6 flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Showing {displayJobs.length} of {total} jobs
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => changePage(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+                  <div className="text-sm text-gray-700">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                  <button
+                    onClick={() => changePage(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
       </div>
     </DottedBackground>
   );

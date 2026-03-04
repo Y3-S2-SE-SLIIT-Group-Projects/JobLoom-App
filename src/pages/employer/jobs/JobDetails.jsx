@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 import parse from 'html-react-parser';
 
 import DottedBackground from '../../../components/DottedBackground';

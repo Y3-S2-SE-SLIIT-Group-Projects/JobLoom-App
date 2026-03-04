@@ -26,10 +26,6 @@ const normalizeError = err => {
   return new Error(typeof err === 'string' ? err : 'Request failed');
 };
 
-// Backward-compatible provider so existing tree structure remains unchanged.
-export const JobProvider = ({ children }) => children;
-
-// eslint-disable-next-line react-refresh/only-export-components
 export const useJobs = () => {
   const dispatch = useDispatch();
   const jobs = useSelector(selectJobs);
@@ -187,4 +183,4 @@ export const useJobs = () => {
   };
 };
 
-export default null;
+export default useJobs;
