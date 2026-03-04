@@ -19,6 +19,7 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
+import { uploadFile } from '../../services/uploadApi';
 
 const PROVINCES = [
   'Western',
@@ -229,30 +230,42 @@ const EditProfile = () => {
     }
 
     try {
-      const fd = new FormData();
-      fd.append('firstName', formData.firstName);
-      fd.append('lastName', formData.lastName);
-      fd.append('phone', formData.phone);
-      fd.append('location', JSON.stringify(formData.location));
+      const updates = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        location: formData.location,
+      };
 
       if (currentRole === 'job_seeker') {
-        fd.append('skills', JSON.stringify(formData.skills));
-        fd.append('experience', JSON.stringify(formData.experience));
-        cvFiles.forEach(file => {
-          fd.append('cv', file);
-        });
+        updates.skills = formData.skills;
+        updates.experience = formData.experience;
+
+        if (cvFiles.length > 0) {
+          const uploadedCVs = await Promise.all(
+            cvFiles.map(async file => {
+              const result = await uploadFile({ file, folder: 'jobloom/cvs' });
+              return { name: file?.name || 'CV', url: result.url };
+            })
+          );
+          updates.newCVs = uploadedCVs;
+        }
       } else {
-        fd.append('companyName', formData.companyName);
-        fd.append('companyWebsite', formData.companyWebsite);
-        fd.append('companyDescription', formData.companyDescription);
-        fd.append('industry', formData.industry);
+        updates.companyName = formData.companyName;
+        updates.companyWebsite = formData.companyWebsite;
+        updates.companyDescription = formData.companyDescription;
+        updates.industry = formData.industry;
       }
 
       if (profileImageFile) {
-        fd.append('profileImage', profileImageFile);
+        const result = await uploadFile({
+          file: profileImageFile,
+          folder: 'jobloom/profile_images',
+        });
+        updates.profileImage = result.url;
       }
 
-      await updateUserProfile(fd);
+      await updateUserProfile(updates);
       setSuccessMsg(t('profile.update_success'));
       setCvFiles([]);
       window.scrollTo({ top: 0, behavior: 'smooth' });

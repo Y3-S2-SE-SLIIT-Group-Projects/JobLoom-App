@@ -16,6 +16,7 @@ import {
   FaTrash,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
+import { uploadFile } from '../../services/uploadApi';
 
 const SKILL_SUGGESTIONS = [
   'Communication',
@@ -176,19 +177,28 @@ const CompleteProfile = () => {
     }
     try {
       setApiError('');
-      const fd = new FormData();
-      fd.append('skills', JSON.stringify(formData.skills));
-      fd.append('experience', JSON.stringify(formData.experience));
+      const updates = {
+        skills: formData.skills,
+        experience: formData.experience,
+      };
 
       if (profileImageFile) {
-        fd.append('profileImage', profileImageFile);
+        const result = await uploadFile({
+          file: profileImageFile,
+          folder: 'jobloom/profile_images',
+        });
+        updates.profileImage = result.url;
       }
 
-      cvFiles.forEach(file => {
-        fd.append('cv', file);
-      });
+      const uploadedCVs = await Promise.all(
+        cvFiles.map(async file => {
+          const result = await uploadFile({ file, folder: 'jobloom/cvs' });
+          return { name: file?.name || 'CV', url: result.url };
+        })
+      );
+      updates.newCVs = uploadedCVs;
 
-      await updateUserProfile(fd);
+      await updateUserProfile(updates);
       navigate('/profile');
     } catch (err) {
       setApiError(err.message || t('errors.registration_failed'));
