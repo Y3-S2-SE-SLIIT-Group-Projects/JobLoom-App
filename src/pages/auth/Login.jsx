@@ -1,15 +1,18 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSignInAlt } from 'react-icons/fa';
 import Logo from '/logo.svg';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { loginUser, loading } = useUser();
+
+  const from = location.state?.from?.pathname || null;
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
@@ -18,11 +21,9 @@ const Login = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.email.trim()) newErrors.email = t('errors.email_required', 'Email is required');
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = t('errors.invalid_email', 'Enter a valid email');
-    if (!formData.password)
-      newErrors.password = t('errors.password_required', 'Password is required');
+    if (!formData.email.trim()) newErrors.email = t('errors.email_required');
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = t('errors.invalid_email');
+    if (!formData.password) newErrors.password = t('errors.password_required');
     return newErrors;
   };
 
@@ -41,14 +42,21 @@ const Login = () => {
     }
     try {
       const data = await loginUser(formData.email, formData.password);
-      // Redirect based on role
+
+      // If there was a specific page they were trying to access, go there
+      if (from) {
+        navigate(from, { replace: true });
+        return;
+      }
+
+      // Default redirect based on role
       if (data.role === 'employer') {
         navigate('/employer/dashboard');
       } else {
         navigate('/profile');
       }
     } catch (err) {
-      setApiError(err.message || t('errors.login_failed', 'Login failed. Please try again.'));
+      setApiError(err.message || t('errors.login_failed'));
     }
   };
 

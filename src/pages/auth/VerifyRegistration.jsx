@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import { FaShieldAlt, FaArrowLeft } from 'react-icons/fa';
 import Logo from '/logo.svg';
@@ -59,7 +59,7 @@ const VerifyRegistration = () => {
     e.preventDefault();
     const otpString = otp.join('');
     if (otpString.length < 6) {
-      setError(t('auth.error_otp_incomplete'));
+      setError(t('errors.otp_required'));
       return;
     }
     try {
@@ -69,11 +69,11 @@ const VerifyRegistration = () => {
         if (data.role === 'employer') {
           navigate('/employer/dashboard');
         } else {
-          navigate('/profile');
+          navigate('/profile/complete');
         }
       }, 1500);
     } catch (err) {
-      setError(err.message || t('errors.otp_failed', 'OTP verification failed'));
+      setError(err.message || t('errors.otp_failed'));
     }
   };
 
@@ -156,9 +156,7 @@ const VerifyRegistration = () => {
                   <button
                     type="button"
                     className="text-[#6794D1] font-medium hover:underline"
-                    onClick={() =>
-                      setError(t('errors.resend_error', 'Resend functionality - please try again'))
-                    }
+                    onClick={() => setError(t('errors.resend_error'))}
                   >
                     {t('auth.resend_button')}
                   </button>
