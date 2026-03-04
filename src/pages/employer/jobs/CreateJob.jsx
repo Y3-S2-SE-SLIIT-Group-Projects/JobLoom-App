@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {
@@ -72,6 +72,691 @@ const JOB_CATEGORIES = [
   { value: 'other', label: 'Other' },
 ];
 
+// Skill sets per category  (advanced + simple basics merged)
+const CATEGORY_SKILLS = {
+  agriculture: [
+    'Planting',
+    'Harvesting',
+    'Irrigation Management',
+    'Pest Control',
+    'Soil Preparation',
+    'Fertilizer Application',
+    'Crop Monitoring',
+    'Land Clearing',
+    'Seed Selection',
+    'Post-Harvest Handling',
+    'Greenhouse Operations',
+    'Composting',
+    'Farm Equipment Operation',
+    'Teamwork',
+    'Physical Fitness',
+    'Punctuality',
+    'Following Instructions',
+  ],
+  farming: [
+    'Soil Preparation',
+    'Planting & Seeding',
+    'Weeding',
+    'Harvesting',
+    'Crop Rotation',
+    'Water Management',
+    'Organic Farming Practices',
+    'Pesticide Application',
+    'Field Maintenance',
+    'Storage Handling',
+    'Teamwork',
+    'Physical Fitness',
+    'Punctuality',
+    'Basic Tool Use',
+  ],
+  livestock: [
+    'Animal Care & Feeding',
+    'Herd Management',
+    'Milking',
+    'Veterinary Assistance',
+    'Pasture Management',
+    'Animal Health Monitoring',
+    'Breeding Assistance',
+    'Record Keeping',
+    'Vaccination Assistance',
+    'Poultry Handling',
+    'Teamwork',
+    'Physical Fitness',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  fishing: [
+    'Net Handling',
+    'Fish Processing & Cleaning',
+    'Boat Operation',
+    'Aquaculture Maintenance',
+    'Fish Sorting & Grading',
+    'Cold Chain Handling',
+    'Fishing Equipment Maintenance',
+    'Catch Reporting',
+    'Dive Safety',
+    'Teamwork',
+    'Physical Fitness',
+    'Punctuality',
+    'Safety Awareness',
+  ],
+  construction: [
+    'Masonry',
+    'Carpentry',
+    'Concrete Mixing & Pouring',
+    'Site Safety',
+    'Scaffolding',
+    'Blueprint Reading',
+    'Formwork Setup',
+    'Tiling',
+    'Painting & Finishing',
+    'Steel Fixing',
+    'Excavation',
+    'Roofing',
+    'Demolition',
+    'Material Handling',
+    'Teamwork',
+    'Physical Fitness',
+    'Punctuality',
+    'Following Instructions',
+  ],
+  carpentry: [
+    'Woodworking',
+    'Measure & Cut',
+    'Joinery',
+    'Furniture Making',
+    'Door & Window Fitting',
+    'Cabinet Making',
+    'Wood Polishing',
+    'Power Tool Operation',
+    'Framing',
+    'Repairs & Restoration',
+    'Attention to Detail',
+    'Teamwork',
+    'Punctuality',
+  ],
+  masonry: [
+    'Brick Laying',
+    'Concrete Work',
+    'Stone Cutting',
+    'Plastering',
+    'Block Work',
+    'Foundation Work',
+    'Tiling',
+    'Rendering',
+    'Physical Fitness',
+    'Teamwork',
+    'Punctuality',
+    'Safety Awareness',
+  ],
+  plumbing: [
+    'Pipe Fitting',
+    'Drainage Installation',
+    'Leak Repair',
+    'Soldering',
+    'Sanitation Systems',
+    'Water Supply Systems',
+    'Valve Installation',
+    'Guttering',
+    'Pipe Threading',
+    'Blueprint Reading',
+    'Attention to Detail',
+    'Punctuality',
+    'Teamwork',
+  ],
+  electrical: [
+    'Wiring & Cabling',
+    'Troubleshooting',
+    'Safety Protocols',
+    'Panel Board Installation',
+    'Earthing & Grounding',
+    'Circuit Testing',
+    'Load Calculation',
+    'Solar Panel Installation',
+    'Conduit Fitting',
+    'Switchgear Operation',
+    'Appliance Repairs',
+    'Attention to Detail',
+    'Punctuality',
+    'Safety Awareness',
+  ],
+  welding: [
+    'MIG Welding',
+    'TIG Welding',
+    'Arc Welding',
+    'Cutting & Grinding',
+    'Metal Fabrication',
+    'Blueprint Reading',
+    'Safety Practices',
+    'Welding Inspection',
+    'Brazing',
+    'Sheet Metal Work',
+    'Attention to Detail',
+    'Physical Fitness',
+    'Safety Awareness',
+  ],
+  manufacturing: [
+    'Machine Operation',
+    'Quality Control',
+    'Assembly Line Work',
+    'Production Planning',
+    'Inventory Management',
+    'Equipment Maintenance',
+    'Safety & OSHA Compliance',
+    'Forklift Operation',
+    'Packaging',
+    'Batch Record Keeping',
+    'Material Inspection',
+    'Teamwork',
+    'Punctuality',
+    'Following Instructions',
+    'Physical Fitness',
+  ],
+  factory_work: [
+    'Assembly Work',
+    'Machine Operation',
+    'Quality Inspection',
+    'Production Targets',
+    'Shift Work',
+    'Conveyor Belt Operation',
+    'Safety Compliance',
+    'Raw Material Handling',
+    'Teamwork',
+    'Punctuality',
+    'Physical Fitness',
+    'Attention to Detail',
+  ],
+  assembly: [
+    'Component Assembly',
+    'Tool Handling',
+    'Quality Checking',
+    'Following Work Instructions',
+    'Packing & Labeling',
+    'Line Balancing',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  food_service: [
+    'Food Preparation',
+    'Sanitation & Hygiene',
+    'Order Taking',
+    'Table Service',
+    'Cash Handling',
+    'Stock Rotation',
+    'Food Safety Standards',
+    'POS Operation',
+    'Menu Knowledge',
+    'Customer Service',
+    'Clearing & Cleaning',
+    'Teamwork',
+    'Punctuality',
+    'Communication Skills',
+  ],
+  cooking: [
+    'Food Preparation',
+    'Knife Skills',
+    'Cooking Techniques',
+    'Menu Planning',
+    'Kitchen Hygiene',
+    'Stock & Inventory',
+    'Recipe Following',
+    'Pastry & Baking',
+    'Cost Control',
+    'Kitchen Equipment Use',
+    'Portion Control',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  catering: [
+    'Bulk Cooking',
+    'Event Setup',
+    'Food Portioning',
+    'Buffet Management',
+    'Client Coordination',
+    'Food Safety',
+    'Transport & Cold Chain',
+    'Staff Supervision',
+    'Teamwork',
+    'Communication Skills',
+    'Punctuality',
+  ],
+  hospitality: [
+    'Guest Service',
+    'Housekeeping',
+    'Front Desk Operations',
+    'Reservation Management',
+    'Room Service',
+    'Check-In/Check-Out',
+    'Complaint Handling',
+    'Event Coordination',
+    'Laundry Service',
+    'Concierge Services',
+    'F&B Service',
+    'Communication Skills',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  retail: [
+    'Cash Handling',
+    'Stock Replenishment',
+    'POS Operation',
+    'Customer Assistance',
+    'Inventory Counting',
+    'Product Knowledge',
+    'Visual Merchandising',
+    'Loss Prevention',
+    'Returns Handling',
+    'Opening & Closing Procedures',
+    'Communication Skills',
+    'Teamwork',
+    'Punctuality',
+  ],
+  sales: [
+    'Lead Generation',
+    'Negotiation',
+    'Customer Relations',
+    'Target Achievement',
+    'Product Pitching',
+    'Cold Calling',
+    'CRM Software',
+    'Market Research',
+    'Upselling & Cross-Selling',
+    'Reporting & Analytics',
+    'Contract Closing',
+    'Communication Skills',
+    'Confidence',
+    'Time Management',
+  ],
+  customer_service: [
+    'Communication Skills',
+    'Problem Solving',
+    'Phone & Email Support',
+    'Live Chat Support',
+    'Complaint Resolution',
+    'CRM Usage',
+    'Data Entry',
+    'Empathy & Patience',
+    'Escalation Handling',
+    'Product Knowledge',
+    'Multi-tasking',
+    'Teamwork',
+    'Punctuality',
+    'Active Listening',
+  ],
+  transportation: [
+    'Route Planning',
+    'Goods Handling',
+    'Vehicle Maintenance',
+    'Delivery Scheduling',
+    'Shipment Documentation',
+    'GPS Navigation',
+    'Load Securing',
+    'Customs Clearance Basics',
+    'Warehouse Operations',
+    'Punctuality',
+    'Physical Fitness',
+    'Time Management',
+  ],
+  driving: [
+    'Valid Driving License',
+    'Route Planning',
+    'Vehicle Maintenance',
+    'Safe Driving Practices',
+    'Navigation Apps',
+    'Logbook Keeping',
+    'Passenger Handling',
+    'Defensive Driving',
+    'Traffic Law Knowledge',
+    'Punctuality',
+    'Time Management',
+    'Communication Skills',
+  ],
+  delivery: [
+    'Last-Mile Delivery',
+    'Route Optimization',
+    'Package Handling',
+    'Customer Interaction',
+    'Delivery App Usage',
+    'Time Management',
+    'Cash on Delivery Handling',
+    'POD Documentation',
+    'Punctuality',
+    'Physical Fitness',
+    'Communication Skills',
+  ],
+  logistics: [
+    'Warehouse Management',
+    'Stock Tracking',
+    'Order Fulfillment',
+    'ERP Software',
+    'Supply Chain Coordination',
+    'Loading & Unloading',
+    'Inventory Auditing',
+    'Forklift Operation',
+    'Cold Chain Management',
+    'Teamwork',
+    'Attention to Detail',
+    'Punctuality',
+  ],
+  cleaning: [
+    'Surface Cleaning',
+    'Sanitation & Disinfection',
+    'Waste Disposal',
+    'Floor Mopping & Polishing',
+    'Window Cleaning',
+    'Equipment Use',
+    'Chemical Handling Safety',
+    'Linen Management',
+    'Restroom Cleaning',
+    'Laundry Services',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+    'Physical Fitness',
+  ],
+  maintenance: [
+    'General Repairs',
+    'Preventive Maintenance',
+    'Plumbing Basics',
+    'Electrical Basics',
+    'Painting & Touch-Up',
+    'HVAC Maintenance',
+    'Equipment Servicing',
+    'Carpentry Basics',
+    'Record Keeping',
+    'Punctuality',
+    'Physical Fitness',
+    'Problem Solving',
+  ],
+  janitorial: [
+    'Trash Removal',
+    'Sweeping & Mopping',
+    'Restroom Maintenance',
+    'Chemical Handling',
+    'Recycling Management',
+    'Outdoor Cleaning',
+    'Punctuality',
+    'Physical Fitness',
+    'Teamwork',
+  ],
+  security: [
+    'Patrolling',
+    'Access Control',
+    'Incident Reporting',
+    'CCTV Monitoring',
+    'Emergency Response',
+    'Crowd Control',
+    'First Aid Basics',
+    'Search Procedures',
+    'Communication Skills',
+    'Alarm Systems',
+    'Shift Handover Procedures',
+    'Physical Fitness',
+    'Alertness',
+    'Punctuality',
+    'Integrity',
+  ],
+  guard_services: [
+    'Gate Control',
+    'Visitor Logging',
+    'Patrolling',
+    'Conflict De-escalation',
+    'Emergency Procedures',
+    'Physical Fitness',
+    'Punctuality',
+    'Alertness',
+    'Integrity',
+    'Communication Skills',
+  ],
+  tailoring: [
+    'Sewing Machine Operation',
+    'Pattern Making',
+    'Alterations & Repairs',
+    'Measurement Taking',
+    'Fabric Cutting',
+    'Hand Stitching',
+    'Garment Finishing',
+    'Button & Zipper Fitting',
+    'Design Reading',
+    'Custom Fitting',
+    'Embroidery',
+    'Attention to Detail',
+    'Creativity',
+    'Punctuality',
+  ],
+  textiles: [
+    'Fabric Inspection',
+    'Loom Operation',
+    'Dyeing & Printing',
+    'Thread Work',
+    'Quality Checking',
+    'Machine Troubleshooting',
+    'Attention to Detail',
+    'Teamwork',
+    'Punctuality',
+  ],
+  garment_making: [
+    'Pattern Cutting',
+    'Sewing & Stitching',
+    'Overlock Machine Use',
+    'Quality Inspection',
+    'Pressing & Ironing',
+    'Fabric Handling',
+    'Attention to Detail',
+    'Teamwork',
+    'Punctuality',
+  ],
+  beauty_services: [
+    'Hair Cutting & Styling',
+    'Makeup Application',
+    'Facial Treatments',
+    'Waxing & Threading',
+    'Nail Care & Manicure',
+    'Pedicure',
+    'Hair Coloring',
+    'Skin Care',
+    'Customer Consultation',
+    'Product Knowledge',
+    'Hygiene & Sanitation',
+    'Communication Skills',
+    'Creativity',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  salon: [
+    'Hair Cutting',
+    'Blow Dry & Styling',
+    'Coloring & Highlights',
+    'Keratin Treatment',
+    'Scalp Treatment',
+    'Customer Relations',
+    'Communication Skills',
+    'Creativity',
+    'Punctuality',
+  ],
+  spa: [
+    'Massage Therapy',
+    'Aromatherapy',
+    'Body Wraps',
+    'Reflexology',
+    'Stone Therapy',
+    'Customer Consultation',
+    'Hygiene Standards',
+    'Product Application',
+    'Communication Skills',
+    'Empathy',
+    'Punctuality',
+  ],
+  education: [
+    'Lesson Planning',
+    'Classroom Management',
+    'Student Assessment',
+    'Subject Knowledge',
+    'Communication Skills',
+    'Curriculum Development',
+    'Student Counseling',
+    'Report Writing',
+    'Digital Tools Usage',
+    'Special Needs Awareness',
+    'Bilingual Teaching',
+    'Patience',
+    'Empathy',
+    'Punctuality',
+    'Teamwork',
+  ],
+  teaching: [
+    'Subject Expertise',
+    'Lesson Delivery',
+    'Classroom Discipline',
+    'Assignment & Grading',
+    'Parent Communication',
+    'Result Analysis',
+    'Patience',
+    'Communication Skills',
+    'Punctuality',
+  ],
+  tutoring: [
+    'One-on-One Coaching',
+    'Study Plan Creation',
+    'Practice Tests',
+    'Doubt Clarification',
+    'Progress Tracking',
+    'Online Tools',
+    'Patience',
+    'Communication Skills',
+    'Punctuality',
+  ],
+  healthcare: [
+    'Patient Care',
+    'First Aid & CPR',
+    'Medication Administration',
+    'Vital Signs Monitoring',
+    'Medical Records',
+    'Wound Care',
+    'Patient Communication',
+    'Infection Control',
+    'IV Cannulation',
+    'Patient Lifting Techniques',
+    'Mental Health Support',
+    'Empathy',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  nursing: [
+    'Clinical Assessment',
+    'Medication Management',
+    'IV Therapy',
+    'Patient Education',
+    'Wound Dressing',
+    'Shift Reporting',
+    'Emergency Response',
+    'ECG Monitoring',
+    'Empathy',
+    'Teamwork',
+    'Punctuality',
+    'Attention to Detail',
+  ],
+  caregiving: [
+    'Personal Hygiene Assistance',
+    'Mobility Support',
+    'Meal Preparation',
+    'Companionship',
+    'Medication Reminders',
+    'Appointment Scheduling',
+    'Dementia Care',
+    'Report Writing',
+    'Empathy',
+    'Patience',
+    'Communication Skills',
+    'Punctuality',
+  ],
+  IT: [
+    'Hardware Troubleshooting',
+    'Software Installation',
+    'Network Setup',
+    'Remote Desktop Support',
+    'Help Desk Ticketing',
+    'OS Administration',
+    'Data Backup & Recovery',
+    'Cybersecurity Basics',
+    'Active Directory',
+    'VPN Configuration',
+    'User Training',
+    'Problem Solving',
+    'Communication Skills',
+    'Teamwork',
+    'Attention to Detail',
+  ],
+  technology: [
+    'Technical Support',
+    'System Administration',
+    'Cloud Platforms',
+    'Database Management',
+    'IT Documentation',
+    'Vendor Management',
+    'Problem Solving',
+    'Communication Skills',
+    'Teamwork',
+  ],
+  software: [
+    'Programming (Python/Java/JS)',
+    'Debugging',
+    'Version Control (Git)',
+    'REST API Development',
+    'Database Design (SQL/NoSQL)',
+    'Unit Testing',
+    'Agile/Scrum',
+    'Code Review',
+    'UI/UX Principles',
+    'CI/CD Pipelines',
+    'Docker & Containers',
+    'Problem Solving',
+    'Communication Skills',
+    'Teamwork',
+    'Attention to Detail',
+  ],
+  general_labor: [
+    'Manual Handling',
+    'Basic Tool Use',
+    'Teamwork',
+    'Loading & Unloading',
+    'Site Cleanup',
+    'Following Instructions',
+    'Physical Fitness',
+    'Time Management',
+    'Safety Awareness',
+    'Punctuality',
+    'Adaptability',
+    'Communication Skills',
+  ],
+  manual_labor: [
+    'Heavy Lifting',
+    'Digging & Excavation',
+    'Equipment Operation',
+    'Outdoor Work Endurance',
+    'Team Collaboration',
+    'Physical Fitness',
+    'Punctuality',
+    'Following Instructions',
+  ],
+  other: [
+    'Communication',
+    'Punctuality',
+    'Teamwork',
+    'Problem Solving',
+    'Time Management',
+    'Attention to Detail',
+    'Adaptability',
+    'Honesty',
+    'Willingness to Learn',
+    'Physical Fitness',
+  ],
+};
+
 // Common job roles
 const COMMON_JOB_ROLES = [
   'Farm Worker',
@@ -123,6 +808,78 @@ const PROVINCES = [
   'Uva',
   'Sabaragamuwa',
 ];
+
+const hasHtmlTags = text => /<\/?(p|h3|ul|li|strong)\b/i.test(text || '');
+
+const toFormattedHtml = raw => {
+  const input = String(raw || '').trim();
+  if (!input) return '';
+  if (hasHtmlTags(input)) return input;
+
+  const normalized = input
+    .replace(/^```(?:html)?/i, '')
+    .replace(/```$/i, '')
+    .replace(/\r/g, '')
+    .trim();
+
+  const lines = normalized
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+  // Lossless markdown-like conversion:
+  // - keeps every line from AI output
+  // - supports bullet lists, bold headings, and paragraphs
+  // - does not drop unrecognized content
+  const htmlParts = [];
+  let inList = false;
+
+  const closeList = () => {
+    if (inList) {
+      htmlParts.push('</ul>');
+      inList = false;
+    }
+  };
+
+  lines.forEach(line => {
+    const cleaned = line.trim();
+    if (!cleaned) return;
+
+    // Bullet line
+    if (/^[-*]\s+/.test(cleaned)) {
+      if (!inList) {
+        htmlParts.push('<ul>');
+        inList = true;
+      }
+      const item = cleaned.replace(/^[-*]\s+/, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      htmlParts.push(`<li>${item}</li>`);
+      return;
+    }
+
+    // Non-bullet line closes any running list
+    closeList();
+
+    // Markdown-style full bold heading line, e.g. **Key Responsibilities:**
+    const headingMatch = cleaned.match(/^\*\*(.+)\*\*$/);
+    if (headingMatch) {
+      const headingText = headingMatch[1].trim().replace(/:$/, '');
+      htmlParts.push(`<h3>${headingText}</h3>`);
+      return;
+    }
+
+    // Plain heading-ish line ending with ":" (e.g., How to Apply:)
+    if (/^[A-Za-z][^<>]{1,80}:$/.test(cleaned)) {
+      htmlParts.push(`<h3>${cleaned.replace(/:$/, '').trim()}</h3>`);
+      return;
+    }
+
+    // Normal paragraph, preserve inline bold
+    const paragraph = cleaned.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    htmlParts.push(`<p>${paragraph}</p>`);
+  });
+
+  closeList();
+  return htmlParts.join('');
+};
 
 // Google Places Autocomplete Component
 const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded }) => {
@@ -251,6 +1008,7 @@ const CreateJob = () => {
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
   const [skillInput, setSkillInput] = useState('');
+  const [skillDropdownOpen, setSkillDropdownOpen] = useState(false);
   const [useMapLocation, setUseMapLocation] = useState(false);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
   const [componentError, setComponentError] = useState(null);
@@ -278,7 +1036,36 @@ const CreateJob = () => {
     endDate: '',
   });
 
+  // Add suggested skill(s) from category
+  const handleAddSuggestedSkill = skill => {
+    if (!skill) return;
+    const s = String(skill).trim();
+    if (!s) return;
+    if (!formData.skillsRequired.includes(s)) {
+      setFormData(prev => ({ ...prev, skillsRequired: [...prev.skillsRequired, s] }));
+    }
+  };
+
+  const handleAddAllSuggested = () => {
+    const suggestions = CATEGORY_SKILLS[formData.category] || [];
+    const toAdd = suggestions.filter(s => !formData.skillsRequired.includes(s));
+    if (toAdd.length === 0) return;
+    setFormData(prev => ({ ...prev, skillsRequired: [...prev.skillsRequired, ...toAdd] }));
+  };
+
+  // Skills autocomplete: filter category skills by current input
+  const skillSuggestions = (() => {
+    const q = skillInput.trim().toLowerCase();
+    if (!q) return [];
+    const pool = CATEGORY_SKILLS[formData.category] || [];
+    return pool
+      .filter(s => s.toLowerCase().includes(q) && !formData.skillsRequired.includes(s))
+      .slice(0, 8);
+  })();
+
   const [errors, setErrors] = useState({});
+  const todayDate = new Date().toISOString().split('T')[0];
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Load Google Maps script
   useEffect(() => {
@@ -500,6 +1287,30 @@ const CreateJob = () => {
     setIsGeneratingDescription(true);
 
     try {
+      const missingFields = [];
+      if (!formData.title?.trim()) missingFields.push('Job Title');
+      if (!formData.category) missingFields.push('Category');
+      if (!formData.jobRole?.trim()) missingFields.push('Job Role');
+      if (!formData.employmentType) missingFields.push('Employment Type');
+      if (!formData.skillsRequired?.length) missingFields.push('Required Skills');
+      if (!formData.salaryAmount || Number(formData.salaryAmount) <= 0)
+        missingFields.push('Salary Amount');
+
+      const hasAddressData = Boolean(
+        formData.location?.fullAddress?.trim() ||
+        formData.location?.district?.trim() ||
+        formData.location?.province?.trim()
+      );
+      if (!hasAddressData) missingFields.push('Location (district/province or map address)');
+
+      if (missingFields.length > 0) {
+        setError(
+          `Details are not enough to generate a good description. Please provide: ${missingFields.join(', ')}.`
+        );
+        scrollToTop();
+        return;
+      }
+
       const result = await generateJobDescription({
         title: formData.title,
         category: formData.category,
@@ -513,15 +1324,17 @@ const CreateJob = () => {
         location: formData.location,
       });
 
-      const generatedDescription = result?.description || '';
+      const generatedDescription = toFormattedHtml(result?.description || '');
       setFormData(prev => ({ ...prev, description: generatedDescription }));
+      const usedTemplate = result?.source === 'template';
       setGenerationMessage(
-        result?.source === 'ai'
-          ? 'Description generated using third-party AI.'
-          : 'Description generated using template fallback (AI key is missing or request failed).'
+        usedTemplate
+          ? `Description generated using template fallback${result?.reason ? ` (${result.reason})` : ''}.`
+          : 'Description generated using Cohere AI.'
       );
     } catch (err) {
       setError(err.message || 'Failed to generate description.');
+      scrollToTop();
     } finally {
       setIsGeneratingDescription(false);
     }
@@ -556,6 +1369,18 @@ const CreateJob = () => {
       newErrors.salaryAmount = 'Salary amount must be greater than 0 if provided';
     }
 
+    if (formData.startDate && formData.startDate < todayDate) {
+      newErrors.startDate = 'Start date cannot be in the past';
+    }
+
+    if (formData.endDate && formData.endDate < todayDate) {
+      newErrors.endDate = 'End date cannot be in the past';
+    }
+
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = 'End date must be the same day or after start date';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -565,6 +1390,7 @@ const CreateJob = () => {
     setError('');
 
     if (!validate()) {
+      scrollToTop();
       return;
     }
 
@@ -749,6 +1575,7 @@ const CreateJob = () => {
       navigate('/employer/my-jobs');
     } catch (err) {
       setError(err.message || 'Failed to create job. Please try again.');
+      scrollToTop();
     } finally {
       setLoading(false);
     }
@@ -1063,35 +1890,110 @@ const CreateJob = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Required Skills
                 </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={skillInput}
-                    onChange={e => setSkillInput(e.target.value)}
-                    onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                    placeholder="e.g., Planting, Harvesting"
-                  />
+                <div className="relative flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={skillInput}
+                      onChange={e => {
+                        setSkillInput(e.target.value);
+                        setSkillDropdownOpen(true);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddSkill();
+                          setSkillDropdownOpen(false);
+                        }
+                        if (e.key === 'Escape') setSkillDropdownOpen(false);
+                      }}
+                      onFocus={() => setSkillDropdownOpen(true)}
+                      onBlur={() => setTimeout(() => setSkillDropdownOpen(false), 150)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                      placeholder={
+                        formData.category
+                          ? 'Type to search or add a skill…'
+                          : 'e.g., Communication, Teamwork'
+                      }
+                    />
+                    {skillDropdownOpen && skillSuggestions.length > 0 && (
+                      <ul className="absolute z-20 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {skillSuggestions.map((s, i) => (
+                          <li
+                            key={i}
+                            onMouseDown={() => {
+                              handleAddSuggestedSkill(s);
+                              setSkillInput('');
+                              setSkillDropdownOpen(false);
+                            }}
+                            className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer"
+                          >
+                            {s}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                   <button
                     type="button"
-                    onClick={handleAddSkill}
+                    onClick={() => {
+                      handleAddSkill();
+                      setSkillDropdownOpen(false);
+                    }}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
                   >
                     <FaPlus className="w-4 h-4" />
                   </button>
                 </div>
+                {/* Suggested skills for selected category */}
+                {Array.isArray(CATEGORY_SKILLS[formData.category]) &&
+                  CATEGORY_SKILLS[formData.category].length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-sm text-gray-600">Suggested skills</div>
+                        <button
+                          type="button"
+                          onClick={handleAddAllSuggested}
+                          className="text-sm text-blue-600 hover:underline"
+                        >
+                          Add all
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {CATEGORY_SKILLS[formData.category].map((sug, i) => {
+                          const already = formData.skillsRequired.includes(sug);
+                          const btnClass = already
+                            ? 'inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-sm opacity-70 cursor-not-allowed'
+                            : 'inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200';
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => handleAddSuggestedSkill(sug)}
+                              disabled={already}
+                              className={btnClass}
+                            >
+                              {sug}
+                              {!already && <span className="ml-2 text-xs">+</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                 {formData.skillsRequired.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {formData.skillsRequired.map((skill, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                        className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
                       >
                         {skill}
                         <button
                           type="button"
                           onClick={() => handleRemoveSkill(skill)}
-                          className="ml-2 text-blue-700 hover:text-blue-900"
+                          className="ml-2 text-green-700 hover:text-green-900"
                         >
                           <FaTimes className="w-3 h-3" />
                         </button>
@@ -1117,6 +2019,7 @@ const CreateJob = () => {
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleChange}
+                  min={todayDate}
                   className={`w-full px-4 py-2 border ${errors.startDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
                 {errors.startDate && (
@@ -1133,9 +2036,14 @@ const CreateJob = () => {
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleChange}
-                  min={formData.startDate}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  min={
+                    formData.startDate && formData.startDate > todayDate
+                      ? formData.startDate
+                      : todayDate
+                  }
+                  className={`w-full px-4 py-2 border ${errors.endDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
+                {errors.endDate && <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>}
               </div>
             </div>
           </div>
@@ -1300,7 +2208,7 @@ const CreateJob = () => {
                 </div>
               </div>
 
-              <div className="min-h-[220px] max-h-[420px] overflow-y-auto">
+              <div className="min-h-[220px]">
                 <EditorContent editor={editor} />
               </div>
             </div>

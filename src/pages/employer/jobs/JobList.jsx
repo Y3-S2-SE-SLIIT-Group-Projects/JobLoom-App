@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {

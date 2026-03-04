@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 
 import DottedBackground from '../../../components/DottedBackground';
 import { FaArrowRight, FaUserCircle, FaChartBar } from 'react-icons/fa';

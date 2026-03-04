@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {
@@ -238,6 +238,7 @@ const EditJob = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const loadJob = async () => {
     try {
@@ -274,6 +275,7 @@ const EditJob = () => {
       }
     } catch (err) {
       setError(err.message || 'Failed to load job');
+      scrollToTop();
       console.error('Error loading job:', err);
     } finally {
       setLoadingJob(false);
@@ -422,53 +424,48 @@ const EditJob = () => {
 
   const validate = () => {
     const newErrors = {};
+    const todayDate = new Date().toISOString().split('T')[0];
 
-    if (!formData.title || formData.title.length < 3) {
-      newErrors.title = 'Title must be at least 3 characters';
-    }
-
-    const textDescription = formData.description.trim();
-    if (!textDescription || textDescription.replace(/<[^>]*>/g, '').trim().length < 20) {
-      newErrors.description = 'Description must be at least 20 characters';
+    // Keep edit validation aligned with Create Job: optional fields,
+    // validate only when a value is provided.
+    if (formData.title && formData.title.length > 0 && formData.title.length < 3) {
+      newErrors.title = 'Title must be at least 3 characters if provided';
     }
 
-    if (!formData.category) {
-      newErrors.category = 'Please select a category';
-    }
-    if (!formData.jobRole) {
-      newErrors.jobRole = 'Please enter or select a job role';
-    }
-    if (!formData.employmentType) {
-      newErrors.employmentType = 'Please select an employment type';
-    }
-
-    if (!useMapLocation) {
-      if (!formData.location.village) {
-        newErrors['location.village'] = 'Village is required';
-      }
-      if (!formData.location.district) {
-        newErrors['location.district'] = 'District is required';
-      }
-      if (!formData.location.province) {
-        newErrors['location.province'] = 'Province is required';
-      }
-    } else {
-      if (!formData.location.fullAddress) {
-        newErrors.location = 'Please select a location from the search results';
-      }
+    const textDescription = (formData.description || '').trim();
+    if (
+      textDescription &&
+      textDescription.replace(/<[^>]*>/g, '').trim().length > 0 &&
+      textDescription.replace(/<[^>]*>/g, '').trim().length < 20
+    ) {
+      newErrors.description = 'Description must be at least 20 characters if provided';
     }
 
-    if (!formData.salaryAmount || formData.salaryAmount <= 0) {
-      newErrors.salaryAmount = 'Please enter a valid salary amount';
+    if (formData.salaryAmount && formData.salaryAmount <= 0) {
+      newErrors.salaryAmount = 'Salary amount must be greater than 0 if provided';
     }
-    if (!formData.positions || formData.positions < 1 || formData.positions > 100) {
-      newErrors.positions = 'Positions must be between 1 and 100';
+    if (formData.positions && (formData.positions < 1 || formData.positions > 100)) {
+      newErrors.positions = 'Positions must be between 1 and 100 if provided';
     }
-    if (!formData.startDate) {
-      newErrors.startDate = 'Start date is required';
+
+    if (formData.startDate && formData.startDate < todayDate) {
+      newErrors.startDate = 'Start date cannot be in the past';
+    }
+    if (formData.endDate && formData.endDate < todayDate) {
+      newErrors.endDate = 'End date cannot be in the past';
+    }
+    if (formData.startDate && formData.endDate && formData.endDate < formData.startDate) {
+      newErrors.endDate = 'End date must be the same day or after start date';
+    }
+
+    if (useMapLocation && formData.location.fullAddress && !formData.location.coordinates) {
+      newErrors.location = 'Please select a location from the search results';
     }
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      scrollToTop();
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -482,14 +479,18 @@ const EditJob = () => {
 
     setLoading(true);
     try {
-      const submitData = {
+      const rawSubmitData = {
         ...formData,
         location: useMapLocation
           ? {
-              village: formData.location.fullAddress.split(',')[0] || 'N/A',
-              district: formData.location.fullAddress.split(',')[1]?.trim() || 'N/A',
-              province: formData.location.province || 'Western',
-              fullAddress: formData.location.fullAddress,
+              village: formData.location.fullAddress
+                ? formData.location.fullAddress.split(',')[0] || ''
+                : '',
+              district: formData.location.fullAddress
+                ? formData.location.fullAddress.split(',')[1]?.trim() || ''
+                : '',
+              province: formData.location.province || '',
+              fullAddress: formData.location.fullAddress || '',
               coordinates: formData.location.coordinates,
             }
           : {
@@ -498,10 +499,42 @@ const EditJob = () => {
             },
       };
 
-      await updateJob(id, submitData);
+      // Remove empty optional fields so backend optional validators are not triggered by ""
+      const cleanedLocation = {};
+      const rawLocation = rawSubmitData.location || {};
+      if (rawLocation.village?.trim()) cleanedLocation.village = rawLocation.village.trim();
+      if (rawLocation.district?.trim()) cleanedLocation.district = rawLocation.district.trim();
+      if (rawLocation.province?.trim()) cleanedLocation.province = rawLocation.province.trim();
+      if (rawLocation.fullAddress?.trim())
+        cleanedLocation.fullAddress = rawLocation.fullAddress.trim();
+      if (rawLocation.coordinates) cleanedLocation.coordinates = rawLocation.coordinates;
+
+      const cleanedSubmitData = {};
+      Object.entries(rawSubmitData).forEach(([key, value]) => {
+        if (key === 'location') {
+          if (Object.keys(cleanedLocation).length > 0) {
+            cleanedSubmitData.location = cleanedLocation;
+          }
+          return;
+        }
+
+        if (key === 'skillsRequired') {
+          if (Array.isArray(value) && value.length > 0) {
+            cleanedSubmitData.skillsRequired = value;
+          }
+          return;
+        }
+
+        if (value !== '' && value !== null && value !== undefined) {
+          cleanedSubmitData[key] = value;
+        }
+      });
+
+      await updateJob(id, cleanedSubmitData);
       navigate(`/employer/jobs/${id}`);
     } catch (err) {
       setError(err.message || 'Failed to update job. Please try again.');
+      scrollToTop();
     } finally {
       setLoading(false);
     }
@@ -540,7 +573,7 @@ const EditJob = () => {
           {/* Basic Information */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Briefcase className="w-5 h-5 mr-2 text-green-600" />
+              <FaBriefcase className="w-5 h-5 mr-2 text-green-600" />
               Basic Information
             </h2>
             <div className="space-y-4">

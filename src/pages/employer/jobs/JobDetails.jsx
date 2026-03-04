@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 import parse from 'html-react-parser';
 
 import DottedBackground from '../../../components/DottedBackground';
@@ -268,9 +268,15 @@ const JobDetails = () => {
         </div>
 
         {/* Job Description */}
-        <div className="mb-8">
-          <div className="prose prose-lg max-w-none text-gray-700">
-            {parse(job.description || 'No description provided.')}
+        <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <FaFileAlt className="w-5 h-5 text-gray-500" />
+            JOB DESCRIPTION
+          </h2>
+          <div className="border-t border-gray-100 pt-4">
+            <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+              {job.description ? parse(job.description) : 'No description provided.'}
+            </div>
           </div>
         </div>
 
