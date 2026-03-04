@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import {
   FaPhone,
@@ -24,14 +24,19 @@ const PhoneStep = ({ onNext, loading }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (!phone.trim()) {
-      setError(t('errors.phone_required', 'Phone number is required'));
+      setError(t('errors.phone_required'));
+      return;
+    }
+    const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
+    if (!phoneRegex.test(phone.trim().replace(/\s/g, ''))) {
+      setError(t('errors.invalid_phone'));
       return;
     }
     try {
       await forgotPassword(phone.trim());
       onNext(phone.trim());
     } catch (err) {
-      setError(err.message || t('errors.otp_send_failed', 'Failed to send OTP'));
+      setError(err.message || t('errors.otp_send_failed'));
     }
   };
 
@@ -129,14 +134,14 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
     e.preventDefault();
     const otpString = otp.join('');
     if (otpString.length < 6) {
-      setError(t('auth.error_otp_incomplete'));
+      setError(t('errors.otp_required'));
       return;
     }
     try {
       const data = await verifyPasswordReset(phone, otpString);
       onNext(data.resetToken);
     } catch (err) {
-      setError(err.message || t('errors.otp_failed', 'OTP verification failed'));
+      setError(err.message || t('errors.otp_failed'));
     }
   };
 
@@ -230,7 +235,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
       setDone(true);
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.message || t('errors.reset_failed', 'Password reset failed'));
+      setError(err.message || t('errors.reset_failed'));
     }
   };
 
@@ -243,12 +248,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
           </div>
         </div>
         <h2 className="text-2xl font-bold text-[#2B373F]">{t('auth.password_reset_success')}</h2>
-        <p className="text-[#516876]">
-          {t(
-            'auth.password_reset_success_desc',
-            'Your password has been updated. Redirecting to login...'
-          )}
-        </p>
+        <p className="text-[#516876]">{t('auth.password_reset_success_desc')}</p>
       </div>
     );
   }
@@ -284,7 +284,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
               setPassword(e.target.value);
               setError('');
             }}
-            placeholder={t('errors.password_min_length', 'Min. 6 characters')}
+            placeholder={t('errors.password_min_length')}
             className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
           />
           <button
