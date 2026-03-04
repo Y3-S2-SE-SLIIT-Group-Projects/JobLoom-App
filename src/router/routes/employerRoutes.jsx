@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 import ComingSoon from '../../pages/ComingSoon';
 
 const EmployerDashboard = lazy(() => import('../../pages/employer/jobs/EmployerDashboard'));
@@ -9,13 +10,62 @@ const EditJob = lazy(() => import('../../pages/employer/jobs/EditJob'));
 const Analytics = lazy(() => import('../../pages/employer/jobs/Analytics'));
 
 const employerRoutes = [
-  { path: 'employer/dashboard', element: <EmployerDashboard /> },
-  { path: 'employer/create-job', element: <CreateJob /> },
-  { path: 'employer/my-jobs', element: <JobList /> },
-  { path: 'employer/jobs/:id', element: <JobDetails /> },
-  { path: 'employer/jobs/:id/edit', element: <EditJob /> },
-  { path: 'employer/analytics', element: <Analytics /> },
-  { path: 'employer/applications', element: <ComingSoon label="Applications" /> },
+  {
+    path: 'employer/dashboard',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <EmployerDashboard />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/create-job',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <CreateJob />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/my-jobs',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <JobList />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/jobs/:id',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <JobDetails />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/jobs/:id/edit',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <EditJob />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/analytics',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <Analytics />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/applications',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <ComingSoon label="Applications" />
+      </ProtectedRoute>
+    ),
+  },
 ];
 
 export default employerRoutes;
