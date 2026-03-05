@@ -148,9 +148,6 @@ const Navbar = () => {
                           }}
                         />
                       ) : null}
-                      <FaUserCircle
-                        className={`w-5 h-5 text-[#516876] ${currentUser.profileImage ? 'hidden' : 'block'}`}
-                      />
                       <span className="font-medium text-[#2B373F] max-w-[120px] truncate text-sm">
                         {currentUser.role === 'employer'
                           ? currentUser.companyName || currentUser.firstName
