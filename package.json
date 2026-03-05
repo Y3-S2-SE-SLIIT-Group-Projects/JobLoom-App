@@ -11,7 +11,8 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "preview": "vite preview",
     "test": "echo 'Tests will be added soon' && exit 0",
-    "test:e2e": "echo 'E2E tests will be added soon' && exit 0",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "lighthouse": "npx @lhci/cli@0.15.1 autorun --collect.staticDistDir=dist",
     "lighthouse:mobile": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=mobile",
     "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.58.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
