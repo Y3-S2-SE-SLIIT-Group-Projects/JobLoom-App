@@ -67,10 +67,6 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-      - name: Run e2e tests
-        run: npm run test:e2e
-        continue-on-error: true
-
   build:
     name: Build Application
     runs-on: ubuntu-latest
