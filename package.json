@@ -10,9 +10,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "preview": "vite preview",
-    "test": "echo 'Tests will be added soon' && exit 0",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
     "lighthouse": "npx @lhci/cli@0.15.1 autorun --collect.staticDistDir=dist",
     "lighthouse:mobile": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=mobile",
     "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
@@ -53,7 +53,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@playwright/test": "^1.58.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
@@ -66,6 +65,8 @@
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.19",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "@playwright/test": "^1.50.1",
+    "dotenv": "^16.4.7"
   }
 }

@@ -23,7 +23,7 @@ test.describe('Login Functionality (Member 1)', () => {
 
     // 2. Fill in valid credentials
     // IMPORTANT: Replace these with actual test account credentials
-    await page.fill('input[name="email"]', 'thilinarangana@gmail.com');
+    await page.fill('input[name="email"]', 'kavishigodage225@gmail.com');
     await page.fill('input[name="password"]', '123456');
 
     // 3. Click the sign-in button
