@@ -16,6 +16,8 @@ const JobApplicationsList = lazy(
 const ApplicationDetailPage = lazy(
   () => import('../../pages/employer/applications/ApplicationDetailPage')
 );
+const CalendlySettings = lazy(() => import('../../pages/employer/settings/CalendlySettings'));
+const CalendlyCallback = lazy(() => import('../../pages/auth/CalendlyCallback'));
 
 const employerRoutes = [
   {
@@ -87,6 +89,22 @@ const employerRoutes = [
     element: (
       <ProtectedRoute allowedRoles={['employer']}>
         <ApplicationDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'employer/settings/calendly',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <CalendlySettings />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: 'auth/calendly/callback',
+    element: (
+      <ProtectedRoute allowedRoles={['employer']}>
+        <CalendlyCallback />
       </ProtectedRoute>
     ),
   },

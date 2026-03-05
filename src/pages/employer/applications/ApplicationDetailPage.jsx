@@ -16,6 +16,7 @@ import ApplicationReviewsPanel from '../../../components/reviews/ApplicationRevi
 import DottedBackground from '../../../components/DottedBackground';
 import AlertBanner from '../../../components/ui/AlertBanner';
 import Spinner from '../../../components/ui/Spinner';
+import CalendlyPopupButton from '../../../components/calendly/CalendlyPopupButton';
 import {
   FaArrowLeft,
   FaEnvelope,
@@ -24,7 +25,9 @@ import {
   FaLink,
   FaSave,
   FaPaperPlane,
+  FaDownload,
 } from 'react-icons/fa';
+import { getImageUrl } from '../../../utils/imageUrls';
 
 // ── Status transition rules (match backend) ─────────────────────────────────────
 
@@ -296,21 +299,28 @@ const ApplicationDetailPage = () => {
           </section>
         )}
 
-        {/* Resume link */}
-        {application.resumeUrl && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Resume</h2>
-            <a
-              href={application.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium"
-            >
-              <FaLink className="w-4 h-4" />
-              View resume
-            </a>
-          </section>
-        )}
+        {/* Resume / CV */}
+        {application.resumeUrl &&
+          (() => {
+            const isExternal = application.resumeUrl.startsWith('http');
+            const resolvedUrl = isExternal
+              ? application.resumeUrl
+              : getImageUrl(application.resumeUrl);
+            return (
+              <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Resume</h2>
+                <a
+                  href={resolvedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium"
+                >
+                  {isExternal ? <FaLink className="w-4 h-4" /> : <FaDownload className="w-4 h-4" />}
+                  {isExternal ? 'View resume' : 'Download CV'}
+                </a>
+              </section>
+            );
+          })()}
 
         {/* Status update & employer notes */}
         <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -374,28 +384,42 @@ const ApplicationDetailPage = () => {
 
             <AlertBanner type="error" message={scheduleError} />
 
-            <form onSubmit={handleScheduleInterview} className="flex flex-wrap items-end gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Interview date & time
-                </label>
-                <input
-                  type="datetime-local"
-                  value={interviewDateInput}
-                  onChange={e => setInterviewDateInput(e.target.value)}
-                  min={new Date().toISOString().slice(0, 16)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] outline-none text-sm"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={scheduleLoading}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#2CD2BD] text-white rounded-lg hover:bg-[#25b8a5] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {scheduleLoading ? <Spinner size="sm" /> : <FaPaperPlane className="w-4 h-4" />}
-                Schedule
-              </button>
-            </form>
+            {/* Calendly popup (shown when employer has Calendly connected) */}
+            <div className="mb-5">
+              <CalendlyPopupButton
+                inviteeName={getApplicantName()}
+                inviteeEmail={getApplicantEmail()}
+              />
+            </div>
+
+            {/* Manual fallback scheduler */}
+            <div className="border-t border-gray-100 pt-5">
+              <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-medium">
+                Or set a date manually
+              </p>
+              <form onSubmit={handleScheduleInterview} className="flex flex-wrap items-end gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Interview date & time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={interviewDateInput}
+                    onChange={e => setInterviewDateInput(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] outline-none text-sm"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={scheduleLoading}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#2CD2BD] text-white rounded-lg hover:bg-[#25b8a5] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {scheduleLoading ? <Spinner size="sm" /> : <FaPaperPlane className="w-4 h-4" />}
+                  Schedule
+                </button>
+              </form>
+            </div>
 
             {application.interviewDate && (
               <p className="mt-3 text-sm text-gray-600">

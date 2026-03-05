@@ -5,7 +5,7 @@ import { useJobs } from '../../../hooks/useJobs';
 import { loadAllJobStats, selectJobStatsMap } from '../../../store/slices/applicationSlice';
 
 import DottedBackground from '../../../components/DottedBackground';
-import { FaArrowRight, FaUserCircle, FaChartBar } from 'react-icons/fa';
+import { FaArrowRight, FaUserCircle, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 import createJobImg from '../../../assets/images/create-job.png';
 import myJobsImg from '../../../assets/images/my-jobs.png';
 import applicationListImg from '../../../assets/images/application-list.png';
@@ -17,7 +17,17 @@ const EmployerDashboard = () => {
   const totalApplications = useMemo(() => {
     return Object.values(jobStatsMap).reduce((sum, stats) => {
       if (!stats || typeof stats !== 'object') return sum;
-      return sum + Object.values(stats).reduce((s, n) => s + (typeof n === 'number' ? n : 0), 0);
+      // Backend returns stats.total; avoid double-counting by not summing all values
+      if (typeof stats.total === 'number') return sum + stats.total;
+      const statusKeys = [
+        'pending',
+        'reviewed',
+        'shortlisted',
+        'accepted',
+        'rejected',
+        'withdrawn',
+      ];
+      return sum + statusKeys.reduce((s, k) => s + (stats[k] || 0), 0);
     }, 0);
   }, [jobStatsMap]);
 
@@ -97,6 +107,15 @@ const EmployerDashboard = () => {
       borderColor: 'border-l-[#516876]',
       linkColor: 'text-[#516876]',
       link: '/profile',
+    },
+    {
+      title: 'Calendly',
+      description: 'Connect Calendly to schedule interviews seamlessly.',
+      icon: FaCalendarAlt,
+      color: 'text-[#2CD2BD]',
+      borderColor: 'border-l-[#2CD2BD]',
+      linkColor: 'text-[#2CD2BD]',
+      link: '/employer/settings/calendly',
     },
   ];
 

@@ -13,6 +13,7 @@ const INITIAL_FORM = {
   jobId: '',
   coverLetter: '',
   resumeUrl: '',
+  selectedCvId: '',
 };
 
 /**
@@ -41,7 +42,11 @@ const useApplyForm = (defaults = {}) => {
 
     const payload = { jobId: form.jobId };
     if (form.coverLetter.trim()) payload.coverLetter = form.coverLetter.trim();
-    if (form.resumeUrl.trim()) payload.resumeUrl = form.resumeUrl.trim();
+    if (form.selectedCvId) {
+      payload.cvId = form.selectedCvId;
+    } else if (form.resumeUrl.trim()) {
+      payload.resumeUrl = form.resumeUrl.trim();
+    }
 
     return dispatch(submitApplication(payload));
   };

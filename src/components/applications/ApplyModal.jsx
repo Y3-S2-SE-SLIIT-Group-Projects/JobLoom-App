@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { FaTimes, FaCheckCircle, FaPaperPlane } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { FaTimes, FaCheckCircle, FaPaperPlane, FaFileAlt, FaLink } from 'react-icons/fa';
 import useApplyForm from '../../hooks/useApplyForm';
 import AlertBanner from '../ui/AlertBanner';
 import Spinner from '../ui/Spinner';
@@ -18,6 +19,7 @@ import Spinner from '../ui/Spinner';
 const ApplyModal = ({ isOpen, onClose, jobId, jobTitle = '', onSuccess }) => {
   const {
     form,
+    setField,
     handleChange,
     handleSubmit,
     resetForm,
@@ -25,6 +27,9 @@ const ApplyModal = ({ isOpen, onClose, jobId, jobTitle = '', onSuccess }) => {
     submitError,
     submittedApplication,
   } = useApplyForm({ jobId });
+
+  const userCvs = useSelector(state => state.user.currentUser?.cvs) || [];
+  const hasCvs = userCvs.length > 0;
 
   const succeeded = Boolean(submittedApplication);
 
@@ -124,25 +129,89 @@ const ApplyModal = ({ isOpen, onClose, jobId, jobTitle = '', onSuccess }) => {
                 </p>
               </div>
 
-              {/* Resume URL */}
+              {/* CV / Resume Selection */}
               <div>
-                <label
-                  className="block mb-1 text-sm font-semibold text-gray-700"
-                  htmlFor="apply-resumeUrl"
-                >
-                  Resume Link <span className="font-normal text-gray-400">(optional)</span>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">
+                  Resume / CV <span className="font-normal text-gray-400">(optional)</span>
                 </label>
-                <input
-                  id="apply-resumeUrl"
-                  name="resumeUrl"
-                  type="url"
-                  placeholder="https://drive.google.com/…"
-                  value={form.resumeUrl}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#6794D1]"
-                />
+
+                {hasCvs && (
+                  <div className="space-y-2 mb-3">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Select from your uploaded CVs
+                    </p>
+                    {userCvs.map(cv => (
+                      <label
+                        key={cv._id}
+                        className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                          form.selectedCvId === cv._id
+                            ? 'border-[#2CD2BD] bg-[#2CD2BD]/5'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="cvSelection"
+                          value={cv._id}
+                          checked={form.selectedCvId === cv._id}
+                          onChange={() => {
+                            setField('selectedCvId', cv._id);
+                            setField('resumeUrl', '');
+                          }}
+                          className="accent-[#2CD2BD]"
+                        />
+                        <FaFileAlt className="w-4 h-4 text-[#6794D1] shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-gray-800 truncate">{cv.name}</p>
+                          <p className="text-xs text-gray-400">
+                            Uploaded {new Date(cv.createdAt).toLocaleDateString()}
+                            {cv.isPrimary && (
+                              <span className="ml-2 text-[#2CD2BD] font-medium">Primary</span>
+                            )}
+                          </p>
+                        </div>
+                      </label>
+                    ))}
+
+                    {form.selectedCvId && (
+                      <button
+                        type="button"
+                        onClick={() => setField('selectedCvId', '')}
+                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        Clear selection
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {hasCvs && (
+                  <div className="flex items-center gap-3 my-3">
+                    <div className="flex-1 h-px bg-gray-200" />
+                    <span className="text-xs text-gray-400">or paste a link</span>
+                    <div className="flex-1 h-px bg-gray-200" />
+                  </div>
+                )}
+
+                <div className="relative">
+                  <FaLink className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <input
+                    id="apply-resumeUrl"
+                    name="resumeUrl"
+                    type="url"
+                    placeholder="https://drive.google.com/…"
+                    value={form.resumeUrl}
+                    onChange={e => {
+                      handleChange(e);
+                      if (e.target.value) setField('selectedCvId', '');
+                    }}
+                    className="w-full pl-9 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#6794D1]"
+                  />
+                </div>
                 <p className="mt-1 text-xs text-gray-400">
-                  Paste a link to your resume (Google Drive, Dropbox, etc.)
+                  {hasCvs
+                    ? 'Or paste an external link (Google Drive, Dropbox, etc.)'
+                    : 'Paste a link to your resume (Google Drive, Dropbox, etc.)'}
                 </p>
               </div>
             </div>

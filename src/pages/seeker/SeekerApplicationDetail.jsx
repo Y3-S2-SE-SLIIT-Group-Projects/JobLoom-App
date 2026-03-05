@@ -25,7 +25,9 @@ import {
   FaMapMarkerAlt,
   FaStickyNote,
   FaExternalLinkAlt,
+  FaDownload,
 } from 'react-icons/fa';
+import { getImageUrl } from '../../utils/imageUrls';
 
 // ── Status timeline dot colors ──────────────────────────────────────────────────
 
@@ -318,20 +320,31 @@ const SeekerApplicationDetail = () => {
               </div>
             )}
 
-            {application.resumeUrl && (
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Resume</p>
-                <a
-                  href={application.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium text-sm"
-                >
-                  <FaLink className="w-4 h-4" />
-                  View Resume
-                </a>
-              </div>
-            )}
+            {application.resumeUrl &&
+              (() => {
+                const isExternal = application.resumeUrl.startsWith('http');
+                const resolvedUrl = isExternal
+                  ? application.resumeUrl
+                  : getImageUrl(application.resumeUrl);
+                return (
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-2">Resume</p>
+                    <a
+                      href={resolvedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium text-sm"
+                    >
+                      {isExternal ? (
+                        <FaLink className="w-4 h-4" />
+                      ) : (
+                        <FaDownload className="w-4 h-4" />
+                      )}
+                      {isExternal ? 'View Resume' : 'Download CV'}
+                    </a>
+                  </div>
+                );
+              })()}
           </div>
         </section>
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 import {
   loadAllJobStats,
   selectJobStatsMap,
@@ -64,7 +64,10 @@ const EmployerApplications = () => {
 
   const getTotalApplicants = stats => {
     if (!stats) return 0;
-    return Object.values(stats).reduce((sum, n) => sum + (typeof n === 'number' ? n : 0), 0);
+    // Backend returns stats.total; avoid double-counting by not summing all values
+    if (typeof stats.total === 'number') return stats.total;
+    const statusKeys = ['pending', 'reviewed', 'shortlisted', 'accepted', 'rejected', 'withdrawn'];
+    return statusKeys.reduce((sum, k) => sum + (stats[k] || 0), 0);
   };
 
   const isLoading = jobsLoading || statsLoading;
@@ -167,16 +170,18 @@ const EmployerApplications = () => {
                       {/* Stats pills */}
                       {stats && total > 0 ? (
                         <div className="flex flex-wrap gap-2 mt-3">
-                          {Object.entries(stats).map(([status, count]) =>
-                            count > 0 ? (
-                              <span
-                                key={status}
-                                className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${STAT_COLORS[status] || 'text-gray-600 bg-gray-100'}`}
-                              >
-                                {count} {status}
-                              </span>
-                            ) : null
-                          )}
+                          {Object.entries(stats)
+                            .filter(([status]) => status !== 'total')
+                            .map(([status, count]) =>
+                              count > 0 ? (
+                                <span
+                                  key={status}
+                                  className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${STAT_COLORS[status] || 'text-gray-600 bg-gray-100'}`}
+                                >
+                                  {count} {status}
+                                </span>
+                              ) : null
+                            )}
                         </div>
                       ) : (
                         <p className="text-xs text-gray-400 mt-3">No applications yet</p>

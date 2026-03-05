@@ -97,7 +97,10 @@ const JobList = () => {
   const getApplicantCount = jobId => {
     const stats = jobStatsMap[jobId];
     if (!stats || typeof stats !== 'object') return 0;
-    return Object.values(stats).reduce((s, n) => s + (typeof n === 'number' ? n : 0), 0);
+    // Backend returns stats.total; avoid double-counting by not summing all values
+    if (typeof stats.total === 'number') return stats.total;
+    const statusKeys = ['pending', 'reviewed', 'shortlisted', 'accepted', 'rejected', 'withdrawn'];
+    return statusKeys.reduce((s, k) => s + (stats[k] || 0), 0);
   };
 
   const getJobTypeColor = type => {

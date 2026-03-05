@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useJobs } from '../contexts/JobContext';
+import { useJobs } from '../hooks/useJobs';
 import { useUser } from '../hooks/useUser';
 import {
   loadMyApplications,

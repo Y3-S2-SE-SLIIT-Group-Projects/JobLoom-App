@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useJobs } from '../../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 import {
   loadJobApplications,
   loadJobStats,
@@ -108,7 +108,10 @@ const JobApplicationsList = () => {
 
   const totalAll = useMemo(() => {
     if (!stats) return 0;
-    return Object.values(stats).reduce((s, n) => s + (typeof n === 'number' ? n : 0), 0);
+    // Backend returns stats.total; avoid double-counting by not summing all values
+    if (typeof stats.total === 'number') return stats.total;
+    const statusKeys = ['pending', 'reviewed', 'shortlisted', 'accepted', 'rejected', 'withdrawn'];
+    return statusKeys.reduce((s, k) => s + (stats[k] || 0), 0);
   }, [stats]);
 
   const getStatCount = status => {
