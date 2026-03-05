@@ -180,6 +180,18 @@ const Navbar = () => {
             /* Public Nav */
             <div className="flex items-center gap-4">
               <LanguageSwitcher />
+              {currentUser?.role === 'job_seeker' && (
+                <Link
+                  to="/my-applications"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive('/my-applications')
+                      ? 'text-[#6794D1] border-b-2 border-[#6794D1] pb-1'
+                      : 'text-[#516876] hover:text-[#6794D1]'
+                  }`}
+                >
+                  {t('navbar.my_applications')}
+                </Link>
+              )}
               <Link
                 to="/register?role=employer"
                 className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
@@ -239,6 +251,18 @@ const Navbar = () => {
               <Link to="/jobs" className="px-3 py-2 text-sm text-[#516876] hover:text-[#6794D1]">
                 {t('navbar.browse_jobs')}
               </Link>
+              {currentUser?.role === 'job_seeker' && (
+                <Link
+                  to="/my-applications"
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive('/my-applications')
+                      ? 'text-[#6794D1] border-b-2 border-[#6794D1] pb-1'
+                      : 'text-[#516876] hover:text-[#6794D1]'
+                  }`}
+                >
+                  {t('navbar.my_applications')}
+                </Link>
+              )}
               {currentUser ? (
                 <div className="flex items-center gap-2">
                   <Link

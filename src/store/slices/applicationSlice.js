@@ -43,7 +43,19 @@ export const withdrawApplication = createAsyncThunk(
   'applications/withdraw',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const { data: res } = await applicationApi.withdraw(id, data);
+      await applicationApi.withdraw(id, data);
+      return { id, withdrawalReason: data?.withdrawalReason };
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const updateApplicationNotes = createAsyncThunk(
+  'applications/updateNotes',
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const { data: res } = await applicationApi.updateNotes(id, data);
       return res.data?.application ?? res.data ?? res;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -143,6 +155,7 @@ const initialState = {
     updateStatus: false,
     scheduleInterview: false,
     withdraw: false,
+    updateNotes: false,
   },
 
   error: {
@@ -155,9 +168,12 @@ const initialState = {
     updateStatus: null,
     scheduleInterview: null,
     withdraw: null,
+    updateNotes: null,
   },
 
   lastSubmittedApplication: null,
+  appliedJobIds: [],
+  appliedJobIdsLoaded: false,
 };
 
 // ─── Slice ─────────────────────────────────────────────────────────────────────
@@ -186,6 +202,10 @@ const applicationSlice = createSlice({
       .addCase(submitApplication.fulfilled, (state, { payload }) => {
         state.loading.submit = false;
         state.lastSubmittedApplication = payload;
+        const newJobId = payload?.jobId?._id ?? payload?.jobId;
+        if (newJobId && !state.appliedJobIds.includes(newJobId)) {
+          state.appliedJobIds.push(newJobId);
+        }
       })
       .addCase(submitApplication.rejected, (state, { payload }) => {
         state.loading.submit = false;
@@ -198,10 +218,19 @@ const applicationSlice = createSlice({
         state.loading.myApplications = true;
         state.error.myApplications = null;
       })
-      .addCase(loadMyApplications.fulfilled, (state, { payload }) => {
+      .addCase(loadMyApplications.fulfilled, (state, { payload, meta }) => {
         state.loading.myApplications = false;
         state.myApplications = payload.applications ?? [];
         state.pagination = payload.pagination ?? null;
+        // Update appliedJobIds only when fetching a large unfiltered set (for "already applied" persistence)
+        const hasNoStatusFilter = !meta?.arg?.status || meta.arg.status === 'all';
+        const isLargeFetch = (meta?.arg?.limit ?? 0) >= 200;
+        if (hasNoStatusFilter && isLargeFetch) {
+          state.appliedJobIds = (payload.applications ?? [])
+            .map(a => (typeof a.jobId === 'object' ? a.jobId._id : a.jobId))
+            .filter(Boolean);
+          state.appliedJobIdsLoaded = true;
+        }
       })
       .addCase(loadMyApplications.rejected, (state, { payload }) => {
         state.loading.myApplications = false;
@@ -231,9 +260,17 @@ const applicationSlice = createSlice({
       })
       .addCase(withdrawApplication.fulfilled, (state, { payload }) => {
         state.loading.withdraw = false;
-        state.myApplications = state.myApplications.map(a => (a._id === payload._id ? payload : a));
-        if (state.currentApplication?._id === payload._id) {
-          state.currentApplication = payload;
+        state.myApplications = state.myApplications.map(a =>
+          a._id === payload.id
+            ? { ...a, status: 'withdrawn', withdrawalReason: payload.withdrawalReason }
+            : a
+        );
+        if (state.currentApplication?._id === payload.id) {
+          state.currentApplication = {
+            ...state.currentApplication,
+            status: 'withdrawn',
+            withdrawalReason: payload.withdrawalReason,
+          };
         }
       })
       .addCase(withdrawApplication.rejected, (state, { payload }) => {
@@ -329,6 +366,24 @@ const applicationSlice = createSlice({
         state.loading.scheduleInterview = false;
         state.error.scheduleInterview = payload;
       });
+
+    // ── updateApplicationNotes ──
+    builder
+      .addCase(updateApplicationNotes.pending, state => {
+        state.loading.updateNotes = true;
+        state.error.updateNotes = null;
+      })
+      .addCase(updateApplicationNotes.fulfilled, (state, { payload }) => {
+        state.loading.updateNotes = false;
+        state.myApplications = state.myApplications.map(a => (a._id === payload._id ? payload : a));
+        if (state.currentApplication?._id === payload._id) {
+          state.currentApplication = payload;
+        }
+      })
+      .addCase(updateApplicationNotes.rejected, (state, { payload }) => {
+        state.loading.updateNotes = false;
+        state.error.updateNotes = payload;
+      });
   },
 });
 
@@ -348,5 +403,9 @@ export const selectJobAppsPagination = state => state.applications.jobAppsPagina
 export const selectLastSubmittedApplication = state => state.applications.lastSubmittedApplication;
 export const selectApplicationLoading = key => state => state.applications.loading[key];
 export const selectApplicationError = key => state => state.applications.error[key];
+export const selectAppliedJobIds = state => state.applications.appliedJobIds;
+export const selectAppliedJobIdsLoaded = state => state.applications.appliedJobIdsLoaded;
+export const selectHasAppliedToJob = jobId => state =>
+  state.applications.appliedJobIds.includes(jobId);
 
 export default applicationSlice.reducer;

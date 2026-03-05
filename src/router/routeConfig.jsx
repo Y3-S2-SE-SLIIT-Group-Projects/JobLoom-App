@@ -4,6 +4,7 @@ import NotFound from '../pages/NotFound';
 import publicRoutes from './routes/publicRoutes';
 import userRoutes from './routes/userRoutes';
 import employerRoutes from './routes/employerRoutes';
+import seekerRoutes from './routes/seekerRoutes';
 import reviewRoutes from './routes/reviewRoutes';
 
 /**
@@ -19,6 +20,7 @@ const routeConfig = [
       ...publicRoutes,
       ...userRoutes,
       ...employerRoutes,
+      ...seekerRoutes,
       ...reviewRoutes,
       { path: '*', element: <NotFound /> },
     ],
