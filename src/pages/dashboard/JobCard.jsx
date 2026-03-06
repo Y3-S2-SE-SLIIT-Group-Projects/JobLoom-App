@@ -8,7 +8,7 @@ const JobCard = ({ job }) => {
 
   const handleClick = () => {
     if (!job || !job._id) return;
-    navigate(`/employer/jobs/${job._id}?public=true`);
+    navigate(`/jobs/${job._id}`);
   };
 
   const getCompanyName = () => {
