@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import DottedBackground from '../../components/DottedBackground';
 import { useTranslation } from 'react-i18next';
-import { useJobs } from '../../contexts/JobContext';
+import { useJobs } from '../../hooks/useJobs';
+import { useUser } from '../../hooks/useUser';
 import JobCard from './JobCard';
 import {
   FaSearch,
@@ -185,9 +186,13 @@ const SALARY_RANGES = [
 // Main Dashboard component
 // ---------------------------------------------------------------
 const Dashboard = () => {
-  const { fetchJobs, jobs, loading } = useJobs();
+  const { fetchJobs, fetchRecommendedJobs, jobs, loading, pagination } = useJobs();
+  const { currentUser } = useUser();
   const { t } = useTranslation();
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
+  const isJobSeeker = currentUser?.role === 'job_seeker';
+  const shouldShowRecommendations = isLoggedIn && isJobSeeker;
 
   // Ref to scroll to the search/results section
   const searchRef = useRef(null);
@@ -208,6 +213,9 @@ const Dashboard = () => {
   const [nearbyJobs, setNearbyJobs] = useState(null);
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [nearbyError, setNearbyError] = useState('');
+  const [recommendedJobs, setRecommendedJobs] = useState([]);
+  const [recommendedLoading, setRecommendedLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Google Maps loader
   useEffect(() => {
@@ -222,14 +230,57 @@ const Dashboard = () => {
 
   // Initial load
   useEffect(() => {
-    fetchJobs();
+    fetchJobs({ status: 'open' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load recommendations only for logged-in job seekers
+  useEffect(() => {
+    if (!shouldShowRecommendations) {
+      setRecommendedJobs([]);
+      setRecommendedLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    const loadRecommendations = async () => {
+      setRecommendedLoading(true);
+      try {
+        const recommendationData = await fetchRecommendedJobs();
+        const recommendations = Array.isArray(recommendationData?.jobs)
+          ? recommendationData.jobs
+          : Array.isArray(recommendationData)
+            ? recommendationData
+            : [];
+
+        if (isMounted) {
+          setRecommendedJobs(recommendations);
+        }
+      } catch {
+        if (isMounted) {
+          setRecommendedJobs([]);
+        }
+      } finally {
+        if (isMounted) {
+          setRecommendedLoading(false);
+        }
+      }
+    };
+
+    loadRecommendations();
+
+    return () => {
+      isMounted = false;
+    };
+    // fetchRecommendedJobs is provided by context and may have unstable identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldShowRecommendations]);
 
   // Build and fire the search
   const runSearch = async (extra = {}) => {
     setNearbyJobs(null);
     setNearbyError('');
+    const page = extra.page || 1;
     const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
     const locationParts = locationLabel
       .split(',')
@@ -240,12 +291,14 @@ const Dashboard = () => {
     const prov = normalizeRegionName(locationObj?.province || province || undefined);
 
     const filters = {
+      status: 'open',
       search: query || undefined,
       category: category || undefined,
       district,
       province: prov,
       minSalary: selectedRange.min || undefined,
       maxSalary: selectedRange.max || undefined,
+      page,
       ...extra,
     };
     // Remove undefined keys so they don't appear in query string
@@ -313,7 +366,22 @@ const Dashboard = () => {
     setSalaryRangeKey('Any');
     setNearbyJobs(null);
     setNearbyError('');
-    await fetchJobs({});
+    setCurrentPage(1);
+    await fetchJobs({ status: 'open' });
+  };
+
+  useEffect(() => {
+    if (!pagination) return;
+    const pageFromApi =
+      pagination.page || pagination.currentPage || pagination.current_page || pagination.current;
+    if (pageFromApi) setCurrentPage(pageFromApi);
+  }, [pagination]);
+
+  const changePage = async newPage => {
+    if (!newPage || newPage === currentPage) return;
+    const pageNum = Number(newPage);
+    setCurrentPage(pageNum);
+    await runSearch({ page: pageNum });
   };
 
   // Client-side employment type filter (backend doesn't support this param)
@@ -590,11 +658,40 @@ const Dashboard = () => {
         )}
 
         {/* Results header */}
+        {shouldShowRecommendations && (
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-[#1F2A37] mb-3">Recommended for you</h2>
+            {recommendedLoading && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
+                Finding matches for your profile...
+              </div>
+            )}
+            {!recommendedLoading && recommendedJobs.length === 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
+                No recommendations yet. Add more skills to your profile to improve matching.
+              </div>
+            )}
+            {!recommendedLoading &&
+              recommendedJobs.length > 0 &&
+              recommendedJobs.map(job => <JobCard key={`recommended-${job._id}`} job={job} />)}
+          </div>
+        )}
+
+        {/* Results header */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-lg font-semibold text-[#1F2A37]">
-            {isNearbyResult
-              ? t('dashboard.results_count_nearby', { count: displayJobs.length })
-              : t('dashboard.results_count_total', { count: displayJobs.length })}
+            {(() => {
+              const total =
+                pagination?.total ||
+                pagination?.totalCount ||
+                pagination?.total_count ||
+                pagination?.totalItems ||
+                pagination?.total_items ||
+                displayJobs.length;
+              return isNearbyResult
+                ? t('dashboard.results_count_nearby', { count: displayJobs.length })
+                : t('dashboard.results_count_total', { count: total });
+            })()}
           </span>
         </div>
 
@@ -609,6 +706,48 @@ const Dashboard = () => {
           <div className="text-center py-16 text-gray-400">{t('dashboard.no_jobs_found')}</div>
         )}
         {!loading && !nearbyLoading && displayJobs.map(job => <JobCard key={job._id} job={job} />)}
+
+        {/* Pagination controls (only when not using nearby results) */}
+        {!isNearbyResult &&
+          pagination &&
+          (() => {
+            const total =
+              pagination?.total ||
+              pagination?.totalCount ||
+              pagination?.total_count ||
+              pagination?.totalItems ||
+              pagination?.total_items ||
+              0;
+            const limit = pagination?.limit || pagination?.perPage || pagination?.pageSize || 20;
+            const totalPages = Math.max(1, Math.ceil((total || 0) / limit));
+            if (total <= limit) return null;
+            return (
+              <div className="max-w-7xl mx-auto px-6 mt-6 flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Showing {displayJobs.length} of {total} jobs
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => changePage(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+                  <div className="text-sm text-gray-700">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                  <button
+                    onClick={() => changePage(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                    className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
       </div>
     </DottedBackground>
   );

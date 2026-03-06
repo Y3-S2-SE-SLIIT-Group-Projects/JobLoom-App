@@ -19,9 +19,28 @@
     "analytics": "Analytics",
     "post_job": "Post a Job",
     "browse_jobs": "Browse Jobs",
+    "my_applications": "My Applications",
     "sign_in": "Sign in",
     "register": "Register",
     "sign_out": "Sign out"
+  },
+  "applications": {
+    "my_applications_title": "My Applications",
+    "my_applications_subtitle": "Track and manage your job applications",
+    "no_applications": "You haven't applied to any jobs yet.",
+    "browse_jobs_cta": "Browse Jobs",
+    "applied_on": "Applied {{date}}",
+    "interview_scheduled": "Interview scheduled",
+    "withdraw": "Withdraw Application",
+    "withdraw_confirm": "Are you sure you want to withdraw? This cannot be undone.",
+    "withdrawal_reason": "Reason for withdrawal",
+    "notes_label": "My Notes (private)",
+    "notes_placeholder": "Keep personal notes about this application…",
+    "save_notes": "Save Notes",
+    "status_timeline": "Application Timeline",
+    "view_job": "View Job Posting",
+    "view_details": "View Details",
+    "already_applied": "You have already applied"
   },
   "auth": {
     "login_title": "Welcome Back",

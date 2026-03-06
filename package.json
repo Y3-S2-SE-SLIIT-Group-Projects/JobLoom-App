@@ -10,9 +10,14 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "preview": "vite preview",
-    "test": "echo 'Tests will be added soon' && exit 0",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
+    "test": "npx playwright test",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:e2e:debug": "npx playwright test --debug",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "test:trace": "npx playwright show-trace",
+    "test:summary": "node scripts/test-summary.js",
     "lighthouse": "npx @lhci/cli@0.15.1 autorun --collect.staticDistDir=dist",
     "lighthouse:mobile": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=mobile",
     "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
@@ -54,6 +59,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
@@ -66,6 +72,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.19",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "wait-on": "^9.0.4"
   }
 }

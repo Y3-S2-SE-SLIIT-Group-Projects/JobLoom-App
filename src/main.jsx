@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { JobProvider } from './contexts/JobContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import store from './store/index.js';
 import './i18n';
@@ -13,16 +12,14 @@ import './index.css';
  * 1. StrictMode  — React dev checks
  * 2. ErrorBoundary — catches render errors across the whole tree
  * 3. Provider (Redux) — global server/async state
- * 4. JobProvider — domain context consumed by job-related pages
+ * 4. App — mounts the router
  * 5. App — mounts the router
  */
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <JobProvider>
-          <App />
-        </JobProvider>
+        <App />
       </Provider>
     </ErrorBoundary>
   </StrictMode>

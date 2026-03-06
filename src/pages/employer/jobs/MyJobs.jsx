@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useJobs } from '../../contexts/JobContext';
+import { useJobs } from '../../../hooks/useJobs';
 import {
   ArrowLeft,
   Briefcase,

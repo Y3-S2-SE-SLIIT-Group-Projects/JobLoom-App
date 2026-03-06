@@ -1,0 +1,351 @@
+import { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { useJobs } from '../hooks/useJobs';
+import { useUser } from '../hooks/useUser';
+import {
+  loadMyApplications,
+  selectHasAppliedToJob,
+  selectAppliedJobIdsLoaded,
+} from '../store/slices/applicationSlice';
+import parse from 'html-react-parser';
+
+import DottedBackground from '../components/DottedBackground';
+import ApplyModal from '../components/applications/ApplyModal';
+import {
+  FaArrowLeft,
+  FaBriefcase,
+  FaDollarSign,
+  FaGlobe,
+  FaSignInAlt,
+  FaPaperPlane,
+  FaUsers,
+  FaCheckCircle,
+} from 'react-icons/fa';
+import { getImageUrl } from '../utils/imageUrls';
+
+const STATUS_COLORS = {
+  open: 'bg-green-100 text-green-800',
+  closed: 'bg-red-100 text-red-800',
+  filled: 'bg-blue-100 text-blue-800',
+};
+
+const PublicJobDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { fetchJobById, loading } = useJobs();
+  const { currentUser } = useUser();
+
+  const hasApplied = useSelector(selectHasAppliedToJob(id));
+  const appliedLoaded = useSelector(selectAppliedJobIdsLoaded);
+
+  const [job, setJob] = useState(null);
+  const [error, setError] = useState('');
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
+
+  // Load applied job IDs for "already applied" persistence (job seeker only)
+  useEffect(() => {
+    if (currentUser?.role === 'job_seeker' && !appliedLoaded) {
+      dispatch(loadMyApplications({ limit: 200 }));
+    }
+  }, [currentUser?.role, appliedLoaded, dispatch]);
+
+  useEffect(() => {
+    if (!id) {
+      setError('Job ID is required');
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await fetchJobById(id);
+        if (!cancelled) setJob(data);
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Failed to load job details');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // ── Derived values ──────────────────────────────────────────
+  const isGuest = !currentUser;
+  const isSeeker = currentUser?.role === 'job_seeker';
+  const isOwner =
+    currentUser?.role === 'employer' &&
+    (job?.employerId?._id === currentUser._id || job?.employerId === currentUser._id);
+
+  const employerCompanyName =
+    job?.employer?.companyName ||
+    job?.employerId?.companyName ||
+    [job?.employer?.firstName, job?.employer?.lastName].filter(Boolean).join(' ').trim() ||
+    [job?.employerId?.firstName, job?.employerId?.lastName].filter(Boolean).join(' ').trim() ||
+    job?.employer?.email ||
+    job?.employerId?.email ||
+    'Unknown employer';
+
+  const locationText =
+    job?.location?.fullAddress ||
+    [job?.location?.village, job?.location?.district, job?.location?.province]
+      .filter(Boolean)
+      .join(', ') ||
+    'Location not specified';
+
+  const formatDate = dateString =>
+    new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+  const formatSalary = (amount, type, currency = 'LKR') => {
+    if (!amount) return 'Salary not specified';
+    if (!type) return `${currency} ${amount.toLocaleString()}`;
+    return `${currency} ${amount.toLocaleString()} / ${type}`;
+  };
+
+  const openLocationInGoogleMaps = () => {
+    if (!job?.location) return;
+    const coordinates = job.location?.coordinates?.coordinates;
+    let mapsUrl = '';
+    if (Array.isArray(coordinates) && coordinates.length === 2) {
+      const [lng, lat] = coordinates;
+      mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+    } else if (locationText && locationText !== 'Location not specified') {
+      mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationText)}`;
+    }
+    if (mapsUrl) window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  // ── Loading / Error states ──────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !job) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600 mb-4">{error || 'Job not found'}</p>
+          <Link
+            to="/jobs"
+            className="inline-block px-6 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors"
+          >
+            Back to Jobs
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render ──────────────────────────────────────────────────
+  return (
+    <DottedBackground>
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Back */}
+        <Link
+          to="/jobs"
+          className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-6"
+        >
+          <FaArrowLeft className="w-5 h-5 mr-2" />
+          Back to Jobs
+        </Link>
+
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+              {job.employer?.profileImage ? (
+                <img
+                  src={getImageUrl(job.employer.profileImage)}
+                  alt="logo"
+                  className="w-full h-full object-cover"
+                  onError={e => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : null}
+              <FaBriefcase
+                className={`w-8 h-8 text-gray-400 ${job.employer?.profileImage ? 'hidden' : 'block'}`}
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+                <span
+                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-800'}`}
+                >
+                  {job.status}
+                </span>
+              </div>
+              <p className="text-lg text-gray-600">{job.jobRole || 'Job Position'}</p>
+              <p className="text-sm text-gray-500 mt-1">{employerCompanyName}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Details bar */}
+        <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-gray-200">
+          <div className="flex items-center gap-2 text-gray-700">
+            <FaBriefcase className="w-5 h-5 text-gray-400" />
+            <span className="capitalize">{job.employmentType || 'Full-time'}</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <FaGlobe className="w-5 h-5 text-gray-400" />
+            <button
+              type="button"
+              onClick={openLocationInGoogleMaps}
+              className="text-left hover:text-[#6794D1] hover:underline transition-colors"
+              title="Open location in Google Maps"
+            >
+              {locationText}
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-gray-700">
+            <FaDollarSign className="w-5 h-5 text-gray-400" />
+            <span className="font-semibold">
+              {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
+            </span>
+          </div>
+        </div>
+
+        {/* Job info grid */}
+        <div className="bg-gray-50 rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">JOB INFORMATION</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Employer</p>
+              <p className="font-medium text-gray-900">{employerCompanyName}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Category</p>
+              <p className="font-medium text-gray-900 capitalize">{job.category}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Employment Type</p>
+              <p className="font-medium text-gray-900 capitalize">
+                {job.employmentType || 'Full-time'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Positions Available</p>
+              <p className="font-medium text-gray-900">
+                {job.positions} position{job.positions > 1 ? 's' : ''}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Experience Level</p>
+              <p className="font-medium text-gray-900 capitalize">
+                {job.experienceRequired || 'None'}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Start Date</p>
+              <p className="font-medium text-gray-900">{formatDate(job.startDate)}</p>
+            </div>
+            {job.endDate && (
+              <div>
+                <p className="text-sm text-gray-600 mb-1">End Date</p>
+                <p className="font-medium text-gray-900">{formatDate(job.endDate)}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Description */}
+        <div className="mb-8">
+          <div className="prose prose-lg max-w-none text-gray-700">
+            {parse(job.description || 'No description provided.')}
+          </div>
+        </div>
+
+        {/* Skills */}
+        {job.skillsRequired?.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">SKILLS</h2>
+            <ul className="space-y-2">
+              {job.skillsRequired.map((skill, i) => (
+                <li key={i} className="flex items-start gap-2 text-gray-700">
+                  <span className="text-[#2CD2BD] mt-1">•</span>
+                  <span>{skill}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* ── CTA Section ──────────────────────────────────────── */}
+        <div className="pt-6 border-t border-gray-200">
+          {/* Guest → Login to Apply */}
+          {isGuest && (
+            <button
+              onClick={() => navigate('/login', { state: { from: `/jobs/${id}` } })}
+              className="px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium flex items-center gap-2"
+            >
+              <FaSignInAlt className="w-5 h-5" />
+              Login to Apply
+            </button>
+          )}
+
+          {/* Job seeker → Already applied (show regardless of job status) */}
+          {isSeeker && hasApplied && (
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex px-6 py-3 bg-gray-100 text-gray-600 rounded-lg font-medium items-center gap-2">
+                <FaCheckCircle className="w-5 h-5 text-green-500" />
+                You have already applied
+              </div>
+              <Link
+                to="/my-applications"
+                className="text-sm text-[#6794D1] hover:underline font-medium"
+              >
+                View My Applications
+              </Link>
+            </div>
+          )}
+
+          {/* Job seeker → Apply (only when job is open and hasn't applied) */}
+          {isSeeker && job.status === 'open' && !hasApplied && (
+            <button
+              onClick={() => setApplyModalOpen(true)}
+              className="px-6 py-3 bg-[#2CD2BD] text-white rounded-lg hover:bg-[#25b8a5] transition-colors font-medium flex items-center gap-2"
+            >
+              <FaPaperPlane className="w-5 h-5" />
+              Apply Now
+            </button>
+          )}
+
+          {/* Employer (own job) → Manage Applications */}
+          {isOwner && (
+            <Link
+              to={`/employer/applications/job/${job._id}`}
+              className="inline-flex px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium items-center gap-2"
+            >
+              <FaUsers className="w-5 h-5" />
+              Manage Applications
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Apply Modal */}
+      <ApplyModal
+        isOpen={applyModalOpen}
+        onClose={() => setApplyModalOpen(false)}
+        jobId={job._id}
+        jobTitle={job.title}
+      />
+    </DottedBackground>
+  );
+};
+
+export default PublicJobDetails;
