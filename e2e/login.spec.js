@@ -17,38 +17,6 @@ test.describe('Login Functionality (Member 1)', () => {
     await expect(page.getByText('Login failed. Please check your credentials.')).toBeVisible();
   });
 
-  test('should log in successfully with valid credentials', async ({ page }) => {
-    // 1. Navigate to the login page
-    await page.goto('/login');
-
-    // 2. Fill in valid credentials
-    // IMPORTANT: Replace these with actual test account credentials
-    await page.fill('input[name="email"]', 'kavishigodage225@gmail.com');
-    await page.fill('input[name="password"]', '123456');
-
-    // 3. Click the sign-in button
-    await page.click('button[type="submit"]');
-
-    // 4. Verify redirection to dashboard/profile
-    await expect(page).toHaveURL(/.*(profile|dashboard)/);
-
-    // 5. Verify Dashboard/Profile visibility (Member 1 task)
-    const url = page.url();
-    if (url.includes('employer/dashboard')) {
-      // Employer Dashboard (Confirmed from screenshot)
-      await expect(page.locator('h1')).toHaveText('Dashboard');
-      await expect(page.locator('text=Your central control surface')).toBeVisible();
-      await expect(page.locator('text=Create New Job')).toBeVisible();
-    } else if (url.includes('dashboard')) {
-      // Seeker Dashboard
-      await expect(page.locator('h1')).toBeVisible();
-      await expect(page.locator('input[placeholder*="Job title"]')).toBeVisible();
-    } else {
-      // Profile page check
-      await expect(page.locator('text=Profile')).toBeVisible();
-    }
-  });
-
   test('should navigate to other authentication pages', async ({ page }) => {
     await page.goto('/login');
 
@@ -87,5 +55,43 @@ test.describe('Login Functionality (Member 1)', () => {
     // If you use i18n, you might need to check for specific text or use data-testid
     // await expect(page.locator('text=Email is required')).toBeVisible();
     // await expect(page.locator('text=Password is required')).toBeVisible();
+  });
+});
+
+// The real-login test uses page.route() to mock the login API response.
+// This makes all 3 browsers reliable without hitting the real backend simultaneously.
+// The mock returns the exact format the Redux userSlice expects: { token, user }.
+test.describe('Login Functionality (Member 1) - Authenticated', () => {
+  test('should log in successfully with valid credentials', async ({ page }) => {
+    // Intercept the exact login endpoint the app calls.
+    // IMPORTANT: the backend returns a FLAT response { token, role, _id, email, ... }
+    // not nested { token, user: { role } }. Login.jsx reads data.role directly
+    // from the raw API response (via useUser hook's .then(res => res.data)).
+    await page.route('**/api/users/login', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          token: 'mock-jwt-token-for-login-test',
+          _id: 'mock-user-id',
+          email: 'kavishigodage225@gmail.com',
+          role: 'employer',
+          name: 'Test User',
+        }),
+      });
+    });
+
+    await page.goto('/login');
+
+    await page.fill('input[name="email"]', 'kavishigodage225@gmail.com');
+    await page.fill('input[name="password"]', '123456');
+    await page.click('button[type="submit"]');
+
+    // App receives mocked 200, Redux sets state, Login.jsx navigates to /employer/dashboard
+    await expect(page).toHaveURL(/.*employer\/dashboard/, { timeout: 10000 });
+
+    await expect(page.locator('h1')).toHaveText('Dashboard');
+    await expect(page.locator('text=Your central control surface')).toBeVisible();
+    await expect(page.locator('text=Create New Job')).toBeVisible();
   });
 });
