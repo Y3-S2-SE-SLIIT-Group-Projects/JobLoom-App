@@ -13,7 +13,8 @@ test.describe('Fixtures & Environment Control', () => {
 
   test('1. should load the home page using navigation fixture', async ({ gotoHome }) => {
     const url = gotoHome.url();
-    expect(url).toContain('localhost:5173');
+    // Check for localhost only — port varies (5173 in dev, 4173 in CI preview)
+    expect(url).toContain('localhost');
     console.log(`Navigated to: ${url}`);
   });
 
@@ -49,7 +50,9 @@ test.describe('Fixtures & Environment Control', () => {
   });
 
   test('5. should use the base URL from environment configuration', async ({ page }) => {
-    const expectedBase = 'http://localhost:5173';
+    // Read the configured baseURL from Playwright's project config — works in both
+    // local dev (localhost:5173) and CI preview (localhost:4173) without hardcoding.
+    const expectedBase = test.info().project.use.baseURL || 'http://localhost:5173';
     await page.goto('/');
     expect(page.url().startsWith(expectedBase)).toBeTruthy();
     console.log(`Base URL resolved from environment: ${expectedBase}`);
