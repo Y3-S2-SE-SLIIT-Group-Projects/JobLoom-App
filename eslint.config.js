@@ -26,17 +26,10 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
-  // E2E test files run in Node (via Playwright), not the browser.
-  // Disable React hook rules that produce false positives on Playwright fixtures.
   {
-    files: ['tests/e2e/**/*.js'],
+    files: ['scripts/**/*.js'],
     languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-    },
-    rules: {
-      'react-hooks/rules-of-hooks': 'off',
+      globals: globals.node,
     },
   },
 ]);

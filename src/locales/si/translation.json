@@ -18,9 +18,28 @@
     "analytics": "දත්ත විග්‍රහය",
     "post_job": "රැකියාවක් පළ කරන්න",
     "browse_jobs": "රැකියා සොයන්න",
+    "my_applications": "මගේ අයදුම්පත්",
     "sign_in": "ඇතුල් වන්න",
     "register": "ලියාපදිංචි වන්න",
     "sign_out": "ඉවත් වන්න"
+  },
+  "applications": {
+    "my_applications_title": "මගේ අයදුම්පත්",
+    "my_applications_subtitle": "ඔබේ රැකියා අයදුම්පත් නිරීක්ෂණය කර කළමනාකරණය කරන්න",
+    "no_applications": "ඔබ තවමත් රැකියා සඳහා අයදුම් කර නැත.",
+    "browse_jobs_cta": "රැකියා සොයන්න",
+    "applied_on": "අයදුම් කළ දිනය {{date}}",
+    "interview_scheduled": "සම්මුඛ පරීක්ෂණය සැලසුම් කර ඇත",
+    "withdraw": "අයදුම්පත ඉල්ලා අස්වන්න",
+    "withdraw_confirm": "ඔබට අයදුම්පත ඉල්ලා අස්වීමට අවශ්‍යයි? මෙය අහෝසි කළ නොහැක.",
+    "withdrawal_reason": "ඉල්ලා අස්වීමට හේතුව",
+    "notes_label": "මගේ සටහන් (පෞද්ගලික)",
+    "notes_placeholder": "මෙම අයදුම්පත පිළිබඳ පෞද්ගලික සටහන් තබන්න…",
+    "save_notes": "සටහන් සුරකින්න",
+    "status_timeline": "අයදුම්පතේ කාල රේඛාව",
+    "view_job": "රැකියා පළකිරීම බලන්න",
+    "view_details": "විස්තර බලන්න",
+    "already_applied": "ඔබ දැනටමත් අයදුම් කර ඇත"
   },
   "auth": {
     "login_title": "නැවත සාදරයෙන් පිළිගනිමු",
