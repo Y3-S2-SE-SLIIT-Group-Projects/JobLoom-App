@@ -5,7 +5,13 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist', 'lighthouserc.js', '*.config.js']),
+  globalIgnores([
+    'dist',
+    'lighthouserc.js',
+    '*.config.js',
+    'playwright-report/**',
+    'test-results/**',
+  ]),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -30,6 +36,23 @@ export default defineConfig([
     files: ['scripts/**/*.js'],
     languageOptions: {
       globals: globals.node,
+    },
+  },
+  // E2E test files: Node.js environment, Playwright-specific patterns
+  {
+    files: ['e2e/**/*.js', 'tests/e2e/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
+    },
+    rules: {
+      // Playwright fixtures use a parameter named `use` which ESLint's React
+      // hooks plugin incorrectly flags as a hook call violation.
+      'react-hooks/rules-of-hooks': 'off',
+      // `void e` pattern used in catch blocks to suppress unused-var errors
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', caughtErrors: 'none' }],
     },
   },
 ]);
