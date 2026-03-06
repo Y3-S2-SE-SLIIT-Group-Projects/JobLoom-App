@@ -37,6 +37,8 @@ const useApplyForm = (defaults = {}) => {
     setField(name, value);
   };
 
+  console.log('useApplyForm state:', { form, isSubmitting, submitError, submittedApplication });
+
   const handleSubmit = async e => {
     e?.preventDefault();
 
