@@ -193,7 +193,7 @@ const CompleteProfile = () => {
       const uploadedCVs = await Promise.all(
         cvFiles.map(async file => {
           const result = await uploadFile({ file, folder: 'jobloom/cvs' });
-          return { name: file?.name || 'CV', url: result.url };
+          return { name: file?.name || 'CV', url: result.url, public_id: result.public_id };
         })
       );
       updates.newCVs = uploadedCVs;

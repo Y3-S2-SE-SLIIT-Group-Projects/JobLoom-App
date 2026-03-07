@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
 import ProfileRecommendations from '../../components/reviews/ProfileRecommendations';
+import { getSignedDownloadUrl } from '../../services/uploadApi';
 
 const getRoleBadge = role => {
   const styles = {
@@ -46,6 +47,7 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [imgError, setImgError] = useState(false);
   const [error, setError] = useState('');
+  const [cvDownloadError, setCvDownloadError] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
@@ -106,6 +108,21 @@ const UserProfile = () => {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const handleCvDownload = async cv => {
+    try {
+      setCvDownloadError('');
+      const signedUrl = await getSignedDownloadUrl({
+        publicId: cv?.public_id,
+        url: cv?.url,
+        attachment: false,
+      });
+      if (!signedUrl) throw new Error('Failed to generate download link');
+      window.open(signedUrl, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      setCvDownloadError(err.message || 'Failed to download CV');
+    }
   };
 
   if (loading && !user) {
@@ -395,6 +412,9 @@ const UserProfile = () => {
                     </div>
                     Uploaded CVs
                   </h2>
+                  {cvDownloadError && (
+                    <p className="text-sm text-red-600 mb-3">{cvDownloadError}</p>
+                  )}
                   {user.cvs && user.cvs.length > 0 ? (
                     <div className="space-y-3">
                       {user.cvs.map((cv, index) => (
@@ -416,15 +436,14 @@ const UserProfile = () => {
                               </div>
                             </div>
                           </div>
-                          <a
-                            href={getImageUrl(cv.url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            type="button"
+                            onClick={() => handleCvDownload(cv)}
                             className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           >
                             <FaDownload className="w-3.5 h-3.5" />
                             Download
-                          </a>
+                          </button>
                         </div>
                       ))}
                     </div>
