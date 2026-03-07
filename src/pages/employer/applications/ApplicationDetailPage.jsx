@@ -28,6 +28,7 @@ import {
   FaDownload,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../../utils/imageUrls';
+import { getSignedDownloadUrl } from '../../../services/uploadApi';
 
 // ── Status transition rules (match backend) ─────────────────────────────────────
 
@@ -48,6 +49,10 @@ const STATUS_BADGE = {
   rejected: 'bg-red-100 text-red-700 border-red-200',
   withdrawn: 'bg-gray-100 text-gray-500 border-gray-200',
 };
+
+const isCloudinaryUrl = value =>
+  typeof value === 'string' &&
+  (value.includes('res.cloudinary.com/') || value.includes('res.cloudinary.com\\'));
 
 const ApplicationDetailPage = () => {
   const { id } = useParams();
@@ -303,6 +308,7 @@ const ApplicationDetailPage = () => {
         {application.resumeUrl &&
           (() => {
             const isExternal = application.resumeUrl.startsWith('http');
+            const needsSigned = isExternal && isCloudinaryUrl(application.resumeUrl);
             const resolvedUrl = isExternal
               ? application.resumeUrl
               : getImageUrl(application.resumeUrl);
@@ -310,13 +316,25 @@ const ApplicationDetailPage = () => {
               <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Resume</h2>
                 <a
-                  href={resolvedUrl}
+                  href={needsSigned ? '#' : resolvedUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={async e => {
+                    if (!needsSigned) return;
+                    e.preventDefault();
+                    const signedUrl = await getSignedDownloadUrl({ url: application.resumeUrl });
+                    if (signedUrl) window.open(signedUrl, '_blank', 'noopener,noreferrer');
+                  }}
                   className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium"
                 >
-                  {isExternal ? <FaLink className="w-4 h-4" /> : <FaDownload className="w-4 h-4" />}
-                  {isExternal ? 'View resume' : 'Download CV'}
+                  {needsSigned ? (
+                    <FaDownload className="w-4 h-4" />
+                  ) : isExternal ? (
+                    <FaLink className="w-4 h-4" />
+                  ) : (
+                    <FaDownload className="w-4 h-4" />
+                  )}
+                  {needsSigned ? 'Download CV' : isExternal ? 'View resume' : 'Download CV'}
                 </a>
               </section>
             );

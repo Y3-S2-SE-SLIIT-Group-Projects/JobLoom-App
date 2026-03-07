@@ -28,6 +28,7 @@ import {
   FaDownload,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
+import { getSignedDownloadUrl } from '../../services/uploadApi';
 
 // ── Status timeline dot colors ──────────────────────────────────────────────────
 
@@ -61,6 +62,10 @@ const formatDateTime = dateString => {
     minute: '2-digit',
   });
 };
+
+const isCloudinaryUrl = value =>
+  typeof value === 'string' &&
+  (value.includes('res.cloudinary.com/') || value.includes('res.cloudinary.com\\'));
 
 const SeekerApplicationDetail = () => {
   const { id } = useParams();
@@ -323,6 +328,7 @@ const SeekerApplicationDetail = () => {
             {application.resumeUrl &&
               (() => {
                 const isExternal = application.resumeUrl.startsWith('http');
+                const needsSigned = isExternal && isCloudinaryUrl(application.resumeUrl);
                 const resolvedUrl = isExternal
                   ? application.resumeUrl
                   : getImageUrl(application.resumeUrl);
@@ -330,17 +336,27 @@ const SeekerApplicationDetail = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-700 mb-2">Resume</p>
                     <a
-                      href={resolvedUrl}
+                      href={needsSigned ? '#' : resolvedUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={async e => {
+                        if (!needsSigned) return;
+                        e.preventDefault();
+                        const signedUrl = await getSignedDownloadUrl({
+                          url: application.resumeUrl,
+                        });
+                        if (signedUrl) window.open(signedUrl, '_blank', 'noopener,noreferrer');
+                      }}
                       className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium text-sm"
                     >
-                      {isExternal ? (
+                      {needsSigned ? (
+                        <FaDownload className="w-4 h-4" />
+                      ) : isExternal ? (
                         <FaLink className="w-4 h-4" />
                       ) : (
                         <FaDownload className="w-4 h-4" />
                       )}
-                      {isExternal ? 'View Resume' : 'Download CV'}
+                      {needsSigned ? 'Download CV' : isExternal ? 'View Resume' : 'Download CV'}
                     </a>
                   </div>
                 );
