@@ -266,6 +266,7 @@ const CATEGORY_CARDS = [
 ];
 
 const CategoriesCarousel = ({ setCategory, searchRef }) => {
+  const { t } = useTranslation();
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -302,13 +303,13 @@ const CategoriesCarousel = ({ setCategory, searchRef }) => {
           <span
             className={`inline-block mb-3 px-4 py-1.5 ${C.bgSkyLight50} ${C.primary} ${T.sm} ${T.bold} rounded-full tracking-widest uppercase ${T.body}`}
           >
-            Explore
+            {t('dashboard.explore_badge')}
           </span>
           <h2 className={`${T['2xl']} ${T.heading} ${T.bold} ${C.text} mb-2`}>
-            Popular Categories
+            {t('dashboard.popular_categories_title')}
           </h2>
           <p className={`${C.subtle} max-w-xl ${T.base} ${T.body} ${T.leadingLoose}`}>
-            Browse jobs by industry &mdash; find the field that fits your skills.
+            {t('dashboard.popular_categories_desc')}
           </p>
         </div>
         <div className="hidden sm:flex flex-col items-end gap-2 shrink-0 pb-1">
@@ -316,7 +317,7 @@ const CategoriesCarousel = ({ setCategory, searchRef }) => {
             onClick={() => searchRef.current?.scrollIntoView({ behavior: 'smooth' })}
             className={`${C.primary} ${T.sm} ${T.medium} ${T.body} underline underline-offset-4 hover:opacity-80 transition-opacity`}
           >
-            View All Categories
+            {t('dashboard.view_all_categories')}
           </button>
           <div className="flex items-center gap-2">
             <button
@@ -367,7 +368,7 @@ const CategoriesCarousel = ({ setCategory, searchRef }) => {
               <item.icon className="w-5 h-5" />
             </span>
             <span className={`${T.xs} ${T.medium} ${C.text} ${T.body} text-center leading-tight`}>
-              {item.label}
+              {t(`categories.${item.value}_short`, item.label)}
             </span>
           </button>
         ))}
@@ -683,7 +684,7 @@ const Dashboard = () => {
             className={`hero-badge-shimmer inline-flex items-center gap-2 w-fit mb-6 px-4 py-2 ${C.bgSkyLight50} ${C.primary} ${T.sm} ${T.bold} rounded-full tracking-widest uppercase ${T.body} border border-[color:color-mix(in_srgb,var(--color-sky-light)_60%,transparent)]`}
           >
             <span className="w-2 h-2 rounded-full bg-[color:var(--color-blue-green)] animate-pulse" />
-            Sri Lanka&rsquo;s Job Platform
+            {t('dashboard.hero_badge')}
           </span>
 
           {/* Hero heading */}
@@ -728,7 +729,9 @@ const Dashboard = () => {
               </span>
               <div>
                 <p className={`${T.sm} ${T.bold} ${C.text} ${T.heading} leading-none`}>18+</p>
-                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>Categories</p>
+                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>
+                  {t('dashboard.stat_categories')}
+                </p>
               </div>
             </div>
 
@@ -740,7 +743,9 @@ const Dashboard = () => {
               </span>
               <div>
                 <p className={`${T.sm} ${T.bold} ${C.text} ${T.heading} leading-none`}>9+</p>
-                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>Provinces</p>
+                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>
+                  {t('dashboard.stat_provinces')}
+                </p>
               </div>
             </div>
 
@@ -752,7 +757,9 @@ const Dashboard = () => {
               </span>
               <div>
                 <p className={`${T.sm} ${T.bold} ${C.text} ${T.heading} leading-none`}>100%</p>
-                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>Free</p>
+                <p className={`${T.xs} ${C.subtle} ${T.body} leading-tight mt-0.5`}>
+                  {t('dashboard.stat_free')}
+                </p>
               </div>
             </div>
           </div>
@@ -771,10 +778,10 @@ const Dashboard = () => {
           <span
             className={`inline-block mb-4 px-4 py-1.5 ${C.bgSkyLight50} ${C.primary} ${T.sm} ${T.bold} rounded-full tracking-widest uppercase ${T.body}`}
           >
-            Who We&rsquo;re Built For
+            {t('dashboard.who_built_for_badge')}
           </span>
           <h2 className={`${T['2xl']} md:text-4xl ${T.heading} ${T.bold} ${C.text} mb-3`}>
-            One Platform, Two Powerful Experiences
+            {t('dashboard.who_built_for_title')}
           </h2>
         </div>
 
@@ -792,24 +799,22 @@ const Dashboard = () => {
             </div>
             <div className="flex-1 p-8 md:p-10 flex flex-col justify-center">
               <span className="inline-block w-fit mb-3 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full tracking-wide uppercase">
-                Employers
+                {t('dashboard.employers_badge')}
               </span>
               <h3 className={`${T.xl} ${T.heading} ${T.bold} ${C.text} mb-2`}>
-                Hire Smarter, Not Harder
+                {t('dashboard.employers_title')}
               </h3>
               <p className={`${C.subtle} ${T.sm} ${T.body} ${T.leadingLoose} mb-5`}>
-                From posting your first listing to onboarding your next star employee, JobLoom
-                streamlines every step of the hiring journey so you can focus on what
-                matters&mdash;growing your business.
+                {t('dashboard.employers_description')}
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { icon: FaBriefcase, text: 'Post & manage job listings' },
-                  { icon: FaUserCheck, text: 'Screen & shortlist applicants' },
-                  { icon: FaChartLine, text: 'Real-time hiring analytics' },
-                  { icon: FaBullhorn, text: 'Reach candidates island-wide' },
-                  { icon: FaHandshake, text: 'Schedule interviews with Calendly' },
-                  { icon: FaStar, text: 'Build your employer reputation' },
+                  { icon: FaBriefcase, text: t('dashboard.employer_feature_post') },
+                  { icon: FaUserCheck, text: t('dashboard.employer_feature_screen') },
+                  { icon: FaChartLine, text: t('dashboard.employer_feature_analytics') },
+                  { icon: FaBullhorn, text: t('dashboard.employer_feature_reach') },
+                  { icon: FaHandshake, text: t('dashboard.employer_feature_interview') },
+                  { icon: FaStar, text: t('dashboard.employer_feature_reputation') },
                 ].map(item => (
                   <li key={item.text} className="flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 shrink-0">
@@ -837,24 +842,22 @@ const Dashboard = () => {
             </div>
             <div className="flex-1 p-8 md:p-10 flex flex-col justify-center">
               <span className="inline-block w-fit mb-3 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full tracking-wide uppercase">
-                Job Seekers
+                {t('dashboard.seekers_badge')}
               </span>
               <h3 className={`${T.xl} ${T.heading} ${T.bold} ${C.text} mb-2`}>
-                Your Next Opportunity Awaits
+                {t('dashboard.seekers_title')}
               </h3>
               <p className={`${C.subtle} ${T.sm} ${T.body} ${T.leadingLoose} mb-5`}>
-                Discover roles tailored to your skills, apply in seconds, and track every
-                application from one dashboard. JobLoom puts you in the driver&rsquo;s seat of your
-                career.
+                {t('dashboard.seekers_description')}
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { icon: FaFileAlt, text: 'One-click easy applications' },
-                  { icon: FaBellIcon, text: 'AI-powered job recommendations' },
-                  { icon: FaStar, text: 'Rate & review employers' },
-                  { icon: FaMapMarkerAlt, text: 'Find jobs near you (GPS)' },
-                  { icon: FaSearch, text: 'Smart search & filters' },
-                  { icon: FaChartLine, text: 'Track application progress' },
+                  { icon: FaFileAlt, text: t('dashboard.seeker_feature_apply') },
+                  { icon: FaBellIcon, text: t('dashboard.seeker_feature_ai') },
+                  { icon: FaStar, text: t('dashboard.seeker_feature_review') },
+                  { icon: FaMapMarkerAlt, text: t('dashboard.seeker_feature_gps') },
+                  { icon: FaSearch, text: t('dashboard.seeker_feature_search') },
+                  { icon: FaChartLine, text: t('dashboard.seeker_feature_track') },
                 ].map(item => (
                   <li key={item.text} className="flex items-center gap-2.5">
                     <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber/10 shrink-0">
@@ -871,10 +874,10 @@ const Dashboard = () => {
         {/* Trust / stats strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { value: '9+', label: 'Provinces Covered', icon: FaMapMarkerAlt },
-            { value: '18+', label: 'Job Categories', icon: FaBriefcase },
-            { value: '3', label: 'Languages Supported', icon: FaBullhorn },
-            { value: '100%', label: 'Free for Job Seekers', icon: FaHandshake },
+            { value: '9+', label: t('dashboard.stat_provinces_covered'), icon: FaMapMarkerAlt },
+            { value: '18+', label: t('dashboard.stat_job_categories'), icon: FaBriefcase },
+            { value: '3', label: t('dashboard.stat_languages_supported'), icon: FaBullhorn },
+            { value: '100%', label: t('dashboard.stat_free_for_seekers'), icon: FaHandshake },
           ].map(stat => (
             <div
               key={stat.label}
@@ -1004,7 +1007,7 @@ const Dashboard = () => {
                   <option value="">{t('dashboard.all_categories')}</option>
                   {JOB_CATEGORIES.map(c => (
                     <option key={c.value} value={c.value}>
-                      {c.label}
+                      {t(`categories.${c.value}`, c.label)}
                     </option>
                   ))}
                 </select>
@@ -1086,20 +1089,20 @@ const Dashboard = () => {
         {shouldShowRecommendations && (
           <div className="mb-6">
             <h2 className={`${T.xl} ${T.heading} ${T.bold} ${C.text} mb-3 ${T.leadingTight}`}>
-              Recommended for you
+              {t('dashboard.recommended_title')}
             </h2>
             {recommendedLoading && (
               <div
                 className={`${C.bgSurface} rounded-xl border ${C.border} p-4 ${T.sm} ${C.muted} ${T.body}`}
               >
-                Finding matches for your profile...
+                {t('dashboard.recommended_loading')}
               </div>
             )}
             {!recommendedLoading && recommendedJobs.length === 0 && (
               <div
                 className={`${C.bgSurface} rounded-xl border ${C.border} p-4 ${T.sm} ${C.muted} ${T.body}`}
               >
-                No recommendations yet. Add more skills to your profile to improve matching.
+                {t('dashboard.recommended_empty')}
               </div>
             )}
             {!recommendedLoading &&
@@ -1159,7 +1162,7 @@ const Dashboard = () => {
             return (
               <div className="max-w-7xl mx-auto px-6 mt-6 flex items-center justify-between">
                 <div className={`${T.sm} ${C.muted} ${T.body}`}>
-                  Showing {displayJobs.length} of {total} jobs
+                  {t('dashboard.pagination_showing', { shown: displayJobs.length, total })}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -1167,17 +1170,17 @@ const Dashboard = () => {
                     disabled={currentPage <= 1}
                     className={`px-3 py-1.5 rounded-lg border ${C.border} ${C.bgSurface} ${T.sm} ${C.muted} ${T.body} ${C.hoverSurfaceMuted} disabled:opacity-50`}
                   >
-                    Prev
+                    {t('dashboard.pagination_prev')}
                   </button>
                   <div className={`${T.sm} ${C.muted} ${T.body}`}>
-                    Page {currentPage} of {totalPages}
+                    {t('dashboard.pagination_page', { current: currentPage, total: totalPages })}
                   </div>
                   <button
                     onClick={() => changePage(currentPage + 1)}
                     disabled={currentPage >= totalPages}
                     className={`px-3 py-1.5 rounded-lg border ${C.border} ${C.bgSurface} ${T.sm} ${C.muted} ${T.body} ${C.hoverSurfaceMuted} disabled:opacity-50`}
                   >
-                    Next
+                    {t('dashboard.pagination_next')}
                   </button>
                 </div>
               </div>
