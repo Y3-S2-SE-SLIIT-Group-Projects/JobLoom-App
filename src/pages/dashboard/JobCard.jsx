@@ -11,29 +11,43 @@ const JobCard = ({ job }) => {
     navigate(`/jobs/${job._id}`);
   };
 
-  const getCompanyName = () => {
-    if (!job) return 'Unknown employer';
-    if (job.employerId && typeof job.employerId === 'object') {
-      return (
-        job.employerId.companyName ||
-        [job.employerId.firstName, job.employerId.lastName].filter(Boolean).join(' ').trim() ||
-        job.employerId.email ||
-        'Unknown employer'
-      );
+  const getEmployerAndCompany = () => {
+    const result = { companyName: 'Unknown employer', logo: null };
+    if (!job) return result;
+
+    const maybe = obj => (obj && typeof obj === 'object' ? obj : null);
+
+    const employerObj =
+      maybe(job.employer) || maybe(job.employerId) || maybe(job.employerInfo) || null;
+    const companyObj = maybe(job.company) || (employerObj && maybe(employerObj.company)) || null;
+
+    if (employerObj) {
+      result.companyName = employerObj.companyName || employerObj.company || result.companyName;
+
+      // common logo fields
+      result.logo =
+        employerObj.profileImage ||
+        employerObj.logo ||
+        employerObj.companyLogo ||
+        employerObj.avatar ||
+        result.logo;
     }
-    if (typeof job.company === 'string') return job.company;
-    if (job.company && typeof job.company === 'object') {
-      return job.company.name || job.company.companyName || job.company.title || 'Unknown employer';
+
+    if (companyObj) {
+      result.companyName =
+        companyObj.name || companyObj.companyName || companyObj.title || result.companyName;
+      result.logo =
+        result.logo || companyObj.logo || companyObj.companyLogo || companyObj.image || result.logo;
     }
-    if (job.employer && typeof job.employer === 'object')
-      return (
-        job.employer.name ||
-        job.employer.companyName ||
-        [job.employer.firstName, job.employer.lastName].filter(Boolean).join(' ').trim() ||
-        job.employer.email ||
-        'Unknown employer'
-      );
-    return 'Unknown employer';
+
+    // fallback when job.company is a string
+    if (typeof job.company === 'string') result.companyName = job.company;
+
+    // also allow top-level companyName on job
+    if (job.companyName && typeof job.companyName === 'string')
+      result.companyName = job.companyName;
+
+    return result;
   };
 
   const formatLocation = () => {
@@ -59,7 +73,7 @@ const JobCard = ({ job }) => {
     return 'Not specified';
   };
 
-  const companyName = getCompanyName();
+  const { companyName, logo } = getEmployerAndCompany();
   const companyInitial = companyName ? companyName.slice(0, 1).toUpperCase() : 'J';
   const created = job?.createdAt ? new Date(job.createdAt).toLocaleDateString() : '';
 
@@ -70,9 +84,9 @@ const JobCard = ({ job }) => {
     >
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-xl font-bold text-gray-600 overflow-hidden border border-gray-100">
-          {job.employer?.profileImage ? (
+          {logo ? (
             <img
-              src={getImageUrl(job.employer.profileImage)}
+              src={getImageUrl(logo)}
               alt={companyName}
               className="w-full h-full object-cover"
               onError={e => {
