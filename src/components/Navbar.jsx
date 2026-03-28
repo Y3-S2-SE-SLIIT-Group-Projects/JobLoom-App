@@ -120,10 +120,10 @@ const Navbar = () => {
               <div className="flex items-center gap-4">
                 <LanguageSwitcher />
                 <Link
-                  to="/employer/create-job"
-                  className="hidden md:inline-block px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
+                  to="/jobs"
+                  className="hidden md:inline-block px-4 py-2 bg-white text-[#516876] border border-[#D2D5D9] rounded-lg hover:bg-[#F4F6F9] transition-colors mr-2"
                 >
-                  {t('navbar.post_job')}
+                  {t('navbar.browse_jobs') || 'Browse Jobs'}
                 </Link>
                 <button className="relative p-2 hover:bg-[#F4F6F9] rounded-lg transition-colors">
                   <FaBell className="w-6 h-6 text-[#516876]" />
@@ -189,11 +189,12 @@ const Navbar = () => {
                   {t('navbar.my_applications')}
                 </Link>
               )}
+              {/* On jobs/home page show Dashboard CTA, employers see Browse Jobs in employer section */}
               <Link
-                to="/register?role=employer"
+                to="/employer/dashboard"
                 className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:opacity-95 transition-colors"
               >
-                {t('navbar.post_job')}
+                {t('navbar.dashboard')}
               </Link>
               {currentUser ? (
                 <div className="flex items-center gap-2">

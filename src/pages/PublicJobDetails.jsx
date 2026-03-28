@@ -43,6 +43,7 @@ const PublicJobDetails = () => {
   const [job, setJob] = useState(null);
   const [error, setError] = useState('');
   const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Load applied job IDs for "already applied" persistence (job seeker only)
   useEffect(() => {
@@ -54,16 +55,22 @@ const PublicJobDetails = () => {
   useEffect(() => {
     if (!id) {
       setError('Job ID is required');
+      setIsInitialLoading(false);
       return;
     }
 
     let cancelled = false;
+    setIsInitialLoading(true);
+    setError('');
+    setJob(null);
     (async () => {
       try {
         const data = await fetchJobById(id);
         if (!cancelled) setJob(data);
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to load job details');
+      } finally {
+        if (!cancelled) setIsInitialLoading(false);
       }
     })();
     return () => {
@@ -79,14 +86,42 @@ const PublicJobDetails = () => {
     currentUser?.role === 'employer' &&
     (job?.employerId?._id === currentUser._id || job?.employerId === currentUser._id);
 
-  const employerCompanyName =
-    job?.employer?.companyName ||
-    job?.employerId?.companyName ||
-    [job?.employer?.firstName, job?.employer?.lastName].filter(Boolean).join(' ').trim() ||
-    [job?.employerId?.firstName, job?.employerId?.lastName].filter(Boolean).join(' ').trim() ||
-    job?.employer?.email ||
-    job?.employerId?.email ||
-    'Unknown employer';
+  const getEmployerAndCompany = () => {
+    const result = { companyName: 'Unknown employer', logo: null };
+    if (!job) return result;
+
+    const maybe = obj => (obj && typeof obj === 'object' ? obj : null);
+
+    const employerObj =
+      maybe(job.employer) || maybe(job.employerId) || maybe(job.employerInfo) || null;
+    const companyObj = maybe(job.company) || (employerObj && maybe(employerObj.company)) || null;
+
+    if (employerObj) {
+      result.companyName = employerObj.companyName || employerObj.company || result.companyName;
+
+      result.logo =
+        employerObj.profileImage ||
+        employerObj.logo ||
+        employerObj.companyLogo ||
+        employerObj.avatar ||
+        result.logo;
+    }
+
+    if (companyObj) {
+      result.companyName =
+        companyObj.name || companyObj.companyName || companyObj.title || result.companyName;
+      result.logo =
+        result.logo || companyObj.logo || companyObj.companyLogo || companyObj.image || result.logo;
+    }
+
+    if (typeof job.company === 'string') result.companyName = job.company;
+    if (job.companyName && typeof job.companyName === 'string')
+      result.companyName = job.companyName;
+
+    return result;
+  };
+
+  const { companyName: employerCompany, logo: employerLogo } = getEmployerAndCompany();
 
   const locationText =
     job?.location?.fullAddress ||
@@ -122,7 +157,7 @@ const PublicJobDetails = () => {
   };
 
   // ── Loading / Error states ──────────────────────────────────
-  if (loading) {
+  if (loading || isInitialLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
@@ -130,7 +165,7 @@ const PublicJobDetails = () => {
     );
   }
 
-  if (error || !job) {
+  if (!isInitialLoading && (error || !job)) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full text-center">
@@ -164,9 +199,9 @@ const PublicJobDetails = () => {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
-              {job.employer?.profileImage ? (
+              {employerLogo ? (
                 <img
-                  src={getImageUrl(job.employer.profileImage)}
+                  src={getImageUrl(employerLogo)}
                   alt="logo"
                   className="w-full h-full object-cover"
                   onError={e => {
@@ -174,10 +209,9 @@ const PublicJobDetails = () => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-              ) : null}
-              <FaBriefcase
-                className={`w-8 h-8 text-gray-400 ${job.employer?.profileImage ? 'hidden' : 'block'}`}
-              />
+              ) : (
+                <FaBriefcase className="w-8 h-8 text-gray-400" />
+              )}
             </div>
             <div>
               <div className="flex items-center gap-3">
@@ -189,7 +223,7 @@ const PublicJobDetails = () => {
                 </span>
               </div>
               <p className="text-lg text-gray-600">{job.jobRole || 'Job Position'}</p>
-              <p className="text-sm text-gray-500 mt-1">{employerCompanyName}</p>
+              <p className="text-sm text-gray-500 mt-1">{employerCompany}</p>
             </div>
           </div>
         </div>
@@ -224,8 +258,8 @@ const PublicJobDetails = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-4">JOB INFORMATION</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Employer</p>
-              <p className="font-medium text-gray-900">{employerCompanyName}</p>
+              <p className="text-sm text-gray-600 mb-1">Company</p>
+              <p className="font-medium text-gray-900">{employerCompany}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">Category</p>
