@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { FaStar, FaPen, FaInbox, FaPaperPlane } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { FaStar, FaInbox, FaPaperPlane } from 'react-icons/fa';
 import useUserReviews from '../../hooks/useUserReviews';
 import useSentReviews from '../../hooks/useSentReviews';
-import { getCurrentUserId } from '../../store/slices/reviewSlice';
 import ReviewCard from '../../components/reviews/ReviewCard';
 import ReviewFilterBar from '../../components/reviews/ReviewFilterBar';
 import RatingStatsCard from '../../components/reviews/RatingStatsCard';
@@ -16,7 +16,7 @@ const PAGE_SIZE = 10;
 
 const TABS = [
   { key: 'received', label: 'Received', icon: <FaInbox /> },
-  { key: 'sent', label: 'Sent', icon: <FaPaperPlane /> },
+  { key: 'sent', label: 'Given', icon: <FaPaperPlane /> },
 ];
 
 /**
@@ -30,7 +30,7 @@ const TABS = [
  * Once an auth slice is added, swap getCurrentUserId() for a Redux selector.
  */
 const MyReviewsPage = () => {
-  const currentUserId = getCurrentUserId();
+  const currentUserId = useSelector(state => state.user?.currentUser?._id);
 
   const [activeTab, setActiveTab] = useState('received');
   const [reviewerType, setReviewerType] = useState('');
@@ -196,7 +196,9 @@ const MyReviewsPage = () => {
                     <FaPaperPlane className="text-4xl" />
                   )
                 }
-                title={activeTab === 'received' ? 'No reviews received yet' : 'No reviews sent yet'}
+                title={
+                  activeTab === 'received' ? 'No reviews received yet' : 'No reviews given yet'
+                }
                 description={
                   activeTab === 'received'
                     ? 'Reviews will appear here when others rate you after a completed job.'

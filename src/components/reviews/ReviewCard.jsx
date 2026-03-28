@@ -96,6 +96,8 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
         {showActions && (
           <ReviewCardActions
             isOwner={isOwner}
+            canEdit={review.canEdit ?? false}
+            canDelete={review.canDelete ?? false}
             isDeleting={isDeleting}
             isReporting={isReporting}
             onEdit={() => setShowEditModal(true)}

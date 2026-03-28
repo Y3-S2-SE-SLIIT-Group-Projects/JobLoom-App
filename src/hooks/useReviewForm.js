@@ -10,20 +10,6 @@ import {
   selectLastSubmittedReview,
 } from '../store/slices/reviewSlice';
 
-/** Default empty form state mirrors the Review model */
-const INITIAL_FORM = {
-  revieweeId: '',
-  jobId: '',
-  reviewerType: 'job_seeker', // 'job_seeker' | 'employer'
-  rating: 0,
-  comment: '',
-  workQuality: 0,
-  communication: 0,
-  punctuality: 0,
-  paymentOnTime: 0,
-  wouldRecommend: true,
-};
-
 /**
  * useReviewForm
  * Manages form state + submission for creating OR editing a review.
@@ -35,12 +21,31 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
   const dispatch = useDispatch();
   const isEdit = Boolean(existingReview);
 
+  // Derive reviewerType automatically from the logged-in user's role in Redux,
+  // falling back to 'job_seeker' for unauthenticated / unknown roles.
+  const currentUserRole = useSelector(state => state.user?.currentUser?.role ?? 'job_seeker');
+  const derivedReviewerType = currentUserRole === 'employer' ? 'employer' : 'job_seeker';
+
+  /** Default empty form state mirrors the Review model */
+  const INITIAL_FORM = {
+    revieweeId: '',
+    jobId: '',
+    reviewerType: derivedReviewerType,
+    rating: 0,
+    comment: '',
+    workQuality: 0,
+    communication: 0,
+    punctuality: 0,
+    paymentOnTime: 0,
+    wouldRecommend: true,
+  };
+
   const initialValues = isEdit
     ? {
         ...INITIAL_FORM,
         revieweeId: existingReview.revieweeId?._id ?? existingReview.revieweeId ?? '',
         jobId: existingReview.jobId?._id ?? existingReview.jobId ?? '',
-        reviewerType: existingReview.reviewerType ?? 'job_seeker',
+        reviewerType: existingReview.reviewerType ?? derivedReviewerType,
         rating: existingReview.rating ?? 0,
         comment: existingReview.comment ?? '',
         workQuality: existingReview.workQuality ?? 0,
@@ -53,6 +58,8 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
 
   const [form, setForm] = useState(initialValues);
   const [editSuccess, setEditSuccess] = useState(false);
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const isSubmitting = useSelector(selectReviewLoading(isEdit ? 'edit' : 'submit'));
   const submitError = useSelector(selectReviewError(isEdit ? 'edit' : 'submit'));
@@ -67,6 +74,26 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
     setField(name, type === 'checkbox' ? checked : value);
   };
 
+  /** Add image files (max 5 total) */
+  const handleImageChange = files => {
+    const incoming = Array.from(files);
+    setImages(prev => {
+      const combined = [...prev, ...incoming].slice(0, 5);
+      // Build object-URL previews for new files
+      setImagePreviews(combined.map(f => URL.createObjectURL(f)));
+      return combined;
+    });
+  };
+
+  /** Remove image at index */
+  const removeImage = index => {
+    setImages(prev => {
+      const next = prev.filter((_, i) => i !== index);
+      setImagePreviews(next.map(f => URL.createObjectURL(f)));
+      return next;
+    });
+  };
+
   const handleSubmit = async e => {
     e?.preventDefault();
 
@@ -76,18 +103,31 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
       if (!payload[k]) delete payload[k];
     });
 
+    // Build FormData when images are attached; plain object otherwise
+    let submitPayload;
+    if (images.length > 0) {
+      const fd = new FormData();
+      Object.entries(payload).forEach(([k, v]) => fd.append(k, String(v)));
+      images.forEach(img => fd.append('reviewImages', img));
+      submitPayload = fd;
+    } else {
+      submitPayload = payload;
+    }
+
     if (isEdit) {
       const result = await dispatch(
-        editReview({ reviewId: existingReview._id, updateData: payload })
+        editReview({ reviewId: existingReview._id, updateData: submitPayload })
       );
       if (!result.error) setEditSuccess(true);
     } else {
-      dispatch(submitReview(payload));
+      dispatch(submitReview(submitPayload));
     }
   };
 
   const resetForm = () => {
     setForm(initialValues);
+    setImages([]);
+    setImagePreviews([]);
     setEditSuccess(false);
     dispatch(clearSubmitError());
     if (!isEdit) dispatch(clearLastSubmitted());
@@ -97,6 +137,10 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
     form,
     setField,
     handleChange,
+    handleImageChange,
+    removeImage,
+    images,
+    imagePreviews,
     handleSubmit,
     resetForm,
     isSubmitting,

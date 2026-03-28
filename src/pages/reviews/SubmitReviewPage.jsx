@@ -1,19 +1,11 @@
 import { useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import useReviewForm from '../../hooks/useReviewForm';
-import StarRating from '../../components/ui/StarRating';
-import AlertBanner from '../../components/ui/AlertBanner';
 import Spinner from '../../components/ui/Spinner';
-import FormTextField from '../../components/ui/FormTextField';
-import CriteriaInput from '../../components/reviews/CriteriaInput';
 import ReviewSuccessScreen from '../../components/reviews/ReviewSuccessScreen';
 import ReviewFormHeader from '../../components/reviews/ReviewFormHeader';
-import ReviewerTypeToggle from '../../components/reviews/ReviewerTypeToggle';
+import ReviewForm from '../../components/reviews/ReviewForm';
 
-/**
- * SubmitReviewPage  –  /reviews/submit/:jobId  or  /reviews/submit?jobId=&revieweeId=
- * Lets an authenticated user submit a review for a completed job.
- */
 const SubmitReviewPage = () => {
   const { jobId: paramJobId } = useParams();
   const [searchParams] = useSearchParams();
@@ -26,6 +18,10 @@ const SubmitReviewPage = () => {
     form,
     setField,
     handleChange,
+    handleImageChange,
+    removeImage,
+    images,
+    imagePreviews,
     handleSubmit,
     resetForm,
     isSubmitting,
@@ -42,7 +38,6 @@ const SubmitReviewPage = () => {
     return () => clearTimeout(timer);
   }, [submittedReview, navigate, resetForm]);
 
-  const isEmployer = form.reviewerType === 'employer';
   const canSubmit = form.rating > 0 && form.revieweeId && form.jobId && !isSubmitting;
 
   if (submittedReview) return <ReviewSuccessScreen />;
@@ -50,125 +45,22 @@ const SubmitReviewPage = () => {
   return (
     <div className="min-h-screen bg-surface-muted">
       <ReviewFormHeader />
-
-      <div className="max-w-2xl mx-auto px-6 py-8">
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <AlertBanner type="error" message={submitError} />
-
-            <ReviewerTypeToggle
-              value={form.reviewerType}
-              onChange={v => setField('reviewerType', v)}
-            />
-
-            {!revieweeId && (
-              <FormTextField
-                id="revieweeId"
-                name="revieweeId"
-                label="Reviewee ID"
-                placeholder="User ID being reviewed"
-                value={form.revieweeId}
-                onChange={handleChange}
-                required
-              />
-            )}
-            {!jobId && (
-              <FormTextField
-                id="jobId"
-                name="jobId"
-                label="Job ID"
-                placeholder="Job ID for this review"
-                value={form.jobId}
-                onChange={handleChange}
-                required
-              />
-            )}
-
-            {/* Overall Rating */}
-            <div>
-              <label className="block text-sm font-semibold text-muted mb-2">
-                Overall Rating <span className="text-error">*</span>
-              </label>
-              <div className="flex items-center gap-3">
-                <StarRating
-                  value={form.rating}
-                  interactive
-                  onChange={v => setField('rating', v)}
-                  size="text-3xl"
-                />
-                {form.rating > 0 && (
-                  <span className="text-2xl font-bold text-secondary">{form.rating}.0</span>
-                )}
-              </div>
-            </div>
-
-            {/* Detailed Criteria */}
-            <div>
-              <p className="text-sm font-semibold text-muted mb-1">
-                Detailed Ratings <span className="text-subtle font-normal">(optional)</span>
-              </p>
-              <div className="rounded-xl border border-border px-4 py-2">
-                <CriteriaInput
-                  label="Work Quality"
-                  field="workQuality"
-                  value={form.workQuality}
-                  onChange={setField}
-                />
-                <CriteriaInput
-                  label="Communication"
-                  field="communication"
-                  value={form.communication}
-                  onChange={setField}
-                />
-                {isEmployer ? (
-                  <CriteriaInput
-                    label="Payment on Time"
-                    field="paymentOnTime"
-                    value={form.paymentOnTime}
-                    onChange={setField}
-                  />
-                ) : (
-                  <CriteriaInput
-                    label="Punctuality"
-                    field="punctuality"
-                    value={form.punctuality}
-                    onChange={setField}
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Comment */}
-            <div>
-              <label className="block text-sm font-semibold text-muted mb-1" htmlFor="comment">
-                Comment
-              </label>
-              <textarea
-                id="comment"
-                name="comment"
-                rows={4}
-                maxLength={1000}
-                placeholder="Share details about your experience…"
-                value={form.comment}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-border rounded-xl text-sm resize-none focus:outline-none focus:border-primary"
-              />
-              <p className="text-xs text-subtle mt-1 text-right">{form.comment.length}/1000</p>
-            </div>
-
-            {/* Would Recommend */}
-            <label className="flex items-center gap-3 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                name="wouldRecommend"
-                checked={form.wouldRecommend}
-                onChange={handleChange}
-                className="w-4 h-4 accent-primary"
-              />
-              <span className="text-sm text-muted">I would recommend this person</span>
-            </label>
-
-            {/* Submit */}
+      <div className="max-w-2xl px-6 py-8 mx-auto">
+        <div className="p-6 bg-surface border border-border shadow-sm rounded-2xl">
+          <ReviewForm
+            form={form}
+            setField={setField}
+            handleChange={handleChange}
+            handleImageChange={handleImageChange}
+            removeImage={removeImage}
+            images={images}
+            imagePreviews={imagePreviews}
+            submitError={submitError}
+            showRevieweeField={!revieweeId}
+            showJobIdField={!jobId}
+            formId="submit-review-form"
+            onSubmit={handleSubmit}
+          >
             <div className="flex items-center justify-between gap-4 pt-2 border-t border-neutral-100">
               <Link to={-1} className="text-sm text-subtle hover:text-primary transition-colors">
                 Cancel
@@ -179,11 +71,11 @@ const SubmitReviewPage = () => {
                 className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting && <Spinner size="sm" />}
-                {isSubmitting ? 'Submitting…' : 'Submit Review'}
+                {isSubmitting ? 'Submitting\u2026' : 'Submit Review'}
               </button>
             </div>
-          </div>
-        </form>
+          </ReviewForm>
+        </div>
       </div>
     </div>
   );

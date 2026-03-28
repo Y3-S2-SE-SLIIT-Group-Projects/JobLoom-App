@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FaArrowLeft } from 'react-icons/fa';
 import useUserReviews from '../../hooks/useUserReviews';
 import useRatingStats from '../../hooks/useRatingStats';
@@ -18,6 +19,8 @@ const PAGE_SIZE = 10;
  */
 const UserReviewsPage = () => {
   const { userId } = useParams();
+  const currentUserId = useSelector(state => state.user?.currentUser?._id);
+  const isOwnProfile = currentUserId === userId;
 
   const [reviewerType, setReviewerType] = useState('');
   const [sort, setSort] = useState('-createdAt');
@@ -68,15 +71,17 @@ const UserReviewsPage = () => {
           <aside className="w-full lg:w-72 shrink-0">
             {statsLoading ? <Spinner className="py-8" /> : <RatingStatsCard stats={stats} />}
 
-            {/* Quick link to submit a review – real apps would gate by auth */}
-            <div className="mt-4">
-              <Link
-                to={`/reviews/submit?revieweeId=${userId}`}
-                className="block w-full text-center px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
-              >
-                Write a Review
-              </Link>
-            </div>
+            {/* Quick link to submit a review – hidden when viewing own profile */}
+            {!isOwnProfile && currentUserId && (
+              <div className="mt-4">
+                <Link
+                  to={`/reviews/submit?revieweeId=${userId}`}
+                  className="block w-full text-center px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                >
+                  Write a Review
+                </Link>
+              </div>
+            )}
           </aside>
 
           {/* Main content */}
@@ -103,7 +108,12 @@ const UserReviewsPage = () => {
                 <>
                   <div className="space-y-4">
                     {reviews.map(review => (
-                      <ReviewCard key={review._id} review={review} showActions={false} />
+                      <ReviewCard
+                        key={review._id}
+                        review={review}
+                        currentUserId={currentUserId}
+                        showActions={!!currentUserId}
+                      />
                     ))}
                   </div>
 
