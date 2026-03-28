@@ -1,24 +1,9 @@
 import { useEffect } from 'react';
-import { FaTimes, FaCheckCircle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { X, CheckCircle2, Briefcase } from 'lucide-react';
 import useReviewForm from '../../hooks/useReviewForm';
-import Spinner from '../ui/Spinner';
 import ReviewForm from './ReviewForm';
 
-/**
- * ReviewModal
- * Slide-in overlay modal for writing OR editing a review.
- * Delegates the form body to ReviewForm — no duplicated field logic here.
- *
- * Props:
- *   isOpen        {boolean}  – show/hide
- *   onClose       {Function} – called after success or on cancel
- *   jobId         {string}   – pre-filled
- *   revieweeId    {string}   – pre-filled
- *   revieweeName  {string}   – displayed in the header
- *   jobTitle      {string}   – displayed in the header
- *   existingReview {Object}  – when provided, switches to EDIT mode
- *   onSuccess     {Function} – optional callback after successful submit/edit
- */
 const ReviewModal = ({
   isOpen,
   onClose,
@@ -29,6 +14,8 @@ const ReviewModal = ({
   existingReview = null,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
+
   const {
     form,
     setField,
@@ -44,18 +31,19 @@ const ReviewModal = ({
     submittedReview,
     editSuccess,
     isEdit,
+    effectiveRating,
   } = useReviewForm({ jobId, revieweeId }, existingReview);
 
   const succeeded = isEdit ? editSuccess : Boolean(submittedReview);
 
   useEffect(() => {
     if (!succeeded) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       onSuccess?.();
       onClose?.();
       resetForm();
     }, 1400);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [succeeded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClose = () => {
@@ -74,61 +62,64 @@ const ReviewModal = ({
 
   if (!isOpen) return null;
 
-  const canSubmit = form.rating > 0 && !isSubmitting;
+  const canSubmit = effectiveRating > 0 && form.revieweeId && form.jobId && !isSubmitting;
 
-  // \u2500\u2500 Success State \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   if (succeeded) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-        <div className="relative z-10 w-full max-w-sm p-8 text-center bg-surface shadow-2xl rounded-2xl">
-          <FaCheckCircle className="mx-auto mb-3 text-5xl text-success" />
-          <p className="text-lg font-bold text-text-dark">
-            {isEdit ? 'Review updated!' : 'Review submitted!'}
+        <div className="relative z-10 w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-50 flex items-center justify-center">
+            <CheckCircle2 className="w-7 h-7 text-emerald-500" />
+          </div>
+          <p className="text-base font-bold text-text">
+            {isEdit ? t('reviews.review_updated') : t('reviews.review_submitted')}
           </p>
-          <p className="mt-1 text-sm text-subtle">
+          <p className="mt-1 text-sm text-gray-400">
             {isEdit
-              ? 'Your changes have been saved.'
-              : `Thanks for reviewing ${revieweeName || 'this user'}.`}
+              ? t('reviews.changes_saved')
+              : t('reviews.thanks_reviewing', { name: revieweeName || '' })}
           </p>
         </div>
       </div>
     );
   }
 
-  // \u2500\u2500 Form \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      {/* Overlay */}
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
 
-      {/* Panel */}
-  <div className="relative bg-surface w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl z-10 max-h-[92vh] flex flex-col">
+      <div className="relative bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl z-10 max-h-[92vh] flex flex-col overflow-hidden">
+        {/* Top accent */}
+        <div className="h-1 w-full bg-primary shrink-0" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
           <div>
-            <p className="text-xs font-medium tracking-wide text-subtle uppercase">
-              {isEdit ? 'Edit Review' : 'Write a Review'}
+            <p className="text-xs font-semibold tracking-wider text-primary uppercase">
+              {isEdit ? t('reviews.edit_review') : t('reviews.write_review_title')}
             </p>
-            <h2 className="text-base font-bold text-text-dark leading-tight">
-              {revieweeName || 'Review User'}
+            <h2 className="text-base font-bold text-text mt-0.5">
+              {revieweeName || t('reviews.review_user')}
             </h2>
             {jobTitle && (
-              <p className="text-xs text-subtle mt-0.5">
-                Job: <span className="text-muted">{jobTitle}</span>
+              <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                <Briefcase className="w-3 h-3" />
+                {jobTitle}
               </p>
             )}
           </div>
           <button
             onClick={handleClose}
-            className="flex items-center justify-center w-8 h-8 text-subtle transition-colors bg-neutral-100 rounded-full hover:bg-neutral-200"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            aria-label={t('common.close')}
           >
-            <FaTimes className="text-sm" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 px-6 py-5 overflow-y-auto">
+        <div className="flex-1 px-6 py-5 overflow-y-auto custom-scrollbar">
           <ReviewForm
             form={form}
             setField={setField}
@@ -141,32 +132,14 @@ const ReviewModal = ({
             formId="review-modal-form"
             onSubmit={handleSubmit}
             commentFieldId="modal-comment"
+            showActions
+            isSubmitting={isSubmitting}
+            canSubmit={canSubmit}
+            submitLabel={isEdit ? t('reviews.save_changes') : t('reviews.submit_review')}
+            submittingLabel={isEdit ? t('reviews.saving') : t('reviews.submitting')}
+            onCancel={handleClose}
+            cancelLabel={t('common.cancel')}
           />
-        </div>
-
-        {/* Footer — outside the scrollable area; button targets form by id */}
-        <div className="flex items-center justify-between gap-4 px-6 py-4 border-t border-neutral-100 shrink-0">
-          <button
-            onClick={handleClose}
-            className="text-sm text-subtle hover:text-primary transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            form="review-modal-form"
-            type="submit"
-            disabled={!canSubmit}
-            className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {isSubmitting && <Spinner size="sm" />}
-            {isSubmitting
-              ? isEdit
-                ? 'Saving\u2026'
-                : 'Submitting\u2026'
-              : isEdit
-                ? 'Save Changes'
-                : 'Submit Review'}
-          </button>
         </div>
       </div>
     </div>

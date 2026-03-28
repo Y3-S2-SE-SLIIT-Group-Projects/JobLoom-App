@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
-import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import useReviewForm from '../../hooks/useReviewForm';
-import Spinner from '../../components/ui/Spinner';
 import ReviewSuccessScreen from '../../components/reviews/ReviewSuccessScreen';
 import ReviewFormHeader from '../../components/reviews/ReviewFormHeader';
 import ReviewForm from '../../components/reviews/ReviewForm';
 
 const SubmitReviewPage = () => {
+  const { t } = useTranslation();
   const { jobId: paramJobId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -15,18 +16,9 @@ const SubmitReviewPage = () => {
   const revieweeId = searchParams.get('revieweeId') || '';
 
   const {
-    form,
-    setField,
-    handleChange,
-    handleImageChange,
-    removeImage,
-    images,
-    imagePreviews,
-    handleSubmit,
-    resetForm,
-    isSubmitting,
-    submitError,
-    submittedReview,
+    form, setField, handleChange, handleImageChange,
+    removeImage, images, imagePreviews, handleSubmit,
+    resetForm, isSubmitting, submitError, submittedReview,
   } = useReviewForm({ jobId, revieweeId });
 
   useEffect(() => {
@@ -43,10 +35,11 @@ const SubmitReviewPage = () => {
   if (submittedReview) return <ReviewSuccessScreen />;
 
   return (
-    <div className="min-h-screen bg-surface-muted">
+    <div className="min-h-screen bg-background">
       <ReviewFormHeader />
-      <div className="max-w-2xl px-6 py-8 mx-auto">
-        <div className="p-6 bg-surface border border-border shadow-sm rounded-2xl">
+
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+        <div className="bg-white border border-gray-100 shadow-card rounded-2xl p-6">
           <ReviewForm
             form={form}
             setField={setField}
@@ -60,21 +53,14 @@ const SubmitReviewPage = () => {
             showJobIdField={!jobId}
             formId="submit-review-form"
             onSubmit={handleSubmit}
-          >
-            <div className="flex items-center justify-between gap-4 pt-2 border-t border-neutral-100">
-              <Link to={-1} className="text-sm text-subtle hover:text-primary transition-colors">
-                Cancel
-              </Link>
-              <button
-                type="submit"
-                disabled={!canSubmit}
-                className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isSubmitting && <Spinner size="sm" />}
-                {isSubmitting ? 'Submitting\u2026' : 'Submit Review'}
-              </button>
-            </div>
-          </ReviewForm>
+            showActions
+            isSubmitting={isSubmitting}
+            canSubmit={canSubmit}
+            submitLabel={t('reviews.submit_review')}
+            submittingLabel={t('reviews.submitting')}
+            onCancel={() => navigate(-1)}
+            cancelLabel={t('common.cancel')}
+          />
         </div>
       </div>
     </div>

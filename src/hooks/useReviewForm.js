@@ -10,6 +10,11 @@ import {
   selectLastSubmittedReview,
 } from '../store/slices/reviewSlice';
 
+const EMPLOYER_CRITERIA = ['workQuality', 'communication', 'punctuality'];
+const SEEKER_CRITERIA = ['communication', 'paymentOnTime'];
+
+const roundToOneDecimal = value => Math.round(value * 10) / 10;
+
 /**
  * useReviewForm
  * Manages form state + submission for creating OR editing a review.
@@ -99,6 +104,25 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
 
     // Strip zero-rated optional criteria so the BE ignores them
     const payload = { ...form };
+    const criteria = payload.reviewerType === 'employer' ? EMPLOYER_CRITERIA : SEEKER_CRITERIA;
+    const selectedRatings = criteria
+      .map(k => Number(payload[k]))
+      .filter(v => Number.isFinite(v) && v >= 1 && v <= 5);
+
+    const autoCalculatedRating = selectedRatings.length
+      ? roundToOneDecimal(selectedRatings.reduce((sum, v) => sum + v, 0) / selectedRatings.length)
+      : 0;
+
+    const existingOrManualRating = Number(payload.rating);
+    const finalRating =
+      autoCalculatedRating > 0
+        ? autoCalculatedRating
+        : Number.isFinite(existingOrManualRating) && existingOrManualRating > 0
+          ? existingOrManualRating
+          : 0;
+
+    payload.rating = finalRating;
+
     ['workQuality', 'communication', 'punctuality', 'paymentOnTime'].forEach(k => {
       if (!payload[k]) delete payload[k];
     });
@@ -124,6 +148,15 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
     }
   };
 
+  const criteria = form.reviewerType === 'employer' ? EMPLOYER_CRITERIA : SEEKER_CRITERIA;
+  const selectedRatings = criteria
+    .map(k => Number(form[k]))
+    .filter(v => Number.isFinite(v) && v >= 1 && v <= 5);
+  const autoCalculatedRating = selectedRatings.length
+    ? roundToOneDecimal(selectedRatings.reduce((sum, v) => sum + v, 0) / selectedRatings.length)
+    : 0;
+  const effectiveRating = autoCalculatedRating || Number(form.rating) || 0;
+
   const resetForm = () => {
     setForm(initialValues);
     setImages([]);
@@ -148,6 +181,7 @@ const useReviewForm = (defaults = {}, existingReview = null) => {
     submittedReview: isEdit ? (editSuccess ? existingReview : null) : submittedReview,
     editSuccess,
     isEdit,
+    effectiveRating,
   };
 };
 

@@ -1,47 +1,48 @@
+import { useTranslation } from 'react-i18next';
+import { Star } from 'lucide-react';
 import StarRating from '../ui/StarRating';
 import RatingBar from '../ui/RatingBar';
+import { deriveStatsFromReviews } from '../../utils/reviewStats';
 
-/**
- * RatingStatsCard
- * Shows aggregate rating summary: average, total, and distribution.
- *
- * @param {Object} stats  - ratingStats from Redux state
- *   { averageRating, totalReviews, ratingDistribution: { 5,4,3,2,1 } }
- */
-const RatingStatsCard = ({ stats }) => {
-  if (!stats) return null;
+const RatingStatsCard = ({ stats, reviews = [] }) => {
+  const { t } = useTranslation();
 
-  const distribution = stats.ratingDistribution ?? {};
-  const bars = [5, 4, 3, 2, 1];
+  const derived = deriveStatsFromReviews(reviews);
+  const hasDerivedData = derived.totalReviews > 0;
+  const hasReliableStats = (stats?.totalReviews ?? 0) > 0;
+
+  const safeStats = hasReliableStats ? stats : hasDerivedData ? derived : stats;
+
+  if (!safeStats) return null;
+
+  const distribution = safeStats.ratingDistribution ?? {};
+  const avg = (safeStats.averageRating ?? 0).toFixed(1);
+  const total = safeStats.totalReviews ?? 0;
+  const countLabel =
+    total === 1
+      ? t('reviews.review_count', { count: total })
+      : t('reviews.review_count_plural', { count: total });
 
   return (
-    <div className="bg-surface rounded-xl border border-border p-6 shadow-sm">
-      <h3 className="text-sm font-semibold text-subtle uppercase tracking-wide mb-4">
-        Rating Summary
-      </h3>
+    <div className="overflow-hidden bg-white border border-gray-100 rounded-2xl">
+      <div className="px-5 pt-5 pb-4 border-b border-gray-50">
+        <h3 className="flex items-center gap-2 mb-4 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+          <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+          {t('reviews.rating_summary')}
+        </h3>
 
-      {/* Big average */}
-      <div className="flex items-center gap-4 mb-5">
-        <span className="text-5xl font-bold text-text-dark">
-          {(stats.averageRating ?? 0).toFixed(1)}
-        </span>
-        <div>
-          <StarRating value={stats.averageRating ?? 0} size="text-xl" />
-          <p className="text-xs text-subtle mt-1">
-            {stats.totalReviews ?? 0} review{stats.totalReviews !== 1 ? 's' : ''}
-          </p>
+        <div className="flex items-center gap-4">
+          <span className="text-5xl font-bold text-text tabular-nums">{avg}</span>
+          <div>
+            <StarRating value={safeStats.averageRating ?? 0} size="text-lg" />
+            <p className="mt-1 text-xs text-gray-400">{countLabel}</p>
+          </div>
         </div>
       </div>
 
-      {/* Distribution bars */}
-      <div className="space-y-1.5">
-        {bars.map(star => (
-          <RatingBar
-            key={star}
-            star={star}
-            count={distribution[star] ?? 0}
-            total={stats.totalReviews ?? 0}
-          />
+      <div className="px-5 py-4 space-y-2.5">
+        {[5, 4, 3, 2, 1].map(star => (
+          <RatingBar key={star} star={star} count={distribution[star] ?? 0} total={total} />
         ))}
       </div>
     </div>

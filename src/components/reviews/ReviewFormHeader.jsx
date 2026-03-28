@@ -1,27 +1,25 @@
-import { FaArrowLeft } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
-/**
- * ReviewFormHeader
- * Page header with a back button and title for the submit review form.
- */
 const ReviewFormHeader = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
-    <div className="bg-surface border-b border-border px-6 py-4">
+    <div className="bg-white border-b border-gray-100 px-6 py-4">
       <div className="max-w-2xl mx-auto flex items-center gap-3">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="p-2 rounded-lg text-subtle hover:text-primary hover:bg-info/10 transition-colors"
-          aria-label="Go back"
+          aria-label={t('common.back')}
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
         >
-          <FaArrowLeft />
+          <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-text-dark">Write a Review</h1>
-          <p className="text-sm text-subtle">Share your experience to help the community</p>
+          <h1 className="text-lg font-bold text-text">{t('reviews.write_review_title')}</h1>
+          <p className="text-xs text-gray-400 mt-0.5">{t('reviews.write_review_subtitle')}</p>
         </div>
       </div>
     </div>

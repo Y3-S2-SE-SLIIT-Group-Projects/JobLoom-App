@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   loadJobReviews,
@@ -20,12 +20,16 @@ const useJobReviews = jobId => {
   const isLoading = useSelector(selectReviewLoading('jobReviews'));
   const error = useSelector(selectReviewError('jobReviews'));
 
-  useEffect(() => {
+  const refetch = useCallback(() => {
     if (!jobId) return;
     dispatch(loadJobReviews(jobId));
   }, [dispatch, jobId]);
 
-  return { reviews, isLoading, error };
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  return { reviews, isLoading, error, refetch };
 };
 
 export default useJobReviews;

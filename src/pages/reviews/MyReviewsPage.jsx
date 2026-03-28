@@ -1,208 +1,210 @@
-import { useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { FaStar, FaInbox, FaPaperPlane } from 'react-icons/fa';
+import { useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { Inbox, Send, Star, Info } from 'lucide-react';
 import useUserReviews from '../../hooks/useUserReviews';
 import useSentReviews from '../../hooks/useSentReviews';
+import useRatingStats from '../../hooks/useRatingStats';
 import ReviewCard from '../../components/reviews/ReviewCard';
 import ReviewFilterBar from '../../components/reviews/ReviewFilterBar';
 import RatingStatsCard from '../../components/reviews/RatingStatsCard';
-import useRatingStats from '../../hooks/useRatingStats';
+import ReviewSkeleton from '../../components/reviews/ReviewSkeleton';
 import Spinner from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
 import AlertBanner from '../../components/ui/AlertBanner';
 import DottedBackground from '../../components/DottedBackground';
+import {
+  selectActiveTab,
+  selectReviewerTypeFilter,
+  selectReviewSort,
+  selectReviewPage,
+  setActiveTab,
+  setPage,
+} from '../../store/slices/reviewSlice';
 
 const PAGE_SIZE = 10;
 
 const TABS = [
-  { key: 'received', label: 'Received', icon: <FaInbox /> },
-  { key: 'sent', label: 'Given', icon: <FaPaperPlane /> },
+  { key: 'received', labelKey: 'reviews.tab_received', icon: Inbox },
+  { key: 'sent', labelKey: 'reviews.tab_sent', icon: Send },
 ];
 
-/**
- * MyReviewsPage  –  /reviews/my
- * Shows the logged-in user's received and sent reviews.
- *
- * Received tab: reviews others wrote about you (editable by them).
- * Sent tab:     reviews you wrote about others (you can edit + delete).
- *
- * Uses the JWT in localStorage to resolve the current user's ID.
- * Once an auth slice is added, swap getCurrentUserId() for a Redux selector.
- */
 const MyReviewsPage = () => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
   const currentUserId = useSelector(state => state.user?.currentUser?._id);
 
-  const [activeTab, setActiveTab] = useState('received');
-  const [reviewerType, setReviewerType] = useState('');
-  const [sort, setSort] = useState('-createdAt');
-  const [page, setPage] = useState(1);
+  const activeTab = useSelector(selectActiveTab);
+  const reviewerType = useSelector(selectReviewerTypeFilter);
+  const sort = useSelector(selectReviewSort);
+  const page = useSelector(selectReviewPage);
 
   const queryParams = useMemo(
     () => ({ ...(reviewerType && { reviewerType }), sort, page, limit: PAGE_SIZE }),
     [reviewerType, sort, page]
   );
 
-  const {
-    reviews: receivedReviews,
-    pagination: receivedPagination,
-    isLoading: receivedLoading,
-    error: receivedError,
-  } = useUserReviews(currentUserId, activeTab === 'received' ? queryParams : {});
+  const { reviews: received, pagination: receivedPagination, isLoading: receivedLoading, error: receivedError } =
+    useUserReviews(currentUserId, activeTab === 'received' ? queryParams : {});
 
-  const {
-    reviews: sentReviews,
-    pagination: sentPagination,
-    isLoading: sentLoading,
-    error: sentError,
-  } = useSentReviews(currentUserId, activeTab === 'sent' ? queryParams : {});
+  const { reviews: sent, pagination: sentPagination, isLoading: sentLoading, error: sentError } =
+    useSentReviews(currentUserId, activeTab === 'sent' ? queryParams : {});
 
   const { stats, isLoading: statsLoading } = useRatingStats(currentUserId);
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen bg-surface-muted flex items-center justify-center">
-        <div className="text-center">
-          <FaStar className="text-5xl text-neutral-300 mx-auto mb-3" />
-          <p className="text-subtle font-medium">Please log in to view your reviews.</p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center max-w-sm w-full shadow-card">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-50 flex items-center justify-center">
+            <Star className="w-6 h-6 text-gray-300" />
+          </div>
+          <p className="text-sm text-gray-500">{t('reviews.please_login')}</p>
         </div>
       </div>
     );
   }
 
-  const reviews = activeTab === 'received' ? receivedReviews : sentReviews;
+  const reviews = activeTab === 'received' ? received : sent;
   const pagination = activeTab === 'received' ? receivedPagination : sentPagination;
   const isLoading = activeTab === 'received' ? receivedLoading : sentLoading;
   const error = activeTab === 'received' ? receivedError : sentError;
   const totalPages = pagination?.pages ?? 1;
 
-  const handleTabChange = tab => {
-    setActiveTab(tab);
-    setReviewerType('');
-    setSort('-createdAt');
-    setPage(1);
+  const handleTabChange = key => {
+    dispatch(setActiveTab(key));
   };
 
   return (
-    <div className="min-h-screen bg-surface-muted relative">
+    <div className="min-h-screen bg-background relative">
       <DottedBackground />
 
       {/* Page header */}
-      <div className="relative bg-surface border-b border-border px-6 py-5">
+      <div className="relative bg-white border-b border-gray-100 px-6 py-5">
         <div className="max-w-6xl mx-auto">
-          <p className="text-xs text-primary font-semibold uppercase tracking-widest mb-1">
-            Profile
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">
+            {t('reviews.breadcrumb')}
           </p>
-          <h1 className="text-2xl font-bold text-text-dark">My Reviews</h1>
-          <p className="text-sm text-subtle mt-0.5">
-            Reviews you have received and reviews you have written.
-          </p>
+          <h1 className="text-2xl font-bold text-text">{t('reviews.my_reviews_title')}</h1>
+          <p className="text-sm text-gray-400 mt-0.5">{t('reviews.my_reviews_subtitle')}</p>
         </div>
       </div>
 
-      {/* Body */}
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* ── Sidebar ─────────────────────────────────────────────────── */}
+        <div className="flex flex-col lg:flex-row gap-6">
+
+          {/* Sidebar */}
           <aside className="lg:w-72 shrink-0 space-y-4">
             {statsLoading ? (
-              <div className="bg-surface rounded-xl border border-border p-6 flex justify-center">
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 flex justify-center">
                 <Spinner />
               </div>
             ) : (
               <RatingStatsCard stats={stats} />
             )}
 
-            {/* Quick legend */}
-            <div className="bg-surface rounded-xl border border-border p-4 text-xs text-subtle space-y-2">
-              <p className="font-semibold text-muted">How it works</p>
-              <p>
-                <span className="font-medium text-text-dark">Received</span> — reviews others wrote
-                about you after a completed job.
+            {/* How it works card */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-4">
+              <p className="text-xs font-semibold text-text flex items-center gap-2 mb-3">
+                <Info className="w-3.5 h-3.5 text-primary" />
+                {t('reviews.how_it_works')}
               </p>
-              <p>
-                <span className="font-medium text-text-dark">Sent</span> — reviews you wrote. You
-                can edit within 7 days or delete at any time.
-              </p>
+              <div className="space-y-2.5">
+                <div className="flex gap-2.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                  <div>
+                    <span className="text-xs font-semibold text-text block">
+                      {t('reviews.tab_received')}
+                    </span>
+                    <span className="text-xs text-gray-400 leading-relaxed">
+                      {t('reviews.received_description')}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
+                  <div>
+                    <span className="text-xs font-semibold text-text block">
+                      {t('reviews.tab_sent')}
+                    </span>
+                    <span className="text-xs text-gray-400 leading-relaxed">
+                      {t('reviews.given_description')}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </aside>
 
-          {/* ── Main ────────────────────────────────────────────────────── */}
+          {/* Main content */}
           <main className="flex-1 min-w-0">
-            {/* Tabs */}
-            <div className="flex gap-1 bg-surface border border-border rounded-xl p-1 mb-5 w-fit">
-              {TABS.map(tab => (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabChange(tab.key)}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    activeTab === tab.key
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'text-subtle hover:text-text-dark'
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                  {tab.key === 'received' && receivedPagination?.total != null && (
-                    <span
-                      className={`text-xs rounded-full px-1.5 py-0.5 ${
-                        activeTab === 'received' ? 'bg-surface/25' : 'bg-neutral-100 text-subtle'
-                      }`}
-                    >
-                      {receivedPagination.total}
-                    </span>
-                  )}
-                  {tab.key === 'sent' && sentPagination?.total != null && (
-                    <span
-                      className={`text-xs rounded-full px-1.5 py-0.5 ${
-                        activeTab === 'sent' ? 'bg-surface/25' : 'bg-neutral-100 text-subtle'
-                      }`}
-                    >
-                      {sentPagination.total}
-                    </span>
-                  )}
-                </button>
-              ))}
+            {/* Tab switcher */}
+            <div className="flex gap-1 bg-white border border-gray-100 rounded-xl p-1 mb-5 w-fit">
+              {TABS.map(({ key, labelKey, icon: Icon }) => {
+                const count =
+                  key === 'received' ? receivedPagination?.total : sentPagination?.total;
+                const isActive = activeTab === key;
+
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleTabChange(key)}
+                    className={[
+                      'flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-150',
+                      isActive
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'text-gray-500 hover:text-text',
+                    ].join(' ')}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {t(labelKey)}
+                    {count != null && (
+                      <span
+                        className={`text-xs rounded-full px-1.5 py-0.5 ${
+                          isActive ? 'bg-white/25 text-white' : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Filter bar — only on received */}
+            {/* Filter bar — received tab only */}
             {activeTab === 'received' && (
-              <ReviewFilterBar
-                reviewerType={reviewerType}
-                sort={sort}
-                onFilterChange={v => {
-                  setReviewerType(v);
-                  setPage(1);
-                }}
-                onSortChange={v => {
-                  setSort(v);
-                  setPage(1);
-                }}
-              />
+              <div className="mb-5">
+                <ReviewFilterBar />
+              </div>
             )}
 
-            {/* Content */}
+            {/* Error */}
             <AlertBanner type="error" message={error} />
 
+            {/* Content */}
             {isLoading ? (
-              <div className="flex justify-center py-16">
-                <Spinner />
+              <div className="space-y-4">
+                {Array.from({ length: 3 }, (_, i) => <ReviewSkeleton key={i} />)}
               </div>
             ) : reviews.length === 0 ? (
               <EmptyState
                 icon={
                   activeTab === 'received' ? (
-                    <FaInbox className="text-4xl" />
+                    <Inbox className="w-8 h-8" />
                   ) : (
-                    <FaPaperPlane className="text-4xl" />
+                    <Send className="w-8 h-8" />
                   )
                 }
                 title={
-                  activeTab === 'received' ? 'No reviews received yet' : 'No reviews given yet'
+                  activeTab === 'received'
+                    ? t('reviews.no_received_title')
+                    : t('reviews.no_sent_title')
                 }
                 description={
                   activeTab === 'received'
-                    ? 'Reviews will appear here when others rate you after a completed job.'
-                    : 'Reviews you write about employers or job seekers will appear here.'
+                    ? t('reviews.no_received_desc')
+                    : t('reviews.no_sent_desc')
                 }
               />
             ) : (
@@ -218,25 +220,24 @@ const MyReviewsPage = () => {
                   ))}
                 </div>
 
-                {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-3 mt-8">
+                  <div className="flex items-center justify-center gap-3 mt-8">
                     <button
-                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
                       disabled={page === 1}
-                      className="px-4 py-2 text-sm bg-surface border border-border rounded-lg disabled:opacity-40 hover:border-primary transition-colors"
+                      className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-xl disabled:opacity-40 hover:border-primary/30 transition-colors"
                     >
-                      Previous
+                      {t('common.previous')}
                     </button>
-                    <span className="text-sm text-subtle">
-                      Page {page} of {totalPages}
+                    <span className="text-sm text-gray-500">
+                      {t('common.page_of', { current: page, total: totalPages })}
                     </span>
                     <button
-                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      onClick={() => dispatch(setPage(Math.min(totalPages, page + 1)))}
                       disabled={page === totalPages}
-                      className="px-4 py-2 text-sm bg-surface border border-border rounded-lg disabled:opacity-40 hover:border-primary transition-colors"
+                      className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-xl disabled:opacity-40 hover:border-primary/30 transition-colors"
                     >
-                      Next
+                      {t('common.next')}
                     </button>
                   </div>
                 )}
