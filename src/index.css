@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;700&family=Noto+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+@import './styles/colors.css';
+@import './styles/typography.css';
 
 @tailwind base;
 @tailwind components;
@@ -17,12 +20,15 @@
 
   body {
     @apply min-h-screen bg-background font-body antialiased;
-    font-family: 'Noto Sans', sans-serif;
-    color: #1d283a;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-dark);
   }
 
   #root {
-    @apply w-full min-h-screen;
+    @apply w-full min-h-screen flex flex-col;
   }
 
   h1,
@@ -31,12 +37,111 @@
   h4,
   h5,
   h6 {
-    font-family: 'Spectral', serif;
-    font-weight: 700;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
   }
 }
 
 @layer utilities {
+  /* Hero gradient text */
+  .hero-gradient-text {
+    background: linear-gradient(
+      135deg,
+      var(--color-deep-blue) 0%,
+      var(--color-blue-green) 50%,
+      var(--color-deep-blue) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: hero-gradient-shift 6s ease-in-out infinite;
+  }
+
+  @keyframes hero-gradient-shift {
+    0%,
+    100% {
+      background-position: 0% center;
+    }
+    50% {
+      background-position: 100% center;
+    }
+  }
+
+  /* Hero glow blob */
+  .hero-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0.18;
+    pointer-events: none;
+    animation: hero-glow-pulse 5s ease-in-out infinite;
+  }
+
+  @keyframes hero-glow-pulse {
+    0%,
+    100% {
+      opacity: 0.14;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.22;
+      transform: scale(1.08);
+    }
+  }
+
+  /* Hero floating badges */
+  .hero-float {
+    animation: hero-float 4s ease-in-out infinite;
+  }
+
+  .hero-float-delay {
+    animation: hero-float 4s ease-in-out 1s infinite;
+  }
+
+  .hero-float-delay-2 {
+    animation: hero-float 4s ease-in-out 2s infinite;
+  }
+
+  @keyframes hero-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Hero badge shimmer */
+  .hero-badge-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-badge-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+    animation: hero-shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes hero-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
   /* FlowOps Glass Effect */
   .glass-effect {
     background: rgba(255, 255, 255, 0.9);

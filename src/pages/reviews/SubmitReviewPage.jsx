@@ -48,12 +48,12 @@ const SubmitReviewPage = () => {
   if (submittedReview) return <ReviewSuccessScreen />;
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-surface-muted">
       <ReviewFormHeader />
 
       <div className="max-w-2xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} noValidate>
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-6">
+          <div className="bg-surface rounded-2xl border border-border shadow-sm p-6 space-y-6">
             <AlertBanner type="error" message={submitError} />
 
             <ReviewerTypeToggle
@@ -86,8 +86,8 @@ const SubmitReviewPage = () => {
 
             {/* Overall Rating */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Overall Rating <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-muted mb-2">
+                Overall Rating <span className="text-error">*</span>
               </label>
               <div className="flex items-center gap-3">
                 <StarRating
@@ -97,17 +97,17 @@ const SubmitReviewPage = () => {
                   size="text-3xl"
                 />
                 {form.rating > 0 && (
-                  <span className="text-2xl font-bold text-amber-500">{form.rating}.0</span>
+                  <span className="text-2xl font-bold text-secondary">{form.rating}.0</span>
                 )}
               </div>
             </div>
 
             {/* Detailed Criteria */}
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-1">
-                Detailed Ratings <span className="text-gray-400 font-normal">(optional)</span>
+              <p className="text-sm font-semibold text-muted mb-1">
+                Detailed Ratings <span className="text-subtle font-normal">(optional)</span>
               </p>
-              <div className="rounded-xl border border-gray-200 px-4 py-2">
+              <div className="rounded-xl border border-border px-4 py-2">
                 <CriteriaInput
                   label="Work Quality"
                   field="workQuality"
@@ -140,7 +140,7 @@ const SubmitReviewPage = () => {
 
             {/* Comment */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1" htmlFor="comment">
+              <label className="block text-sm font-semibold text-muted mb-1" htmlFor="comment">
                 Comment
               </label>
               <textarea
@@ -151,9 +151,9 @@ const SubmitReviewPage = () => {
                 placeholder="Share details about your experience…"
                 value={form.comment}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm resize-none focus:outline-none focus:border-[#6794D1]"
+                className="w-full px-4 py-3 border border-border rounded-xl text-sm resize-none focus:outline-none focus:border-primary"
               />
-              <p className="text-xs text-gray-400 mt-1 text-right">{form.comment.length}/1000</p>
+              <p className="text-xs text-subtle mt-1 text-right">{form.comment.length}/1000</p>
             </div>
 
             {/* Would Recommend */}
@@ -163,23 +163,20 @@ const SubmitReviewPage = () => {
                 name="wouldRecommend"
                 checked={form.wouldRecommend}
                 onChange={handleChange}
-                className="w-4 h-4 accent-[#6794D1]"
+                className="w-4 h-4 accent-primary"
               />
-              <span className="text-sm text-gray-700">I would recommend this person</span>
+              <span className="text-sm text-muted">I would recommend this person</span>
             </label>
 
             {/* Submit */}
-            <div className="flex items-center justify-between gap-4 pt-2 border-t border-gray-100">
-              <Link
-                to={-1}
-                className="text-sm text-gray-500 hover:text-[#6794D1] transition-colors"
-              >
+            <div className="flex items-center justify-between gap-4 pt-2 border-t border-neutral-100">
+              <Link to={-1} className="text-sm text-subtle hover:text-primary transition-colors">
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="px-6 py-2.5 bg-[#6794D1] text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting && <Spinner size="sm" />}
                 {isSubmitting ? 'Submitting…' : 'Submit Review'}

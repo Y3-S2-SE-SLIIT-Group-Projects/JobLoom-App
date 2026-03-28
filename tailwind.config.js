@@ -3,32 +3,72 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      // FlowOps Color Palette
+      // Central palette: src/styles/colors.css (:root)
       colors: {
-        text: '#1D283A',
-        background: '#F5F7FA',
-        primary: '#6895D2',
-        secondary: '#2DD4BF',
-        accent: '#A78BFA',
-        warning: '#FBBF24',
-        error: '#EF4444',
-        success: '#10B981',
-        info: '#3B82F6',
+        'sky-light': 'var(--color-sky-light)',
+        'blue-green': 'var(--color-blue-green)',
+        'deep-blue': 'var(--color-deep-blue)',
+        amber: 'var(--color-amber)',
+        orange: 'var(--color-orange)',
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        background: 'var(--color-background)',
+        accent: 'var(--color-accent)',
+        text: 'var(--color-text-primary)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-dark': 'var(--color-text-dark)',
+        muted: 'var(--color-text-muted)',
+        subtle: 'var(--color-text-subtle)',
+        border: 'var(--color-border)',
+        'border-strong': 'var(--color-border-strong)',
+        surface: 'var(--color-surface)',
+        'surface-muted': 'var(--color-surface-muted)',
+        neutral: {
+          50: 'var(--color-neutral-50)',
+          100: 'var(--color-neutral-100)',
+          200: 'var(--color-neutral-200)',
+          300: 'var(--color-neutral-300)',
+          500: 'var(--color-neutral-500)',
+          700: 'var(--color-neutral-700)',
+          900: 'var(--color-neutral-900)',
+        },
+        success: 'var(--color-success)',
+        warning: 'var(--color-warning)',
+        error: 'var(--color-error)',
+        info: 'var(--color-info)',
       },
-      // FlowOps Font Sizes
+      // Typography: src/styles/typography.css (:root)
       fontSize: {
-        sm: '0.600rem', // 9.6px
-        base: '0.8rem', // 12.8px
-        xl: '1.066rem', // 17px
-        '2xl': '1.421rem', // 22.7px
-        '3xl': '1.894rem', // 30.3px
-        '4xl': '2.525rem', // 40.4px
-        '5xl': '3.366rem', // 53.9px
+        xs: 'var(--text-xs)',
+        sm: 'var(--text-sm)',
+        base: 'var(--text-base)',
+        lg: 'var(--text-lg)',
+        xl: 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+        '4xl': 'var(--text-4xl)',
+        '5xl': 'var(--text-5xl)',
       },
-      // FlowOps Font Families
       fontFamily: {
-        heading: ['Spectral', 'serif'],
-        body: ['Noto Sans', 'sans-serif'],
+        heading: 'var(--font-heading)',
+        body: 'var(--font-body)',
+      },
+      fontWeight: {
+        normal: 'var(--font-weight-regular)',
+        medium: 'var(--font-weight-medium)',
+        semibold: 'var(--font-weight-semibold)',
+        bold: 'var(--font-weight-bold)',
+        extrabold: 'var(--font-weight-extrabold)',
+      },
+      lineHeight: {
+        tight: 'var(--leading-tight)',
+        normal: 'var(--leading-normal)',
+        loose: 'var(--leading-loose)',
+      },
+      letterSpacing: {
+        tight: 'var(--tracking-tight)',
+        normal: 'var(--tracking-normal)',
+        wide: 'var(--tracking-wide)',
       },
       // FlowOps Spacing (8px base)
       spacing: {

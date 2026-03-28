@@ -22,7 +22,10 @@
     "my_applications": "My Applications",
     "sign_in": "Sign in",
     "register": "Register",
-    "sign_out": "Sign out"
+    "sign_out": "Sign out",
+    "home": "Home",
+    "about": "About",
+    "explore": "Explore"
   },
   "applications": {
     "my_applications_title": "My Applications",
@@ -192,9 +195,9 @@
   },
   "dashboard": {
     "hero_title": "Take the Next Step in Your Career.",
-    "hero_subtitle": "Let’s Get You Hired.",
     "hero_description": "Browse thousands of jobs across Sri Lanka. Connect with employers, apply with ease, and take the next step in your career today.",
     "explore_jobs": "Explore Jobs",
+    "learn_more": "Learn More",
     "job_title_placeholder": "Job title or keywords",
     "location_placeholder": "Anywhere",
     "search_button": "Search",

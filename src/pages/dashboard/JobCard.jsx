@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaMapMarkerAlt, FaBriefcase, FaDollarSign } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
+import { C, T } from './jobloomTokens';
 
 const JobCard = ({ job }) => {
   const navigate = useNavigate();
@@ -80,10 +81,12 @@ const JobCard = ({ job }) => {
   return (
     <div
       onClick={handleClick}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-4 cursor-pointer hover:shadow-md transition-shadow"
+      className={`${C.bgSurface} rounded-xl shadow-sm border ${C.border} p-5 mb-4 cursor-pointer hover:shadow-md transition-shadow`}
     >
       <div className="flex items-start gap-4">
-        <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center text-xl font-bold text-gray-600 overflow-hidden border border-gray-100">
+        <div
+          className={`w-14 h-14 ${C.bgNeutral100} rounded-md flex items-center justify-center ${T.xl} ${T.bold} ${C.muted} overflow-hidden border ${C.border}`}
+        >
           {logo ? (
             <img
               src={getImageUrl(logo)}
@@ -99,9 +102,11 @@ const JobCard = ({ job }) => {
           )}
         </div>
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-[#1F2A37]">{job?.title}</h3>
-          <div className="text-sm text-gray-500 mt-1">{companyName}</div>
-          <div className="flex items-center gap-4 text-sm text-gray-500 mt-3">
+          <h3 className={`${T.lg} ${T.heading} ${T.bold} ${C.text} ${T.leadingTight}`}>
+            {job?.title}
+          </h3>
+          <div className={`${T.sm} ${C.subtle} mt-1 ${T.body}`}>{companyName}</div>
+          <div className={`flex items-center gap-4 ${T.sm} ${C.subtle} mt-3 ${T.body}`}>
             <div className="flex items-center gap-2">
               <FaMapMarkerAlt />
               <span>{formatLocation()}</span>
@@ -116,7 +121,7 @@ const JobCard = ({ job }) => {
             </div>
           </div>
         </div>
-        <div className="text-sm text-gray-400">{created}</div>
+        <div className={`${T.sm} ${C.subtle} shrink-0 ${T.body}`}>{created}</div>
       </div>
     </div>
   );

@@ -29,8 +29,8 @@ import ProfileRecommendations from '../../components/reviews/ProfileRecommendati
 
 const getRoleBadge = role => {
   const styles = {
-    job_seeker: 'bg-[#6794D1]/20 text-[#6794D1] border-[#6794D1]',
-    employer: 'bg-[#2CD2BD]/20 text-[#2CD2BD] border-[#2CD2BD]',
+    job_seeker: 'bg-primary/20 text-primary border-primary',
+    employer: 'bg-success/20 text-success border-success',
     admin: 'bg-purple-100 text-purple-700 border-purple-200',
   };
   return styles[role] || styles.job_seeker;
@@ -112,7 +112,7 @@ const UserProfile = () => {
     return (
       <DottedBackground>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="w-12 h-12 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         </div>
       </DottedBackground>
     );
@@ -122,13 +122,13 @@ const UserProfile = () => {
     return (
       <DottedBackground>
         <div className="flex items-center justify-center min-h-screen p-4">
-          <div className="w-full max-w-md p-6 text-center bg-white border border-red-200 shadow-sm rounded-xl">
-            <FaTimesCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-            <h2 className="text-xl font-bold text-[#2B373F] mb-2">{t('profile.unable_to_load')}</h2>
-            <p className="text-[#516876] mb-4">{error || t('profile.sign_in_to_view')}</p>
+          <div className="w-full max-w-md p-6 text-center bg-surface border border-error/30 shadow-sm rounded-xl">
+            <FaTimesCircle className="w-12 h-12 mx-auto mb-4 text-error" />
+            <h2 className="text-xl font-bold text-text-dark mb-2">{t('profile.unable_to_load')}</h2>
+            <p className="text-muted mb-4">{error || t('profile.sign_in_to_view')}</p>
             <Link
               to="/login"
-              className="inline-block px-6 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors"
+              className="inline-block px-6 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors"
             >
               {t('navbar.sign_in')}
             </Link>
@@ -142,7 +142,7 @@ const UserProfile = () => {
     <DottedBackground>
       <div className="max-w-4xl px-6 py-8 mx-auto">
         {/* Profile Header Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 mb-6">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-6">
           <div className="flex flex-col items-start gap-6 sm:flex-row">
             {/* Avatar */}
             <div className="relative flex-shrink-0">
@@ -150,14 +150,14 @@ const UserProfile = () => {
                 <img
                   src={getImageUrl(user.profileImage)}
                   alt={`${user.firstName} ${user.lastName}`}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-[#D2D5D9]"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-border"
                   onError={e => {
                     e.currentTarget.onerror = null;
                     setImgError(true);
                   }}
                 />
               ) : (
-                <div className="w-24 h-24 bg-gradient-to-br from-[#6794D1] to-[#5a83c0] rounded-full flex items-center justify-center border-4 border-[#6794D1]/20">
+                <div className="w-24 h-24 bg-gradient-to-br from-primary to-deep-blue rounded-full flex items-center justify-center border-4 border-primary/20">
                   <span className="text-3xl font-bold text-white">
                     {user.role === 'employer' ? (
                       <FaBriefcase className="w-10 h-10" />
@@ -171,7 +171,7 @@ const UserProfile = () => {
                 </div>
               )}
               {user.isVerified && (
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#2CD2BD] rounded-full flex items-center justify-center border-2 border-white">
+                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-success rounded-full flex items-center justify-center border-2 border-white">
                   <FaCheckCircle className="w-4 h-4 text-white" />
                 </div>
               )}
@@ -181,7 +181,7 @@ const UserProfile = () => {
             <div className="flex-1">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-[#2B373F] mb-1">
+                  <h1 className="text-3xl font-bold text-text-dark mb-1">
                     {user.firstName} {user.lastName}
                   </h1>
                   <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -191,32 +191,32 @@ const UserProfile = () => {
                       {getRoleLabel(user.role)}
                     </span>
                     {user.role === 'employer' && user.industry && (
-                      <span className="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 border rounded-full">
+                      <span className="px-3 py-1 text-xs font-medium text-muted bg-neutral-100 border rounded-full">
                         <AutoTranslate>{user.industry}</AutoTranslate>
                       </span>
                     )}
                     {user.isVerified ? (
-                      <span className="flex items-center gap-1 text-xs text-[#2CD2BD] font-medium">
+                      <span className="flex items-center gap-1 text-xs text-success font-medium">
                         <FaCheckCircle className="w-3 h-3" /> {t('profile.verified')}
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs font-medium text-orange-500">
+                      <span className="flex items-center gap-1 text-xs font-medium text-warning">
                         <FaTimesCircle className="w-3 h-3" /> {t('profile.not_verified')}
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-[#516876]">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted">
                     <div className="flex items-center gap-2">
-                      <FaEnvelope className="w-4 h-4 text-gray-400" />
+                      <FaEnvelope className="w-4 h-4 text-subtle" />
                       <span>{user.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaPhone className="w-4 h-4 text-gray-400" />
+                      <FaPhone className="w-4 h-4 text-subtle" />
                       <span>{user.phone}</span>
                     </div>
                     {user.location && (
                       <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="w-4 h-4 text-gray-400" />
+                        <FaMapMarkerAlt className="w-4 h-4 text-subtle" />
                         <span>
                           {[user.location.village, user.location.district, user.location.province]
                             .filter(Boolean)
@@ -231,14 +231,14 @@ const UserProfile = () => {
                 <div className="flex flex-shrink-0 gap-2">
                   <Link
                     to="/profile/edit"
-                    className="flex items-center gap-2 px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium"
                   >
                     <FaEdit className="w-4 h-4" />
                     {t('profile.edit_profile')}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors text-sm font-medium"
                   >
                     <FaSignOutAlt className="w-4 h-4" />
                     {t('navbar.sign_out')}
@@ -254,35 +254,35 @@ const UserProfile = () => {
           <div className="space-y-6 lg:col-span-2">
             {/* Employer: Company about */}
             {user.role === 'employer' && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 text-center sm:text-left">
-                <h2 className="text-xl font-bold text-[#2B373F] mb-4 flex items-center gap-2">
-                  <div className="w-8 h-8 bg-[#6794D1]/10 rounded-lg flex items-center justify-center">
-                    <FaBriefcase className="w-4 h-4 text-[#6794D1]" />
+              <div className="bg-surface rounded-xl shadow-sm border border-border p-6 text-center sm:text-left">
+                <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <FaBriefcase className="w-4 h-4 text-primary" />
                   </div>
                   {t('profile.company_overview')}
                 </h2>
                 <div className="space-y-4">
                   {user.companyName && (
                     <div>
-                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
+                      <h3 className="text-sm font-semibold tracking-wider text-subtle uppercase">
                         {t('profile.company_name')}
                       </h3>
-                      <p className="text-lg font-bold text-[#2B373F]">{user.companyName}</p>
+                      <p className="text-lg font-bold text-text-dark">{user.companyName}</p>
                     </div>
                   )}
                   {user.industry && (
                     <div>
-                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
+                      <h3 className="text-sm font-semibold tracking-wider text-subtle uppercase">
                         {t('profile.industry')}
                       </h3>
-                      <p className="text-[#2B373F] font-medium">
+                      <p className="text-text-dark font-medium">
                         <AutoTranslate>{user.industry}</AutoTranslate>
                       </p>
                     </div>
                   )}
                   {user.companyWebsite && (
                     <div>
-                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
+                      <h3 className="text-sm font-semibold tracking-wider text-subtle uppercase">
                         {t('profile.website')}
                       </h3>
                       <a
@@ -293,7 +293,7 @@ const UserProfile = () => {
                         }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#6794D1] hover:underline font-medium"
+                        className="text-primary hover:underline font-medium"
                       >
                         {user.companyWebsite}
                       </a>
@@ -301,20 +301,20 @@ const UserProfile = () => {
                   )}
                   {user.companyDescription && (
                     <div>
-                      <h3 className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
+                      <h3 className="text-sm font-semibold tracking-wider text-subtle uppercase">
                         {t('auth.company_description')}
                       </h3>
-                      <p className="text-[#516876] leading-relaxed whitespace-pre-line">
+                      <p className="text-muted leading-relaxed whitespace-pre-line">
                         <AutoTranslate>{user.companyDescription}</AutoTranslate>
                       </p>
                     </div>
                   )}
                   {!user.companyName && !user.industry && !user.companyDescription && (
                     <div className="py-4 text-center">
-                      <p className="italic text-gray-400">{t('profile.no_company_details')}</p>
+                      <p className="italic text-subtle">{t('profile.no_company_details')}</p>
                       <Link
                         to="/profile/edit"
-                        className="text-[#6794D1] text-sm font-medium mt-2 inline-block"
+                        className="text-primary text-sm font-medium mt-2 inline-block"
                       >
                         {t('profile.add_company_info')}
                       </Link>
@@ -328,10 +328,10 @@ const UserProfile = () => {
             {user.role !== 'employer' && (
               <>
                 {/* Skills */}
-                <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-                  <h2 className="text-xl font-bold text-[#2B373F] mb-4 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#6794D1]/10 rounded-lg flex items-center justify-center">
-                      <FaUser className="w-4 h-4 text-[#6794D1]" />
+                <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                  <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <FaUser className="w-4 h-4 text-primary" />
                     </div>
                     {t('profile.skills')}
                   </h2>
@@ -340,22 +340,22 @@ const UserProfile = () => {
                       {user.skills.map((skill, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1.5 bg-[#6794D1]/10 text-[#6794D1] text-sm font-medium rounded-full border border-[#6794D1]/20"
+                          className="px-3 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full border border-primary/20"
                         >
                           <AutoTranslate>{skill}</AutoTranslate>
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm italic text-gray-400">{t('profile.no_skills')}</p>
+                    <p className="text-sm italic text-subtle">{t('profile.no_skills')}</p>
                   )}
                 </div>
 
                 {/* Experience */}
-                <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-                  <h2 className="text-xl font-bold text-[#2B373F] mb-4 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#2CD2BD]/10 rounded-lg flex items-center justify-center">
-                      <FaBriefcase className="w-4 h-4 text-[#2CD2BD]" />
+                <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                  <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
+                    <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
+                      <FaBriefcase className="w-4 h-4 text-success" />
                     </div>
                     Work Experience
                   </h2>
@@ -364,32 +364,32 @@ const UserProfile = () => {
                       {user.experience.map((exp, index) => (
                         <div
                           key={index}
-                          className="flex gap-4 pb-4 border-b border-[#F4F6F9] last:border-0 last:pb-0"
+                          className="flex gap-4 pb-4 border-b border-surface-muted last:border-0 last:pb-0"
                         >
-                          <div className="w-10 h-10 bg-gradient-to-br from-[#2CD2BD] to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <div className="w-10 h-10 bg-gradient-to-br from-success to-success rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                             <FaBriefcase className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-[#2B373F]">{exp.title}</h3>
-                            <p className="text-[#516876] text-sm font-medium">{exp.company}</p>
+                            <h3 className="font-semibold text-text-dark">{exp.title}</h3>
+                            <p className="text-muted text-sm font-medium">{exp.company}</p>
                             {exp.duration && (
-                              <p className="text-xs text-gray-400 mt-0.5">{exp.duration}</p>
+                              <p className="text-xs text-subtle mt-0.5">{exp.duration}</p>
                             )}
                             {exp.description && (
-                              <p className="text-sm text-[#516876] mt-2">{exp.description}</p>
+                              <p className="text-sm text-muted mt-2">{exp.description}</p>
                             )}
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm italic text-gray-400">No experience added yet.</p>
+                    <p className="text-sm italic text-subtle">No experience added yet.</p>
                   )}
                 </div>
 
                 {/* CVs */}
-                <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-                  <h2 className="text-xl font-bold text-[#2B373F] mb-4 flex items-center gap-2">
+                <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                  <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50">
                       <FaFileAlt className="w-4 h-4 text-purple-600" />
                     </div>
@@ -400,21 +400,19 @@ const UserProfile = () => {
                       {user.cvs.map((cv, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-4 bg-[#F4F6F9] rounded-lg border border-[#D2D5D9] hover:border-[#6794D1] transition-colors"
+                          className="flex items-center justify-between p-4 bg-surface-muted rounded-lg border border-border hover:border-primary transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-lg">
-                              <FaFileAlt className="w-5 h-5 text-red-600" />
+                            <div className="flex items-center justify-center w-10 h-10 bg-error/10 rounded-lg">
+                              <FaFileAlt className="w-5 h-5 text-error" />
                             </div>
                             <div>
-                              <p className="font-medium text-[#2B373F] text-sm">{cv.name}</p>
+                              <p className="font-medium text-text-dark text-sm">{cv.name}</p>
                               <div className="flex items-center gap-2">
                                 {cv.isPrimary && (
-                                  <span className="text-xs text-[#6794D1] font-medium">
-                                    Primary
-                                  </span>
+                                  <span className="text-xs text-primary font-medium">Primary</span>
                                 )}
-                                <p className="text-xs text-gray-400">{formatDate(cv.createdAt)}</p>
+                                <p className="text-xs text-subtle">{formatDate(cv.createdAt)}</p>
                               </div>
                             </div>
                           </div>
@@ -422,7 +420,7 @@ const UserProfile = () => {
                             href={getImageUrl(cv.url)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#6794D1] hover:bg-[#6794D1]/10 rounded-lg transition-colors"
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           >
                             <FaDownload className="w-3.5 h-3.5" />
                             Download
@@ -431,7 +429,7 @@ const UserProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm italic text-gray-400">No CVs uploaded yet.</p>
+                    <p className="text-sm italic text-subtle">No CVs uploaded yet.</p>
                   )}
                 </div>
               </>
@@ -441,27 +439,27 @@ const UserProfile = () => {
           {/* Right Column */}
           <div className="space-y-4">
             {/* Account Info */}
-            <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-              <h3 className="font-semibold text-[#2B373F] mb-4">Account Information</h3>
+            <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+              <h3 className="font-semibold text-text-dark mb-4">Account Information</h3>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-[#F4F6F9]">
-                  <span className="text-sm text-[#516876]">Member since</span>
-                  <span className="text-sm font-medium text-[#2B373F]">
+                <div className="flex justify-between items-center py-2 border-b border-surface-muted">
+                  <span className="text-sm text-muted">Member since</span>
+                  <span className="text-sm font-medium text-text-dark">
                     {formatDate(user.createdAt)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-[#F4F6F9]">
-                  <span className="text-sm text-[#516876]">Account status</span>
+                <div className="flex justify-between items-center py-2 border-b border-surface-muted">
+                  <span className="text-sm text-muted">Account status</span>
                   <span
-                    className={`text-sm font-medium ${user.isActive ? 'text-[#2CD2BD]' : 'text-red-500'}`}
+                    className={`text-sm font-medium ${user.isActive ? 'text-success' : 'text-error'}`}
                   >
                     {user.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-[#516876]">Verification</span>
+                  <span className="text-sm text-muted">Verification</span>
                   <span
-                    className={`text-sm font-medium ${user.isVerified ? 'text-[#2CD2BD]' : 'text-orange-500'}`}
+                    className={`text-sm font-medium ${user.isVerified ? 'text-success' : 'text-warning'}`}
                   >
                     {user.isVerified ? 'Verified' : 'Pending'}
                   </span>
@@ -470,26 +468,26 @@ const UserProfile = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-              <h3 className="font-semibold text-[#2B373F] mb-4">Quick Actions</h3>
+            <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+              <h3 className="font-semibold text-text-dark mb-4">Quick Actions</h3>
               <div className="space-y-2">
                 <Link
                   to="/profile/edit"
-                  className="flex items-center gap-3 p-3 text-[#516876] hover:bg-[#F4F6F9] rounded-lg transition-colors w-full text-left text-sm"
+                  className="flex items-center gap-3 p-3 text-muted hover:bg-surface-muted rounded-lg transition-colors w-full text-left text-sm"
                 >
-                  <FaEdit className="w-4 h-4 text-[#6794D1]" />
+                  <FaEdit className="w-4 h-4 text-primary" />
                   Edit Profile
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 p-3 text-[#516876] hover:bg-[#F4F6F9] rounded-lg transition-colors w-full text-left text-sm"
+                  className="flex items-center gap-3 p-3 text-muted hover:bg-surface-muted rounded-lg transition-colors w-full text-left text-sm"
                 >
-                  <FaSignOutAlt className="w-4 h-4 text-[#516876]" />
+                  <FaSignOutAlt className="w-4 h-4 text-muted" />
                   Sign Out
                 </button>
                 <button
                   onClick={() => setShowDeleteDialog(true)}
-                  className="flex items-center w-full gap-3 p-3 text-sm text-left text-red-600 transition-colors rounded-lg hover:bg-red-50"
+                  className="flex items-center w-full gap-3 p-3 text-sm text-left text-error transition-colors rounded-lg hover:bg-error/10"
                 >
                   <FaTrash className="w-4 h-4" />
                   Delete Account
@@ -507,20 +505,20 @@ const UserProfile = () => {
       {/* Delete Account Dialog */}
       {showDeleteDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="w-full max-w-md p-6 bg-white rounded-xl">
+          <div className="w-full max-w-md p-6 bg-surface rounded-xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
-                <FaTrash className="w-5 h-5 text-red-600" />
+              <div className="flex items-center justify-center w-10 h-10 bg-error/10 rounded-full">
+                <FaTrash className="w-5 h-5 text-error" />
               </div>
-              <h3 className="text-lg font-semibold text-[#2B373F]">Delete Account</h3>
+              <h3 className="text-lg font-semibold text-text-dark">Delete Account</h3>
             </div>
-            <p className="text-[#516876] mb-4">
+            <p className="text-muted mb-4">
               This action is <strong>permanent</strong> and cannot be undone. Enter your password to
               confirm.
             </p>
             {deleteError && (
-              <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                <p className="text-sm text-red-700">{deleteError}</p>
+              <div className="p-3 mb-4 border border-error/30 rounded-lg bg-error/10">
+                <p className="text-sm text-error">{deleteError}</p>
               </div>
             )}
             <input
@@ -531,7 +529,7 @@ const UserProfile = () => {
                 setDeleteError('');
               }}
               placeholder="Enter your password"
-              className="w-full px-4 py-3 border border-[#D2D5D9] rounded-lg focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none mb-4"
+              className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-error focus:border-transparent outline-none mb-4"
             />
             <div className="flex justify-end gap-3">
               <button
@@ -540,14 +538,14 @@ const UserProfile = () => {
                   setDeletePassword('');
                   setDeleteError('');
                 }}
-                className="px-4 py-2 text-[#516876] hover:bg-[#F4F6F9] rounded-lg transition-colors"
+                className="px-4 py-2 text-muted hover:bg-surface-muted rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading}
-                className="px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-white transition-colors bg-error rounded-lg hover:bg-error disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {deleteLoading ? (
                   <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />

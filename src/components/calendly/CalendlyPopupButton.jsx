@@ -100,7 +100,7 @@ const CalendlyPopupButton = ({ inviteeName = '', inviteeEmail = '', className = 
       <button
         type="button"
         onClick={openPopup}
-        className={`inline-flex items-center gap-2 px-4 py-2 bg-[#006bff] text-white rounded-lg hover:bg-[#0057d1] transition-colors text-sm font-medium ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium ${className}`}
       >
         <FaCalendarAlt className="w-4 h-4" />
         Schedule via Calendly
@@ -114,7 +114,7 @@ const CalendlyPopupButton = ({ inviteeName = '', inviteeEmail = '', className = 
       href={schedulingUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-2 px-4 py-2 bg-[#006bff] text-white rounded-lg hover:bg-[#0057d1] transition-colors text-sm font-medium ${className}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium ${className}`}
     >
       <FaCalendarAlt className="w-4 h-4" />
       Schedule via Calendly

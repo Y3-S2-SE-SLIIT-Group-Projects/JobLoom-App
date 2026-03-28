@@ -67,7 +67,7 @@ const EmployerDashboard = () => {
       title: 'Create New Job',
       description: 'Post a new job opening and find the perfect candidates',
       link: '/employer/create-job',
-      bgColor: 'bg-[#6794D1]',
+      bgColor: 'bg-primary',
       textColor: 'text-white',
       image: createJobImg,
     },
@@ -75,7 +75,7 @@ const EmployerDashboard = () => {
       title: 'My Job Listings',
       description: 'View and manage all your active job postings',
       link: '/employer/my-jobs',
-      bgColor: 'bg-[#2CD2BD]',
+      bgColor: 'bg-success',
       textColor: 'text-white',
       image: myJobsImg,
     },
@@ -83,7 +83,7 @@ const EmployerDashboard = () => {
       title: 'Applications',
       description: 'Review and manage job applications from candidates',
       link: '/employer/applications',
-      bgColor: 'bg-[#A68BF9]',
+      bgColor: 'bg-info',
       textColor: 'text-white',
       image: applicationListImg,
     },
@@ -94,27 +94,27 @@ const EmployerDashboard = () => {
       title: 'Analytics',
       description: 'Check your task progress and overall team activity.',
       icon: FaChartBar,
-      color: 'text-[#6794D1]',
-      borderColor: 'border-l-[#6794D1]',
-      linkColor: 'text-[#6794D1]',
+      color: 'text-primary',
+      borderColor: 'border-l-primary',
+      linkColor: 'text-primary',
       link: '/employer/analytics',
     },
     {
       title: 'Profile',
       description: 'Update your profile or sign out of your account.',
       icon: FaUserCircle,
-      color: 'text-[#516876]',
-      borderColor: 'border-l-[#516876]',
-      linkColor: 'text-[#516876]',
+      color: 'text-muted',
+      borderColor: 'border-l-muted',
+      linkColor: 'text-muted',
       link: '/profile',
     },
     {
       title: 'Calendly',
       description: 'Connect Calendly to schedule interviews seamlessly.',
       icon: FaCalendarAlt,
-      color: 'text-[#2CD2BD]',
-      borderColor: 'border-l-[#2CD2BD]',
-      linkColor: 'text-[#2CD2BD]',
+      color: 'text-success',
+      borderColor: 'border-l-success',
+      linkColor: 'text-success',
       link: '/employer/settings/calendly',
     },
   ];
@@ -125,8 +125,8 @@ const EmployerDashboard = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Dashboard Title */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#2B373F] mb-2">Dashboard</h1>
-          <p className="text-lg text-[#516876]">Your central control surface</p>
+          <h1 className="text-4xl font-bold text-text-dark mb-2">Dashboard</h1>
+          <p className="text-lg text-muted">Your central control surface</p>
         </div>
 
         {/* Main Content Grid */}
@@ -181,7 +181,7 @@ const EmployerDashboard = () => {
                 <Link
                   key={index}
                   to={card.link}
-                  className="block bg-white rounded-xl shadow-sm border-l-4 border-[#D2D5D9] p-6 hover:shadow-md hover:border-[#6794D1] transition-all cursor-pointer group"
+                  className="block bg-surface rounded-xl shadow-sm border-l-4 border-border p-6 hover:shadow-md hover:border-primary transition-all cursor-pointer group"
                 >
                   <div className="flex items-start gap-4">
                     <div
@@ -190,8 +190,8 @@ const EmployerDashboard = () => {
                       <IconComponent className={`w-6 h-6 ${card.color}`} />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-[#2B373F] mb-1">{card.title}</h4>
-                      <p className="text-sm text-[#516876] mb-3">{card.description}</p>
+                      <h4 className="font-semibold text-text-dark mb-1">{card.title}</h4>
+                      <p className="text-sm text-muted mb-3">{card.description}</p>
                       <div
                         className={`flex items-center ${card.linkColor} font-medium text-sm group-hover:translate-x-1 transition-transform`}
                       >

@@ -7,9 +7,9 @@
  * @param {Function} onDismiss - Optional dismiss handler
  */
 const TYPE_CLASSES = {
-  error: 'bg-red-50 border-red-300 text-red-700',
-  success: 'bg-green-50 border-green-300 text-green-700',
-  info: 'bg-blue-50 border-blue-300 text-blue-700',
+  error: 'bg-error/10 border-error text-error',
+  success: 'bg-success/10 border-success/30 text-success',
+  info: 'bg-info/10 border-info/30 text-info',
 };
 
 const AlertBanner = ({ type = 'info', message, onDismiss }) => {

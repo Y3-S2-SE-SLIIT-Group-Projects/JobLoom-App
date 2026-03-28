@@ -66,8 +66,8 @@ const getJobStatus = app => {
 };
 
 const JOB_STATUS_BADGE = {
-  closed: 'bg-red-50 text-red-600 border-red-100',
-  filled: 'bg-blue-50 text-blue-600 border-blue-100',
+  closed: 'bg-error/10 text-error border-error/20',
+  filled: 'bg-info/10 text-info border-info/20',
 };
 
 const MyApplications = () => {
@@ -105,10 +105,10 @@ const MyApplications = () => {
   return (
     <DottedBackground>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Applications</h1>
-          <p className="text-sm text-gray-500 mt-1">Track and manage your job applications</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-dark">My Applications</h1>
+          <p className="text-sm text-subtle mt-1">Track and manage your job applications</p>
         </div>
       </div>
 
@@ -116,13 +116,13 @@ const MyApplications = () => {
         {/* Search & filter row */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
             <input
               type="text"
               placeholder="Search by job title..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-[#6794D1] text-sm"
+              className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm"
             />
           </div>
         </div>
@@ -139,15 +139,15 @@ const MyApplications = () => {
                 disabled={isLoading}
                 className={`px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors capitalize shrink-0 ${
                   isActive
-                    ? `${STATUS_TAB_COLORS[status] ?? STATUS_TAB_COLORS.all} bg-white`
-                    : 'border-transparent text-gray-500 hover:bg-gray-100'
+                    ? `${STATUS_TAB_COLORS[status] ?? STATUS_TAB_COLORS.all} bg-surface`
+                    : 'border-transparent text-subtle hover:bg-surface-muted'
                 }`}
               >
                 {status === 'all' ? 'All' : status}
                 {count != null && (
                   <span
                     className={`ml-2 text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                      isActive ? 'bg-gray-100' : 'bg-gray-200/60'
+                      isActive ? 'bg-neutral-100' : 'bg-neutral-200/60'
                     }`}
                   >
                     {count}
@@ -164,20 +164,20 @@ const MyApplications = () => {
         {/* Loading */}
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
-            <div className="w-12 h-12 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : filteredApplications.length === 0 ? (
           /* Empty state */
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <FaInbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-12 text-center">
+            <FaInbox className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-dark mb-2">
               {searchQuery.trim()
                 ? 'No matching applications'
                 : activeFilter !== 'all'
                   ? `No ${activeFilter} applications`
                   : "You haven't applied to any jobs yet."}
             </h3>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-subtle text-sm mb-6">
               {searchQuery.trim() || activeFilter !== 'all'
                 ? 'Try adjusting your search or filter.'
                 : 'Browse jobs to get started.'}
@@ -185,7 +185,7 @@ const MyApplications = () => {
             {!searchQuery.trim() && activeFilter === 'all' && (
               <Link
                 to="/jobs"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium"
               >
                 <FaBriefcase className="w-4 h-4" />
                 Browse Jobs
@@ -204,8 +204,8 @@ const MyApplications = () => {
                 return (
                   <div
                     key={app._id}
-                    className={`bg-white rounded-xl shadow-sm border p-5 transition-shadow ${
-                      isWithdrawn ? 'border-gray-200 opacity-70' : 'border-gray-200 hover:shadow-md'
+                    className={`bg-surface rounded-xl shadow-sm border p-5 transition-shadow ${
+                      isWithdrawn ? 'border-border opacity-70' : 'border-border hover:shadow-md'
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -213,7 +213,7 @@ const MyApplications = () => {
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <h3
                             className={`text-base font-bold truncate ${
-                              isWithdrawn ? 'text-gray-400' : 'text-[#2B373F]'
+                              isWithdrawn ? 'text-subtle' : 'text-text-dark'
                             }`}
                           >
                             {getJobTitle(app)}
@@ -221,7 +221,7 @@ const MyApplications = () => {
                           <span
                             className={`shrink-0 px-2.5 py-0.5 text-xs font-medium rounded-full border capitalize ${
                               STATUS_BADGE_COLORS[app.status] ??
-                              'bg-gray-100 text-gray-700 border-gray-200'
+                              'bg-neutral-100 text-muted border-border'
                             }`}
                           >
                             {app.status}
@@ -237,15 +237,13 @@ const MyApplications = () => {
                           )}
                         </div>
 
-                        <p
-                          className={`text-sm mb-1 ${isWithdrawn ? 'text-gray-400' : 'text-gray-600'}`}
-                        >
+                        <p className={`text-sm mb-1 ${isWithdrawn ? 'text-subtle' : 'text-muted'}`}>
                           {getEmployerName(app)}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-subtle">
                           <span className="flex items-center gap-1.5">
-                            <FaCalendarAlt className="w-3.5 h-3.5 text-gray-400" />
+                            <FaCalendarAlt className="w-3.5 h-3.5 text-subtle" />
                             Applied {formatDate(app.appliedAt || app.createdAt)}
                           </span>
                           {app.interviewDate && !isWithdrawn && (
@@ -257,7 +255,7 @@ const MyApplications = () => {
                         </div>
 
                         {isWithdrawn && app.withdrawalReason && (
-                          <p className="text-xs text-gray-400 mt-2 italic">
+                          <p className="text-xs text-subtle mt-2 italic">
                             Withdrawal reason: {app.withdrawalReason}
                           </p>
                         )}
@@ -268,8 +266,8 @@ const MyApplications = () => {
                           to={`/my-applications/${app._id}`}
                           className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors text-sm font-medium ${
                             isWithdrawn
-                              ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                              : 'bg-[#6794D1] text-white hover:bg-[#5a83c0]'
+                              ? 'bg-neutral-100 text-subtle hover:bg-neutral-200'
+                              : 'bg-primary text-white hover:bg-deep-blue'
                           }`}
                         >
                           View Details
@@ -283,25 +281,24 @@ const MyApplications = () => {
 
             {/* Pagination - only when not filtering by search (pagination is for API results) */}
             {!searchQuery.trim() && pagination && pagination.pages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-border">
+                <p className="text-sm text-subtle">
                   Showing{' '}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-muted">
                     {(pagination.page - 1) * pagination.limit + 1}
                   </span>{' '}
                   to{' '}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-muted">
                     {Math.min(pagination.page * pagination.limit, pagination.total)}
                   </span>{' '}
-                  of <span className="font-medium text-gray-700">{pagination.total}</span>{' '}
-                  applications
+                  of <span className="font-medium text-muted">{pagination.total}</span> applications
                 </p>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage <= 1}
-                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-border text-muted hover:bg-surface-muted transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <FaChevronLeft className="w-4 h-4" />
                   </button>
@@ -319,7 +316,7 @@ const MyApplications = () => {
                     }, [])
                     .map((item, i) =>
                       item === '...' ? (
-                        <span key={`ellipsis-${i}`} className="px-2 text-gray-400">
+                        <span key={`ellipsis-${i}`} className="px-2 text-subtle">
                           ...
                         </span>
                       ) : (
@@ -328,8 +325,8 @@ const MyApplications = () => {
                           onClick={() => setCurrentPage(item)}
                           className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                             currentPage === item
-                              ? 'bg-[#6794D1] text-white'
-                              : 'border border-gray-300 text-gray-600 hover:bg-gray-50'
+                              ? 'bg-primary text-white'
+                              : 'border border-border text-muted hover:bg-surface-muted'
                           }`}
                         >
                           {item}
@@ -340,7 +337,7 @@ const MyApplications = () => {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(pagination.pages, p + 1))}
                     disabled={currentPage >= pagination.pages}
-                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-border text-muted hover:bg-surface-muted transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <FaChevronRight className="w-4 h-4" />
                   </button>

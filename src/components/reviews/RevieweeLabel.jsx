@@ -5,8 +5,8 @@ const RevieweeLabel = ({ review }) => {
   const name = `${reviewee.firstName ?? ''} ${reviewee.lastName ?? ''}`.trim();
 
   return (
-    <p className="text-xs text-[#516876] mb-1.5 px-1">
-      Reviewed: <span className="font-semibold text-[#2B373F]">{name || 'Unknown user'}</span>
+    <p className="text-xs text-muted mb-1.5 px-1">
+      Reviewed: <span className="font-semibold text-text-dark">{name || 'Unknown user'}</span>
     </p>
   );
 };

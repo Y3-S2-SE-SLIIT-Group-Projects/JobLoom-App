@@ -132,8 +132,8 @@ const CalendlySettings = () => {
   return (
     <DottedBackground>
       <div className="max-w-2xl mx-auto px-6 py-8">
-        <h1 className="text-3xl font-bold text-[#2B373F] mb-2">Calendly Integration</h1>
-        <p className="text-[#516876] mb-8">
+        <h1 className="text-3xl font-bold text-text-dark mb-2">Calendly Integration</h1>
+        <p className="text-muted mb-8">
           Connect your Calendly account to let candidates book interview slots directly.
         </p>
 
@@ -143,14 +143,14 @@ const CalendlySettings = () => {
         )}
 
         {/* Connection status card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mt-4">
+        <div className="bg-surface rounded-2xl shadow-sm border border-neutral-100 p-8 mt-4">
           {connected ? (
             <>
               {accountEmail && (
-                <p className="text-sm text-gray-500 mb-4">
-                  Linked to <span className="font-medium text-gray-700">{accountEmail}</span>
+                <p className="text-sm text-subtle mb-4">
+                  Linked to <span className="font-medium text-muted">{accountEmail}</span>
                   {currentUser?.email && accountEmail !== currentUser.email && (
-                    <span className="block mt-1 text-amber-600 text-xs">
+                    <span className="block mt-1 text-secondary text-xs">
                       Session mismatch: You are logged in as {currentUser.email}. Log out and log
                       back in to fix.
                     </span>
@@ -158,9 +158,9 @@ const CalendlySettings = () => {
                 </p>
               )}
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-green-600"
+                    className="w-5 h-5 text-success"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -174,23 +174,23 @@ const CalendlySettings = () => {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-[#2B373F]">Connected</h2>
-                  <p className="text-sm text-[#516876]">Your Calendly account is linked.</p>
+                  <h2 className="text-lg font-semibold text-text-dark">Connected</h2>
+                  <p className="text-sm text-muted">Your Calendly account is linked.</p>
                 </div>
               </div>
 
               {schedulingUrl && (
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
-                  <p className="text-sm text-[#516876] mb-1">Scheduling URL</p>
+                <div className="bg-surface-muted rounded-xl p-4 mb-6">
+                  <p className="text-sm text-muted mb-1">Scheduling URL</p>
                   <a
                     href={schedulingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#6794D1] font-medium hover:underline break-all"
+                    className="text-primary font-medium hover:underline break-all"
                   >
                     {schedulingUrl}
                   </a>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-subtle mt-2">
                     If this isn&apos;t your Calendly link, disconnect and reconnect with the correct
                     Calendly account.
                   </p>
@@ -200,7 +200,7 @@ const CalendlySettings = () => {
               <button
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="px-6 py-2.5 border border-red-300 text-red-600 rounded-xl font-medium hover:bg-red-50 transition-colors disabled:opacity-50"
+                className="px-6 py-2.5 border border-error text-error rounded-xl font-medium hover:bg-error/10 transition-colors disabled:opacity-50"
               >
                 {disconnecting ? 'Disconnecting...' : 'Disconnect Calendly'}
               </button>
@@ -208,9 +208,9 @@ const CalendlySettings = () => {
           ) : (
             <>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-gray-500"
+                    className="w-5 h-5 text-subtle"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -224,8 +224,8 @@ const CalendlySettings = () => {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-[#2B373F]">Not Connected</h2>
-                  <p className="text-sm text-[#516876]">
+                  <h2 className="text-lg font-semibold text-text-dark">Not Connected</h2>
+                  <p className="text-sm text-muted">
                     Link your Calendly to enable interview scheduling.
                   </p>
                 </div>
@@ -233,7 +233,7 @@ const CalendlySettings = () => {
 
               <button
                 onClick={handleConnect}
-                className="px-6 py-3 bg-[#6794D1] text-white rounded-xl font-medium hover:bg-[#5a82b8] transition-colors"
+                className="px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-deep-blue transition-colors"
               >
                 Connect Calendly
               </button>
@@ -242,11 +242,11 @@ const CalendlySettings = () => {
         </div>
 
         {/* Manual URL entry card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mt-6">
-          <h2 className="text-lg font-semibold text-[#2B373F] mb-1">
+        <div className="bg-surface rounded-2xl shadow-sm border border-neutral-100 p-8 mt-6">
+          <h2 className="text-lg font-semibold text-text-dark mb-1">
             {connected ? 'Update Scheduling URL' : 'Or paste your Calendly link'}
           </h2>
-          <p className="text-sm text-[#516876] mb-4">
+          <p className="text-sm text-muted mb-4">
             Enter your Calendly scheduling URL directly if you prefer not to use OAuth.
           </p>
 
@@ -256,12 +256,12 @@ const CalendlySettings = () => {
               value={manualUrl}
               onChange={e => setManualUrl(e.target.value)}
               placeholder="https://calendly.com/your-name"
-              className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none text-sm"
+              className="flex-1 px-4 py-2.5 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
             />
             <button
               type="submit"
               disabled={savingUrl || !manualUrl.trim()}
-              className="px-6 py-2.5 bg-[#2B373F] text-white rounded-xl font-medium hover:bg-[#1e2a30] transition-colors disabled:opacity-50 whitespace-nowrap"
+              className="px-6 py-2.5 bg-deep-blue text-white rounded-xl font-medium hover:bg-deep-blue transition-colors disabled:opacity-50 whitespace-nowrap"
             >
               {savingUrl ? 'Saving...' : 'Save URL'}
             </button>

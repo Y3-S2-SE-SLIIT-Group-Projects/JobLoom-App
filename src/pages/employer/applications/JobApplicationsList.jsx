@@ -38,22 +38,22 @@ const ALL_STATUSES = [
 ];
 
 const STATUS_BADGE = {
-  pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  reviewed: 'bg-blue-100 text-blue-700 border-blue-200',
+  pending: 'bg-warning/10 text-warning border-warning/30',
+  reviewed: 'bg-info/10 text-info border-info/20',
   shortlisted: 'bg-purple-100 text-purple-700 border-purple-200',
-  accepted: 'bg-green-100 text-green-700 border-green-200',
-  rejected: 'bg-red-100 text-red-700 border-red-200',
-  withdrawn: 'bg-gray-100 text-gray-500 border-gray-200',
+  accepted: 'bg-success/10 text-success border-success/30',
+  rejected: 'bg-error/10 text-error border-error/30',
+  withdrawn: 'bg-neutral-100 text-subtle border-border',
 };
 
 const STAT_TAB_COLORS = {
-  all: 'border-[#6794D1] text-[#6794D1]',
-  pending: 'border-yellow-500 text-yellow-700',
-  reviewed: 'border-blue-500 text-blue-700',
+  all: 'border-primary text-primary',
+  pending: 'border-warning text-warning',
+  reviewed: 'border-primary text-info',
   shortlisted: 'border-purple-500 text-purple-700',
-  accepted: 'border-green-500 text-green-700',
-  rejected: 'border-red-500 text-red-700',
-  withdrawn: 'border-gray-400 text-gray-500',
+  accepted: 'border-success text-success',
+  rejected: 'border-error text-error',
+  withdrawn: 'border-neutral-500 text-subtle',
 };
 
 // ── Component ───────────────────────────────────────────────────────────────────
@@ -153,19 +153,19 @@ const JobApplicationsList = () => {
   return (
     <DottedBackground>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <Link
             to="/employer/applications"
-            className="inline-flex items-center text-gray-500 hover:text-[#6794D1] transition-colors text-sm mb-4"
+            className="inline-flex items-center text-subtle hover:text-primary transition-colors text-sm mb-4"
           >
             <FaArrowLeft className="w-4 h-4 mr-2" />
             Back to Applications
           </Link>
 
-          <h1 className="text-2xl font-bold text-gray-900">{job?.title ?? 'Job Applications'}</h1>
+          <h1 className="text-2xl font-bold text-text-dark">{job?.title ?? 'Job Applications'}</h1>
           {job && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-subtle mt-1">
               {job.jobRole || 'Job Position'} &middot;{' '}
               <span className="capitalize">{job.status}</span>
             </p>
@@ -186,14 +186,14 @@ const JobApplicationsList = () => {
                 disabled={statsLoading}
                 className={`px-4 py-2 text-sm font-medium rounded-lg border-2 transition-colors capitalize ${
                   isActive
-                    ? `${STAT_TAB_COLORS[status]} bg-white`
-                    : 'border-transparent text-gray-500 hover:bg-gray-100'
+                    ? `${STAT_TAB_COLORS[status]} bg-surface`
+                    : 'border-transparent text-subtle hover:bg-surface-muted'
                 }`}
               >
                 {status === 'all' ? 'All' : status}
                 <span
                   className={`ml-2 text-xs font-bold px-1.5 py-0.5 rounded-full ${
-                    isActive ? 'bg-gray-100' : 'bg-gray-200/60'
+                    isActive ? 'bg-neutral-100' : 'bg-neutral-200/60'
                   }`}
                 >
                   {count}
@@ -209,16 +209,16 @@ const JobApplicationsList = () => {
         {/* Loading */}
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
-            <div className="w-12 h-12 border-4 border-[#6794D1] border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : applications.length === 0 ? (
           /* Empty state */
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <FaInbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-12 text-center">
+            <FaInbox className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-dark mb-2">
               {activeFilter !== 'all' ? `No ${activeFilter} applications` : 'No applications yet'}
             </h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-subtle text-sm">
               {activeFilter !== 'all'
                 ? 'Try selecting a different status filter.'
                 : 'Applications will appear here once job seekers apply.'}
@@ -231,31 +231,31 @@ const JobApplicationsList = () => {
               {applications.map(app => (
                 <div
                   key={app._id}
-                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow"
+                  className="bg-surface rounded-xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     {/* Applicant info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-base font-bold text-[#2B373F] truncate">
+                        <h3 className="text-base font-bold text-text-dark truncate">
                           {getApplicantName(app)}
                         </h3>
                         <span
-                          className={`shrink-0 px-2.5 py-0.5 text-xs font-medium rounded-full border capitalize ${STATUS_BADGE[app.status] || 'bg-gray-100 text-gray-700 border-gray-200'}`}
+                          className={`shrink-0 px-2.5 py-0.5 text-xs font-medium rounded-full border capitalize ${STATUS_BADGE[app.status] || 'bg-neutral-100 text-muted border-border'}`}
                         >
                           {app.status}
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-subtle">
                         {getApplicantEmail(app) && (
                           <span className="flex items-center gap-1.5">
-                            <FaEnvelope className="w-3.5 h-3.5 text-gray-400" />
+                            <FaEnvelope className="w-3.5 h-3.5 text-subtle" />
                             {getApplicantEmail(app)}
                           </span>
                         )}
                         <span className="flex items-center gap-1.5">
-                          <FaCalendarAlt className="w-3.5 h-3.5 text-gray-400" />
+                          <FaCalendarAlt className="w-3.5 h-3.5 text-subtle" />
                           Applied {formatDate(app.appliedAt || app.createdAt)}
                         </span>
                         {app.interviewDate && (
@@ -272,13 +272,13 @@ const JobApplicationsList = () => {
                           {app.jobSeekerId.skills.slice(0, 5).map((skill, i) => (
                             <span
                               key={i}
-                              className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full"
+                              className="text-xs px-2 py-0.5 bg-neutral-100 text-muted rounded-full"
                             >
                               {skill}
                             </span>
                           ))}
                           {app.jobSeekerId.skills.length > 5 && (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-subtle">
                               +{app.jobSeekerId.skills.length - 5} more
                             </span>
                           )}
@@ -290,7 +290,7 @@ const JobApplicationsList = () => {
                     <div className="shrink-0">
                       <Link
                         to={`/employer/applications/${app._id}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium"
                       >
                         <FaFileAlt className="w-3.5 h-3.5" />
                         View Details
@@ -303,25 +303,24 @@ const JobApplicationsList = () => {
 
             {/* Pagination */}
             {pagination && pagination.pages > 1 && (
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-500">
+              <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+                <p className="text-sm text-subtle">
                   Showing{' '}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-muted">
                     {(pagination.page - 1) * pagination.limit + 1}
                   </span>{' '}
                   to{' '}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-muted">
                     {Math.min(pagination.page * pagination.limit, pagination.total)}
                   </span>{' '}
-                  of <span className="font-medium text-gray-700">{pagination.total}</span>{' '}
-                  applications
+                  of <span className="font-medium text-muted">{pagination.total}</span> applications
                 </p>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage <= 1}
-                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-border text-muted hover:bg-surface-muted transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <FaChevronLeft className="w-4 h-4" />
                   </button>
@@ -339,7 +338,7 @@ const JobApplicationsList = () => {
                     }, [])
                     .map((item, i) =>
                       item === '...' ? (
-                        <span key={`ellipsis-${i}`} className="px-2 text-gray-400">
+                        <span key={`ellipsis-${i}`} className="px-2 text-subtle">
                           ...
                         </span>
                       ) : (
@@ -348,8 +347,8 @@ const JobApplicationsList = () => {
                           onClick={() => setCurrentPage(item)}
                           className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                             currentPage === item
-                              ? 'bg-[#6794D1] text-white'
-                              : 'border border-gray-300 text-gray-600 hover:bg-gray-50'
+                              ? 'bg-primary text-white'
+                              : 'border border-border text-muted hover:bg-surface-muted'
                           }`}
                         >
                           {item}
@@ -360,7 +359,7 @@ const JobApplicationsList = () => {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(pagination.pages, p + 1))}
                     disabled={currentPage >= pagination.pages}
-                    className="p-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg border border-border text-muted hover:bg-surface-muted transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <FaChevronRight className="w-4 h-4" />
                   </button>

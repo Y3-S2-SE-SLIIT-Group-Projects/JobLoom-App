@@ -22,8 +22,8 @@ const ReviewFilterBar = ({ reviewerType, onFilterChange, sort, onSortChange }) =
           className={[
             'px-3 py-1.5 rounded-full text-sm font-medium border transition-colors',
             reviewerType === value
-              ? 'bg-[#6794D1] text-white border-[#6794D1]'
-              : 'bg-white text-gray-600 border-gray-300 hover:border-[#6794D1]',
+              ? 'bg-primary text-white border-primary'
+              : 'bg-surface text-muted border-border hover:border-primary',
           ].join(' ')}
         >
           {label}
@@ -35,7 +35,7 @@ const ReviewFilterBar = ({ reviewerType, onFilterChange, sort, onSortChange }) =
     <select
       value={sort}
       onChange={e => onSortChange(e.target.value)}
-      className="ml-auto text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:border-[#6794D1]"
+      className="ml-auto text-sm border border-border rounded-lg px-3 py-1.5 bg-surface text-muted focus:outline-none focus:border-primary"
     >
       {SORT_OPTIONS.map(({ value, label }) => (
         <option key={value} value={value}>

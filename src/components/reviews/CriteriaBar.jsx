@@ -10,13 +10,13 @@ const CriteriaBar = ({ label, value }) => {
 
   return (
     <div>
-      <div className="flex justify-between text-xs text-gray-500 mb-0.5">
+      <div className="flex justify-between text-xs text-subtle mb-0.5">
         <span>{label}</span>
-        <span className="font-medium text-gray-700">{value}/5</span>
+        <span className="font-medium text-muted">{value}/5</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-1.5">
+      <div className="w-full bg-neutral-200 rounded-full h-1.5">
         <div
-          className="bg-[#6794D1] h-1.5 rounded-full transition-all duration-500"
+          className="bg-primary h-1.5 rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>

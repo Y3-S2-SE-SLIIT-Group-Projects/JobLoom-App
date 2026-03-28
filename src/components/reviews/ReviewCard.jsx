@@ -49,18 +49,16 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
 
   return (
     <>
-      <article className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow">
+      <article className="bg-surface rounded-xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
         {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
-            <p className="font-semibold text-[#2B373F]">{reviewerName}</p>
-            <p className="text-xs text-gray-500">{formattedDate}</p>
+            <p className="font-semibold text-text-dark">{reviewerName}</p>
+            <p className="text-xs text-subtle">{formattedDate}</p>
           </div>
           <div className="flex flex-col items-end gap-1">
             <StarRating value={review.rating} size="text-base" />
-            <span className="text-xs text-gray-500 font-medium">
-              {review.rating.toFixed(1)} / 5
-            </span>
+            <span className="text-xs text-subtle font-medium">{review.rating.toFixed(1)} / 5</span>
           </div>
         </div>
 
@@ -72,7 +70,7 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
           />
           {review.isVerified && <Badge variant="success" label="✓ Verified" />}
           {review.wouldRecommend && (
-            <span className="flex items-center gap-1 text-xs text-green-600">
+            <span className="flex items-center gap-1 text-xs text-success">
               <FaThumbsUp className="text-xs" />
               Would recommend
             </span>
@@ -81,14 +79,14 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
 
         {/* Job reference */}
         {review.jobId?.title && (
-          <p className="text-xs text-gray-400 mb-3">
-            Job: <span className="text-gray-600 font-medium">{review.jobId.title}</span>
+          <p className="text-xs text-subtle mb-3">
+            Job: <span className="text-muted font-medium">{review.jobId.title}</span>
           </p>
         )}
 
         {/* Comment */}
         {review.comment && (
-          <p className="text-sm text-gray-700 leading-relaxed mb-4">{review.comment}</p>
+          <p className="text-sm text-muted leading-relaxed mb-4">{review.comment}</p>
         )}
 
         {/* Detailed criteria */}
