@@ -66,68 +66,68 @@ const Login = () => {
         <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
             {/* Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
+            <div className="bg-surface rounded-2xl shadow-sm border border-border p-8">
               <div className="mb-6 text-center sm:text-left">
-                <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.login_title')}</h1>
-                <p className="text-[#516876]">
+                <h1 className="text-2xl font-bold text-text-dark mb-1">{t('auth.login_title')}</h1>
+                <p className="text-muted">
                   {t('auth.login_subtitle', 'Sign in to your account to continue')}
                 </p>
               </div>
 
               {apiError && (
-                <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50">
-                  <p className="text-sm text-red-700">{apiError}</p>
+                <div className="p-4 mb-5 border border-error/30 rounded-lg bg-error/10">
+                  <p className="text-sm text-error">{apiError}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+                  <label className="block text-sm font-medium text-text-dark mb-1.5">
                     {t('auth.email')}
                   </label>
                   <div className="relative">
-                    <FaEnvelope className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+                    <FaEnvelope className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
                       placeholder={t('auth.email_placeholder')}
-                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${
-                        errors.email ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${
+                        errors.email ? 'border-error bg-error/10' : 'border-border'
                       }`}
                     />
                   </div>
-                  {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+                  {errors.email && <p className="mt-1 text-xs text-error">{errors.email}</p>}
                 </div>
 
                 {/* Password */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-sm font-medium text-[#2B373F]">
+                    <label className="block text-sm font-medium text-text-dark">
                       {t('auth.password')}
                     </label>
-                    <Link to="/forgot-password" className="text-sm text-[#6794D1] hover:underline">
+                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                       {t('auth.forgot_password')}
                     </Link>
                   </div>
                   <div className="relative">
-                    <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+                    <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
                       placeholder={t('auth.password_placeholder')}
-                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${
-                        errors.password ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'
+                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${
+                        errors.password ? 'border-error bg-error/10' : 'border-border'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(p => !p)}
-                      className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 hover:text-gray-600"
+                      className="absolute text-subtle -translate-y-1/2 right-3 top-1/2 hover:text-muted"
                     >
                       {showPassword ? (
                         <FaEyeSlash className="w-4 h-4" />
@@ -136,16 +136,14 @@ const Login = () => {
                       )}
                     </button>
                   </div>
-                  {errors.password && (
-                    <p className="mt-1 text-xs text-red-600">{errors.password}</p>
-                  )}
+                  {errors.password && <p className="mt-1 text-xs text-error">{errors.password}</p>}
                 </div>
 
                 {/* Submit */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
@@ -158,9 +156,9 @@ const Login = () => {
                 </button>
               </form>
 
-              <p className="mt-6 text-center text-sm text-[#516876]">
+              <p className="mt-6 text-center text-sm text-muted">
                 {t('auth.no_account')}{' '}
-                <Link to="/register" className="text-[#6794D1] font-medium hover:underline">
+                <Link to="/register" className="text-primary font-medium hover:underline">
                   {t('auth.create_account')}
                 </Link>
               </p>

@@ -148,7 +148,7 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded, initialValue = 
 
   if (!googleMapsLoaded) {
     return (
-      <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+      <div className="w-full px-4 py-2 border border-border rounded-lg bg-surface-muted text-subtle">
         Google Maps is loading...
       </div>
     );
@@ -184,15 +184,15 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded, initialValue = 
         onChange={handleInput}
         disabled={!ready}
         placeholder="Search for a location in Sri Lanka..."
-        className={`w-full px-4 py-2 border ${error ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+        className={`w-full px-4 py-2 border ${error ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
       />
       {status === 'OK' && data && data.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-60 overflow-auto">
           {data.map(({ place_id, description }) => (
             <li
               key={place_id}
               onClick={() => handleSelect(description)}
-              className="px-4 py-2 hover:bg-green-50 cursor-pointer text-sm text-gray-700 transition-colors"
+              className="px-4 py-2 hover:bg-success/10 cursor-pointer text-sm text-muted transition-colors"
             >
               {description}
             </li>
@@ -542,8 +542,8 @@ const EditJob = () => {
 
   if (loadingJob) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-surface-muted flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-success border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -554,16 +554,16 @@ const EditJob = () => {
         <div className="mb-6">
           <Link
             to={`/employer/jobs/${id}`}
-            className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-4"
+            className="inline-flex items-center text-muted hover:text-info transition-colors mb-4"
           >
             <FaArrowLeft className="w-5 h-5 mr-2" />
             Back to Job Details
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Edit Job</h1>
-          <p className="text-gray-600">Update job details below</p>
+          <h1 className="text-3xl font-bold text-text-dark mb-2">Edit Job</h1>
+          <p className="text-muted">Update job details below</p>
         </div>
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+          <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
             <FaTimes className="w-5 h-5 mr-2" />
             {error}
           </div>
@@ -571,33 +571,33 @@ const EditJob = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaBriefcase className="w-5 h-5 mr-2 text-green-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaBriefcase className="w-5 h-5 mr-2 text-success" />
               Basic Information
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title *</label>
+                <label className="block text-sm font-medium text-muted mb-1">Job Title *</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.title ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.title ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                   placeholder="e.g., Senior Farm Worker"
                 />
-                {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+                {errors.title && <p className="mt-1 text-sm text-error">{errors.title}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Category *</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors.category ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.category ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                   >
                     <option value="">Select a category</option>
                     {JOB_CATEGORIES.map(cat => (
@@ -606,20 +606,18 @@ const EditJob = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.category && (
-                    <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-                  )}
+                  {errors.category && <p className="mt-1 text-sm text-error">{errors.category}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Job Role *</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Job Role *</label>
                   <input
                     type="text"
                     name="jobRole"
                     value={formData.jobRole}
                     onChange={handleChange}
                     list="job-roles"
-                    className={`w-full px-4 py-2 border ${errors.jobRole ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.jobRole ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Farm Supervisor"
                   />
                   <datalist id="job-roles">
@@ -627,19 +625,19 @@ const EditJob = () => {
                       <option key={role} value={role} />
                     ))}
                   </datalist>
-                  {errors.jobRole && <p className="mt-1 text-sm text-red-600">{errors.jobRole}</p>}
+                  {errors.jobRole && <p className="mt-1 text-sm text-error">{errors.jobRole}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Employment Type *
                 </label>
                 <select
                   name="employmentType"
                   value={formData.employmentType}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.employmentType ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.employmentType ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map(type => (
@@ -649,107 +647,107 @@ const EditJob = () => {
                   ))}
                 </select>
                 {errors.employmentType && (
-                  <p className="mt-1 text-sm text-red-600">{errors.employmentType}</p>
+                  <p className="mt-1 text-sm text-error">{errors.employmentType}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   Job Description *
                 </label>
                 <div
-                  className={`border ${errors.description ? 'border-red-300' : 'border-gray-300'} rounded-lg overflow-hidden bg-white`}
+                  className={`border ${errors.description ? 'border-error' : 'border-border'} rounded-lg overflow-hidden bg-surface`}
                 >
-                  <div className="border-b border-gray-200 bg-gray-50 px-3 py-2">
+                  <div className="border-b border-border bg-surface-muted px-3 py-2">
                     <div className="flex flex-wrap gap-1 items-center">
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                      <div className="flex gap-1 border-r border-border pr-2 mr-2">
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleBold().run()}
-                          className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bold') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('bold') ? 'bg-neutral-300' : ''}`}
                         >
                           B
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleItalic().run()}
-                          className={`px-2 py-1.5 text-sm italic rounded hover:bg-gray-200 transition-colors ${editor?.isActive('italic') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm italic rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('italic') ? 'bg-neutral-300' : ''}`}
                         >
                           I
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleUnderline().run()}
-                          className={`px-2 py-1.5 text-sm underline rounded hover:bg-gray-200 transition-colors ${editor?.isActive('underline') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm underline rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('underline') ? 'bg-neutral-300' : ''}`}
                         >
                           U
                         </button>
                       </div>
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                      <div className="flex gap-1 border-r border-border pr-2 mr-2">
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-neutral-300' : ''}`}
                         >
                           H1
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-neutral-300' : ''}`}
                         >
                           H2
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-neutral-300' : ''}`}
                         >
                           H3
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().setParagraph().run()}
-                          className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-neutral-300' : ''}`}
                         >
                           P
                         </button>
                       </div>
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                      <div className="flex gap-1 border-r border-border pr-2 mr-2">
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-neutral-300' : ''}`}
                         >
                           ⬅
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-neutral-300' : ''}`}
                         >
                           ⬌
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-neutral-300' : ''}`}
                         >
                           ➡
                         </button>
                       </div>
-                      <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                      <div className="flex gap-1 border-r border-border pr-2 mr-2">
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-neutral-300' : ''}`}
                         >
                           •
                         </button>
                         <button
                           type="button"
                           onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                          className={`px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-gray-300' : ''}`}
+                          className={`px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-neutral-300' : ''}`}
                         >
                           1.
                         </button>
@@ -759,7 +757,7 @@ const EditJob = () => {
                           type="button"
                           onClick={() => editor?.chain().focus().undo().run()}
                           disabled={!editor?.can().undo()}
-                          className="px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           ↶
                         </button>
@@ -767,7 +765,7 @@ const EditJob = () => {
                           type="button"
                           onClick={() => editor?.chain().focus().redo().run()}
                           disabled={!editor?.can().redo()}
-                          className="px-2 py-1.5 text-sm rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-2 py-1.5 text-sm rounded hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           ↷
                         </button>
@@ -780,28 +778,28 @@ const EditJob = () => {
                 </div>
                 <div className="flex justify-between items-center mt-2">
                   {errors.description ? (
-                    <p className="text-sm text-red-600">{errors.description}</p>
+                    <p className="text-sm text-error">{errors.description}</p>
                   ) : (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-subtle">
                       {charCount < 20
                         ? `Minimum ${20 - charCount} more characters required`
                         : 'Use formatting tools to make your description stand out'}
                     </p>
                   )}
-                  <p className="text-xs text-gray-400">{charCount} characters</p>
+                  <p className="text-xs text-subtle">{charCount} characters</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaMapMarkerAlt className="w-5 h-5 mr-2 text-green-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaMapMarkerAlt className="w-5 h-5 mr-2 text-success" />
               Location
             </h2>
 
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mb-4 p-4 bg-surface-muted rounded-lg">
               <div className="flex items-center space-x-4">
                 <label className="flex items-center cursor-pointer">
                   <input
@@ -810,7 +808,7 @@ const EditJob = () => {
                     onChange={() => setUseMapLocation(false)}
                     className="mr-2"
                   />
-                  <span className="text-sm font-medium text-gray-700">Manual Entry</span>
+                  <span className="text-sm font-medium text-muted">Manual Entry</span>
                 </label>
                 <label className="flex items-center cursor-pointer">
                   <input
@@ -821,7 +819,7 @@ const EditJob = () => {
                     disabled={!googleMapsLoaded}
                   />
                   <span
-                    className={`text-sm font-medium ${googleMapsLoaded ? 'text-gray-700' : 'text-gray-400'} flex items-center`}
+                    className={`text-sm font-medium ${googleMapsLoaded ? 'text-muted' : 'text-subtle'} flex items-center`}
                   >
                     <FaMap className="w-4 h-4 mr-1" />
                     Search on Map {!googleMapsLoaded && '(Loading...)'}
@@ -833,42 +831,42 @@ const EditJob = () => {
             {!useMapLocation ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Village *</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Village *</label>
                   <input
                     type="text"
                     name="location.village"
                     value={formData.location.village}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.village'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.village'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Maharagama"
                   />
                   {errors['location.village'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.village']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.village']}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">District *</label>
+                  <label className="block text-sm font-medium text-muted mb-1">District *</label>
                   <input
                     type="text"
                     name="location.district"
                     value={formData.location.district}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.district'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.district'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Colombo"
                   />
                   {errors['location.district'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.district']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.district']}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Province *</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Province *</label>
                   <select
                     name="location.province"
                     value={formData.location.province}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.province'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.province'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                   >
                     <option value="">Select province</option>
                     {PROVINCES.map(prov => (
@@ -878,13 +876,13 @@ const EditJob = () => {
                     ))}
                   </select>
                   {errors['location.province'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.province']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.province']}</p>
                   )}
                 </div>
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-muted mb-2">
                   Search Location *
                 </label>
                 <PlacesAutocomplete
@@ -894,24 +892,24 @@ const EditJob = () => {
                   initialValue={formData.location.fullAddress}
                 />
                 {formData.location.fullAddress && (
-                  <div className="mt-2 p-3 bg-green-50 text-green-700 rounded-lg text-sm">
+                  <div className="mt-2 p-3 bg-success/10 text-success rounded-lg text-sm">
                     <strong>Selected:</strong> {formData.location.fullAddress}
                   </div>
                 )}
-                {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
+                {errors.location && <p className="mt-1 text-sm text-error">{errors.location}</p>}
               </div>
             )}
           </div>
 
           {/* Salary */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaDollarSign className="w-5 h-5 mr-2 text-green-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaDollarSign className="w-5 h-5 mr-2 text-success" />
               Salary Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Salary Amount (LKR) *
                 </label>
                 <input
@@ -919,24 +917,22 @@ const EditJob = () => {
                   name="salaryAmount"
                   value={formData.salaryAmount}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.salaryAmount ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.salaryAmount ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                   placeholder="e.g., 1500"
                   min="0"
                 />
                 {errors.salaryAmount && (
-                  <p className="mt-1 text-sm text-red-600">{errors.salaryAmount}</p>
+                  <p className="mt-1 text-sm text-error">{errors.salaryAmount}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Salary Type *
-                </label>
+                <label className="block text-sm font-medium text-muted mb-1">Salary Type *</label>
                 <select
                   name="salaryType"
                   value={formData.salaryType}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                 >
                   {SALARY_TYPES.map(type => (
                     <option key={type} value={type}>
@@ -949,15 +945,15 @@ const EditJob = () => {
           </div>
 
           {/* Requirements */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaUsers className="w-5 h-5 mr-2 text-green-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaUsers className="w-5 h-5 mr-2 text-success" />
               Requirements
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Number of Positions *
                   </label>
                   <input
@@ -965,24 +961,24 @@ const EditJob = () => {
                     name="positions"
                     value={formData.positions}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors.positions ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.positions ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                     min="1"
                     max="100"
                   />
                   {errors.positions && (
-                    <p className="mt-1 text-sm text-red-600">{errors.positions}</p>
+                    <p className="mt-1 text-sm text-error">{errors.positions}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Experience Level
                   </label>
                   <select
                     name="experienceRequired"
                     value={formData.experienceRequired}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                   >
                     {EXPERIENCE_LEVELS.map(level => (
                       <option key={level} value={level}>
@@ -994,22 +990,20 @@ const EditJob = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Required Skills
-                </label>
+                <label className="block text-sm font-medium text-muted mb-1">Required Skills</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={skillInput}
                     onChange={e => setSkillInput(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                    className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                     placeholder="e.g., Planting, Harvesting"
                   />
                   <button
                     type="button"
                     onClick={handleAddSkill}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                    className="px-4 py-2 bg-success text-white rounded-lg hover:bg-deep-blue transition-colors flex items-center"
                   >
                     <FaPlus className="w-4 h-4" />
                   </button>
@@ -1019,13 +1013,13 @@ const EditJob = () => {
                     {formData.skillsRequired.map((skill, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
+                        className="inline-flex items-center px-3 py-1 bg-success/10 text-success rounded-full text-sm"
                       >
                         {skill}
                         <button
                           type="button"
                           onClick={() => handleRemoveSkill(skill)}
-                          className="ml-2 text-green-700 hover:text-green-900"
+                          className="ml-2 text-success hover:text-deep-blue"
                         >
                           <FaTimes className="w-3 h-3" />
                         </button>
@@ -1038,28 +1032,26 @@ const EditJob = () => {
           </div>
 
           {/* Duration */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaCalendar className="w-5 h-5 mr-2 text-green-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaCalendar className="w-5 h-5 mr-2 text-success" />
               Job Duration
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                <label className="block text-sm font-medium text-muted mb-1">Start Date *</label>
                 <input
                   type="date"
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.startDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.startDate ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
                 />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>
-                )}
+                {errors.startDate && <p className="mt-1 text-sm text-error">{errors.startDate}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   End Date (Optional)
                 </label>
                 <input
@@ -1068,7 +1060,7 @@ const EditJob = () => {
                   value={formData.endDate}
                   onChange={handleChange}
                   min={formData.startDate}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                 />
               </div>
             </div>
@@ -1078,14 +1070,14 @@ const EditJob = () => {
           <div className="flex justify-end gap-4">
             <Link
               to={`/employer/jobs/${id}`}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="px-6 py-2 bg-success text-white rounded-lg hover:bg-deep-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
             >
               {loading ? (
                 <>

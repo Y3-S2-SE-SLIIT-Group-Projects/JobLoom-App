@@ -116,29 +116,29 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
+    <div className="bg-surface rounded-2xl shadow-sm border border-border p-8">
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <div
-          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 1 ? 'bg-[#6794D1] text-white' : 'bg-[#F4F6F9] text-[#516876]'}`}
+          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 1 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
         >
           1
         </div>
-        <div className={`flex-1 h-1 rounded-full ${step >= 2 ? 'bg-[#6794D1]' : 'bg-[#D2D5D9]'}`} />
+        <div className={`flex-1 h-1 rounded-full ${step >= 2 ? 'bg-primary' : 'bg-neutral-200'}`} />
         <div
-          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 2 ? 'bg-[#6794D1] text-white' : 'bg-[#F4F6F9] text-[#516876]'}`}
+          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 2 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
         >
           2
         </div>
       </div>
 
       <div className="mb-6 text-center sm:text-left">
-        <h1 className="text-2xl font-bold text-[#2B373F] mb-1">
+        <h1 className="text-2xl font-bold text-text-dark mb-1">
           {role === 'employer'
             ? t('auth.employer_registration')
             : t('auth.job_seeker_registration')}
         </h1>
-        <p className="text-[#516876]">
+        <p className="text-muted">
           {step === 1 ? t('auth.step_create_account_desc') : t('auth.step_location_desc')}
         </p>
       </div>
@@ -147,24 +147,24 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
         <div className="space-y-5">
           <div className="flex gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+              <label className="block text-sm font-medium text-text-dark mb-1.5">
                 {t('auth.first_name')}
               </label>
               <div className="relative">
-                <FaUser className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+                <FaUser className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder={t('auth.first_name_placeholder')}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.firstName ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.firstName ? 'border-error bg-error/10' : 'border-border'}`}
                 />
               </div>
-              {errors.firstName && <p className="mt-1 text-xs text-red-600">{errors.firstName}</p>}
+              {errors.firstName && <p className="mt-1 text-xs text-error">{errors.firstName}</p>}
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+              <label className="block text-sm font-medium text-text-dark mb-1.5">
                 {t('auth.last_name')}
               </label>
               <input
@@ -173,86 +173,86 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder={t('auth.last_name_placeholder')}
-                className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.lastName ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.lastName ? 'border-error bg-error/10' : 'border-border'}`}
               />
-              {errors.lastName && <p className="mt-1 text-xs text-red-600">{errors.lastName}</p>}
+              {errors.lastName && <p className="mt-1 text-xs text-error">{errors.lastName}</p>}
             </div>
           </div>
 
           {role === 'employer' && (
             <div className="animate-in fade-in slide-in-from-top-2">
-              <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+              <label className="block text-sm font-medium text-text-dark mb-1.5">
                 {t('auth.company_name')}
               </label>
               <div className="relative">
-                <FaBriefcase className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+                <FaBriefcase className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
                 <input
                   type="text"
                   name="companyName"
                   value={formData.companyName}
                   onChange={handleChange}
                   placeholder={t('auth.company_name')}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.companyName ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.companyName ? 'border-error bg-error/10' : 'border-border'}`}
                 />
               </div>
               {errors.companyName && (
-                <p className="mt-1 text-xs text-red-600">{errors.companyName}</p>
+                <p className="mt-1 text-xs text-error">{errors.companyName}</p>
               )}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.email')}
             </label>
             <div className="relative">
-              <FaEnvelope className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+              <FaEnvelope className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder={t('auth.email_placeholder')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.email ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.email ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.phone_number')}
             </label>
             <div className="relative">
-              <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+              <FaPhone className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
               <input
                 type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder={t('auth.phone_placeholder')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.phone ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.phone ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.password')}
             </label>
             <div className="relative">
-              <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+              <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder={t('auth.password_placeholder')}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.password ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.password ? 'border-error bg-error/10' : 'border-border'}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
+                className="absolute text-subtle -translate-y-1/2 right-3 top-1/2"
               >
                 {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
               </button>
@@ -260,36 +260,36 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.confirm_password')}
             </label>
             <div className="relative">
-              <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+              <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
               <input
                 type={showConfirm ? 'text' : 'password'}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder={t('auth.confirm_password_placeholder')}
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors.confirmPassword ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full pl-10 pr-12 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.confirmPassword ? 'border-error bg-error/10' : 'border-border'}`}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
+                className="absolute text-subtle -translate-y-1/2 right-3 top-1/2"
               >
                 {showConfirm ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-error">{errors.confirmPassword}</p>
             )}
           </div>
 
           <button
             type="button"
             onClick={handleNext}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue font-medium transition-colors"
           >
             {t('auth.next')} <FaArrowRight className="w-4 h-4" />
           </button>
@@ -297,24 +297,24 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
       ) : (
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.village_town')}
             </label>
             <div className="relative">
-              <FaMapMarkerAlt className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+              <FaMapMarkerAlt className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
               <input
                 type="text"
                 name="location.village"
                 value={formData.location.village}
                 onChange={handleChange}
                 placeholder={t('auth.village_placeholder')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors['location.village'] ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors['location.village'] ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.district')}
             </label>
             <input
@@ -323,19 +323,19 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
               value={formData.location.district}
               onChange={handleChange}
               placeholder={t('auth.district_placeholder')}
-              className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors['location.district'] ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+              className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors['location.district'] ? 'border-error bg-error/10' : 'border-border'}`}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+            <label className="block text-sm font-medium text-text-dark mb-1.5">
               {t('auth.province')}
             </label>
             <select
               name="location.province"
               value={formData.location.province}
               onChange={handleChange}
-              className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-[#6794D1] focus:border-transparent ${errors['location.province'] ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+              className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors['location.province'] ? 'border-error bg-error/10' : 'border-border'}`}
             >
               <option value="">{t('auth.select_province')}</option>
               {PROVINCES.map(p => (
@@ -350,14 +350,14 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted rounded-lg hover:bg-surface-muted font-medium"
             >
               <FaArrowLeft className="w-4 h-4" /> {t('common.back')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] font-medium disabled:opacity-60 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue font-medium disabled:opacity-60 transition-colors"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />

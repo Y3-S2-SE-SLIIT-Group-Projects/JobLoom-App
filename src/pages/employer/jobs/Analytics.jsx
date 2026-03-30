@@ -35,7 +35,7 @@ const Analytics = () => {
       label: 'Total Jobs Posted',
       value: stats?.totalJobs || 0,
       icon: FaBriefcase,
-      gradient: 'from-[#6794D1] to-[#5a83c0]',
+      gradient: 'from-primary to-deep-blue',
       change: '+12%',
       trend: 'up',
     },
@@ -71,11 +71,11 @@ const Analytics = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Page Title */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[#2B373F] mb-2 flex items-center gap-3">
-            <FaChartLine className="text-[#6794D1]" />
+          <h1 className="text-4xl font-bold text-text-dark mb-2 flex items-center gap-3">
+            <FaChartLine className="text-primary" />
             Analytics Dashboard
           </h1>
-          <p className="text-lg text-[#516876]">Track your job posting performance and insights</p>
+          <p className="text-lg text-muted">Track your job posting performance and insights</p>
         </div>
 
         {/* Stats Grid */}
@@ -85,7 +85,7 @@ const Analytics = () => {
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6 hover:shadow-md transition-all duration-300"
+                className="bg-surface rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-all duration-300"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div
@@ -95,7 +95,7 @@ const Analytics = () => {
                   </div>
                   <div
                     className={`flex items-center gap-1 text-sm font-medium ${
-                      stat.trend === 'up' ? 'text-[#2CD2BD]' : 'text-red-600'
+                      stat.trend === 'up' ? 'text-success' : 'text-error'
                     }`}
                   >
                     {stat.trend === 'up' ? (
@@ -106,8 +106,8 @@ const Analytics = () => {
                     {stat.change}
                   </div>
                 </div>
-                <p className="text-sm text-[#516876] mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-[#2B373F]">{loading ? '--' : stat.value}</p>
+                <p className="text-sm text-muted mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-text-dark">{loading ? '--' : stat.value}</p>
               </div>
             );
           })}
@@ -116,36 +116,36 @@ const Analytics = () => {
         {/* Additional Analytics Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Performance Chart Placeholder */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-            <h3 className="text-xl font-bold text-[#2B373F] mb-4">Job Performance</h3>
-            <div className="h-64 flex items-center justify-center text-[#516876]">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h3 className="text-xl font-bold text-text-dark mb-4">Job Performance</h3>
+            <div className="h-64 flex items-center justify-center text-muted">
               <p>Chart visualization coming soon...</p>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] p-6">
-            <h3 className="text-xl font-bold text-[#2B373F] mb-4">Recent Activity</h3>
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h3 className="text-xl font-bold text-text-dark mb-4">Recent Activity</h3>
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-3 bg-[#F4F6F9] rounded-lg">
-                <FaBriefcase className="w-5 h-5 text-[#6794D1] mt-1" />
+              <div className="flex items-start gap-3 p-3 bg-surface-muted rounded-lg">
+                <FaBriefcase className="w-5 h-5 text-primary mt-1" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#2B373F]">New job posted</p>
-                  <p className="text-xs text-[#516876]">2 hours ago</p>
+                  <p className="text-sm font-medium text-text-dark">New job posted</p>
+                  <p className="text-xs text-muted">2 hours ago</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-3 bg-[#F4F6F9] rounded-lg">
-                <FaUsers className="w-5 h-5 text-[#A68BF9] mt-1" />
+              <div className="flex items-start gap-3 p-3 bg-surface-muted rounded-lg">
+                <FaUsers className="w-5 h-5 text-info mt-1" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#2B373F]">5 new applicants</p>
-                  <p className="text-xs text-[#516876]">5 hours ago</p>
+                  <p className="text-sm font-medium text-text-dark">5 new applicants</p>
+                  <p className="text-xs text-muted">5 hours ago</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-3 bg-[#F4F6F9] rounded-lg">
-                <FaCheckCircle className="w-5 h-5 text-[#2CD2BD] mt-1" />
+              <div className="flex items-start gap-3 p-3 bg-surface-muted rounded-lg">
+                <FaCheckCircle className="w-5 h-5 text-success mt-1" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#2B373F]">Position filled</p>
-                  <p className="text-xs text-[#516876]">1 day ago</p>
+                  <p className="text-sm font-medium text-text-dark">Position filled</p>
+                  <p className="text-xs text-muted">1 day ago</p>
                 </div>
               </div>
             </div>

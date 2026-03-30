@@ -41,12 +41,12 @@ const STATUS_TRANSITIONS = {
 };
 
 const STATUS_BADGE = {
-  pending: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  reviewed: 'bg-blue-100 text-blue-700 border-blue-200',
+  pending: 'bg-warning/10 text-warning border-warning/30',
+  reviewed: 'bg-info/10 text-info border-info/20',
   shortlisted: 'bg-purple-100 text-purple-700 border-purple-200',
-  accepted: 'bg-green-100 text-green-700 border-green-200',
-  rejected: 'bg-red-100 text-red-700 border-red-200',
-  withdrawn: 'bg-gray-100 text-gray-500 border-gray-200',
+  accepted: 'bg-success/10 text-success border-success/30',
+  rejected: 'bg-error/10 text-error border-error/30',
+  withdrawn: 'bg-neutral-100 text-subtle border-border',
 };
 
 const ApplicationDetailPage = () => {
@@ -210,10 +210,10 @@ const ApplicationDetailPage = () => {
             <Spinner size="lg" />
           ) : (
             <div className="text-center">
-              <p className="text-gray-600 mb-4">Application not found.</p>
+              <p className="text-muted mb-4">Application not found.</p>
               <Link
                 to="/employer/applications"
-                className="text-[#6794D1] hover:underline font-medium"
+                className="text-primary hover:underline font-medium"
               >
                 Back to Applications
               </Link>
@@ -227,26 +227,26 @@ const ApplicationDetailPage = () => {
   return (
     <DottedBackground>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <Link
             to={backHref}
-            className="inline-flex items-center text-gray-500 hover:text-[#6794D1] transition-colors text-sm mb-4"
+            className="inline-flex items-center text-subtle hover:text-primary transition-colors text-sm mb-4"
           >
             <FaArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Link>
 
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{getApplicantName()}</h1>
+            <h1 className="text-2xl font-bold text-text-dark">{getApplicantName()}</h1>
             <span
-              className={`px-3 py-1 text-xs font-medium rounded-full border capitalize ${STATUS_BADGE[application.status] || 'bg-gray-100 text-gray-700'}`}
+              className={`px-3 py-1 text-xs font-medium rounded-full border capitalize ${STATUS_BADGE[application.status] || 'bg-neutral-100 text-muted'}`}
             >
               {application.status}
             </span>
           </div>
-          <p className="text-gray-500 mt-1">
-            Application for <span className="font-medium text-gray-700">{getJobTitle()}</span>
+          <p className="text-subtle mt-1">
+            Application for <span className="font-medium text-muted">{getJobTitle()}</span>
           </p>
         </div>
       </div>
@@ -255,32 +255,29 @@ const ApplicationDetailPage = () => {
         <AlertBanner type="error" message={error} />
 
         {/* Applicant info */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Applicant</h2>
+        <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-bold text-text-dark mb-4">Applicant</h2>
           <div className="space-y-3">
             {getApplicantEmail() && (
-              <div className="flex items-center gap-2 text-gray-700">
-                <FaEnvelope className="w-4 h-4 text-gray-400" />
-                <a
-                  href={`mailto:${getApplicantEmail()}`}
-                  className="text-[#6794D1] hover:underline"
-                >
+              <div className="flex items-center gap-2 text-muted">
+                <FaEnvelope className="w-4 h-4 text-subtle" />
+                <a href={`mailto:${getApplicantEmail()}`} className="text-primary hover:underline">
                   {getApplicantEmail()}
                 </a>
               </div>
             )}
-            <div className="flex items-center gap-2 text-gray-700">
-              <FaCalendarAlt className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 text-muted">
+              <FaCalendarAlt className="w-4 h-4 text-subtle" />
               <span>Applied {formatDate(application.appliedAt || application.createdAt)}</span>
             </div>
             {application.jobSeekerId?.skills?.length > 0 && (
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">Skills</p>
+                <p className="text-sm font-medium text-muted mb-2">Skills</p>
                 <div className="flex flex-wrap gap-2">
                   {application.jobSeekerId.skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                      className="px-3 py-1 bg-neutral-100 text-muted rounded-full text-sm"
                     >
                       {skill}
                     </span>
@@ -293,9 +290,9 @@ const ApplicationDetailPage = () => {
 
         {/* Cover letter */}
         {application.coverLetter && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Cover Letter</h2>
-            <p className="text-gray-700 whitespace-pre-wrap">{application.coverLetter}</p>
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-4">Cover Letter</h2>
+            <p className="text-muted whitespace-pre-wrap">{application.coverLetter}</p>
           </section>
         )}
 
@@ -307,13 +304,13 @@ const ApplicationDetailPage = () => {
               ? application.resumeUrl
               : getImageUrl(application.resumeUrl);
             return (
-              <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">Resume</h2>
+              <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                <h2 className="text-lg font-bold text-text-dark mb-4">Resume</h2>
                 <a
                   href={resolvedUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium"
+                  className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
                 >
                   {isExternal ? <FaLink className="w-4 h-4" /> : <FaDownload className="w-4 h-4" />}
                   {isExternal ? 'View resume' : 'Download CV'}
@@ -323,15 +320,15 @@ const ApplicationDetailPage = () => {
           })()}
 
         {/* Status update & employer notes */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Status & Notes</h2>
+        <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-bold text-text-dark mb-4">Status & Notes</h2>
 
           <AlertBanner type="error" message={statusError} />
           <AlertBanner type="success" message={statusSuccess} />
 
           <form onSubmit={handleUpdateStatus} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-muted mb-1">
                 Employer notes (internal)
               </label>
               <textarea
@@ -340,21 +337,19 @@ const ApplicationDetailPage = () => {
                 rows={4}
                 maxLength={500}
                 placeholder="Private notes about this applicant…"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none text-sm resize-none"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm resize-none"
               />
-              <p className="mt-1 text-xs text-gray-400">{employerNotes.length}/500</p>
+              <p className="mt-1 text-xs text-subtle">{employerNotes.length}/500</p>
             </div>
 
             {canChangeStatus && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Update status
-                </label>
+                <label className="block text-sm font-medium text-muted mb-2">Update status</label>
                 <div className="flex flex-wrap items-center gap-3">
                   <select
                     value={selectedStatus}
                     onChange={e => setSelectedStatus(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] outline-none text-sm"
+                    className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm"
                   >
                     <option value={application.status}>— Keep current —</option>
                     {allowedNextStatuses.map(s => (
@@ -366,7 +361,7 @@ const ApplicationDetailPage = () => {
                   <button
                     type="submit"
                     disabled={statusLoading || selectedStatus === application.status}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {statusLoading ? <Spinner size="sm" /> : <FaSave className="w-4 h-4" />}
                     Update Status
@@ -379,8 +374,8 @@ const ApplicationDetailPage = () => {
 
         {/* Schedule interview */}
         {canScheduleInterview && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Schedule Interview</h2>
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-4">Schedule Interview</h2>
 
             <AlertBanner type="error" message={scheduleError} />
 
@@ -393,13 +388,13 @@ const ApplicationDetailPage = () => {
             </div>
 
             {/* Manual fallback scheduler */}
-            <div className="border-t border-gray-100 pt-5">
-              <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-medium">
+            <div className="border-t border-neutral-100 pt-5">
+              <p className="text-xs text-subtle mb-3 uppercase tracking-wide font-medium">
                 Or set a date manually
               </p>
               <form onSubmit={handleScheduleInterview} className="flex flex-wrap items-end gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Interview date & time
                   </label>
                   <input
@@ -407,13 +402,13 @@ const ApplicationDetailPage = () => {
                     value={interviewDateInput}
                     onChange={e => setInterviewDateInput(e.target.value)}
                     min={new Date().toISOString().slice(0, 16)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] outline-none text-sm"
+                    className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={scheduleLoading}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#2CD2BD] text-white rounded-lg hover:bg-[#25b8a5] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-success text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {scheduleLoading ? <Spinner size="sm" /> : <FaPaperPlane className="w-4 h-4" />}
                   Schedule
@@ -422,7 +417,7 @@ const ApplicationDetailPage = () => {
             </div>
 
             {application.interviewDate && (
-              <p className="mt-3 text-sm text-gray-600">
+              <p className="mt-3 text-sm text-muted">
                 Currently scheduled: {formatDate(application.interviewDate)}
               </p>
             )}
@@ -431,7 +426,7 @@ const ApplicationDetailPage = () => {
 
         {/* Reviews panel (when accepted) */}
         {application.status === 'accepted' && currentUser && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <ApplicationReviewsPanel
               jobId={getJobId()}
               employerId={getEmployerId()}

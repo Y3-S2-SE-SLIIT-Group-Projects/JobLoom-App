@@ -32,12 +32,12 @@ import { getImageUrl } from '../../utils/imageUrls';
 // ── Status timeline dot colors ──────────────────────────────────────────────────
 
 const TIMELINE_DOT_COLORS = {
-  pending: 'bg-yellow-400',
-  reviewed: 'bg-blue-400',
+  pending: 'bg-warning',
+  reviewed: 'bg-info',
   shortlisted: 'bg-purple-400',
-  accepted: 'bg-green-400',
-  rejected: 'bg-red-400',
-  withdrawn: 'bg-gray-400',
+  accepted: 'bg-success',
+  rejected: 'bg-error',
+  withdrawn: 'bg-neutral-500',
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
@@ -210,8 +210,8 @@ const SeekerApplicationDetail = () => {
             <Spinner size="lg" />
           ) : (
             <div className="text-center">
-              <p className="text-gray-600 mb-4">Application not found.</p>
-              <Link to="/my-applications" className="text-[#6794D1] hover:underline font-medium">
+              <p className="text-muted mb-4">Application not found.</p>
+              <Link to="/my-applications" className="text-primary hover:underline font-medium">
                 Back to My Applications
               </Link>
             </div>
@@ -227,29 +227,28 @@ const SeekerApplicationDetail = () => {
   return (
     <DottedBackground>
       {/* ── Header ────────────────────────────────────────────────────────────── */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-surface border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <Link
             to="/my-applications"
-            className="inline-flex items-center text-gray-500 hover:text-[#6794D1] transition-colors text-sm mb-4"
+            className="inline-flex items-center text-subtle hover:text-primary transition-colors text-sm mb-4"
           >
             <FaArrowLeft className="w-4 h-4 mr-2" />
             Back to My Applications
           </Link>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{getJobTitle()}</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-text-dark">{getJobTitle()}</h1>
             <span
               className={`px-3 py-1 text-xs font-medium rounded-full border capitalize ${
-                STATUS_BADGE_COLORS[application.status] ||
-                'bg-gray-100 text-gray-700 border-gray-200'
+                STATUS_BADGE_COLORS[application.status] || 'bg-neutral-100 text-muted border-border'
               }`}
             >
               {application.status}
             </span>
           </div>
-          <p className="text-gray-500 mt-1">
-            Application for <span className="font-medium text-gray-700">{getEmployerName()}</span>
+          <p className="text-subtle mt-1">
+            Application for <span className="font-medium text-muted">{getEmployerName()}</span>
           </p>
         </div>
       </div>
@@ -265,27 +264,27 @@ const SeekerApplicationDetail = () => {
         )}
 
         {/* ── Job Info Card ──────────────────────────────────────────────────── */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <FaBriefcase className="w-4 h-4 text-[#6794D1]" />
+        <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-bold text-text-dark mb-4 flex items-center gap-2">
+            <FaBriefcase className="w-4 h-4 text-primary" />
             Job Details
           </h2>
           <div className="space-y-3">
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600">
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
               {getJobCategory() && (
                 <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-gray-700">Category:</span> {getJobCategory()}
+                  <span className="font-medium text-muted">Category:</span> {getJobCategory()}
                 </span>
               )}
               {getEmploymentType() && (
                 <span className="flex items-center gap-1.5">
-                  <span className="font-medium text-gray-700">Type:</span>{' '}
+                  <span className="font-medium text-muted">Type:</span>{' '}
                   <span className="capitalize">{getEmploymentType()}</span>
                 </span>
               )}
               {getJobLocation() && (
                 <span className="flex items-center gap-1.5">
-                  <FaMapMarkerAlt className="w-3.5 h-3.5 text-gray-400" />
+                  <FaMapMarkerAlt className="w-3.5 h-3.5 text-subtle" />
                   {getJobLocation()}
                 </span>
               )}
@@ -293,7 +292,7 @@ const SeekerApplicationDetail = () => {
             {jobId && (
               <Link
                 to={`/jobs/${jobId}`}
-                className="inline-flex items-center gap-2 text-[#6794D1] hover:underline text-sm font-medium"
+                className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium"
               >
                 <FaExternalLinkAlt className="w-3.5 h-3.5" />
                 View Full Job Posting
@@ -303,18 +302,18 @@ const SeekerApplicationDetail = () => {
         </section>
 
         {/* ── Your Application ───────────────────────────────────────────────── */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Your Application</h2>
+        <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-bold text-text-dark mb-4">Your Application</h2>
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <FaCalendarAlt className="w-3.5 h-3.5 text-gray-400" />
+            <div className="flex items-center gap-2 text-sm text-muted">
+              <FaCalendarAlt className="w-3.5 h-3.5 text-subtle" />
               Applied {formatDate(application.appliedAt || application.createdAt)}
             </div>
 
             {application.coverLetter && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">Cover Letter</p>
-                <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap border border-gray-100">
+                <p className="text-sm font-medium text-muted mb-2">Cover Letter</p>
+                <div className="bg-surface-muted rounded-lg p-4 text-sm text-muted whitespace-pre-wrap border border-neutral-100">
                   {application.coverLetter}
                 </div>
               </div>
@@ -328,12 +327,12 @@ const SeekerApplicationDetail = () => {
                   : getImageUrl(application.resumeUrl);
                 return (
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Resume</p>
+                    <p className="text-sm font-medium text-muted mb-2">Resume</p>
                     <a
                       href={resolvedUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[#6794D1] hover:underline font-medium text-sm"
+                      className="inline-flex items-center gap-2 text-primary hover:underline font-medium text-sm"
                     >
                       {isExternal ? (
                         <FaLink className="w-4 h-4" />
@@ -350,12 +349,12 @@ const SeekerApplicationDetail = () => {
 
         {/* ── Status Timeline ────────────────────────────────────────────────── */}
         {statusHistory.length > 0 && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Application Timeline</h2>
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-4">Application Timeline</h2>
             <div className="relative">
               {statusHistory.map((entry, idx) => {
                 const isLast = idx === statusHistory.length - 1;
-                const dotColor = TIMELINE_DOT_COLORS[entry.status] || 'bg-gray-400';
+                const dotColor = TIMELINE_DOT_COLORS[entry.status] || 'bg-neutral-500';
                 return (
                   <div key={idx} className="flex gap-4 pb-6 last:pb-0">
                     {/* Dot + connector line */}
@@ -367,23 +366,23 @@ const SeekerApplicationDetail = () => {
                         style={
                           isLast
                             ? {
-                                ringColor: TIMELINE_DOT_COLORS[entry.status] || 'bg-gray-400',
+                                ringColor: TIMELINE_DOT_COLORS[entry.status] || 'bg-neutral-500',
                               }
                             : undefined
                         }
                       />
-                      {!isLast && <div className="w-0.5 flex-1 bg-gray-200 mt-1" />}
+                      {!isLast && <div className="w-0.5 flex-1 bg-neutral-200 mt-1" />}
                     </div>
                     {/* Content */}
                     <div className="-mt-0.5">
                       <p
                         className={`text-sm font-semibold capitalize ${
-                          isLast ? 'text-gray-900' : 'text-gray-600'
+                          isLast ? 'text-text-dark' : 'text-muted'
                         }`}
                       >
                         {entry.status}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-subtle mt-0.5">
                         {formatDateTime(entry.changedAt)}
                       </p>
                     </div>
@@ -396,26 +395,24 @@ const SeekerApplicationDetail = () => {
 
         {/* ── Interview Details ──────────────────────────────────────────────── */}
         {application.interviewDate && (
-          <section className="bg-white rounded-xl shadow-sm border border-purple-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <section className="bg-surface rounded-xl shadow-sm border border-purple-200 p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-3 flex items-center gap-2">
               <FaCalendarAlt className="w-4 h-4 text-purple-500" />
               Interview Scheduled
             </h2>
-            <p className="text-gray-700 text-base font-medium">
+            <p className="text-muted text-base font-medium">
               {formatDateTime(application.interviewDate)}
             </p>
-            <p className="text-sm text-gray-500 mt-1">Scheduled by {getEmployerName()}</p>
+            <p className="text-sm text-subtle mt-1">Scheduled by {getEmployerName()}</p>
           </section>
         )}
 
         {/* ── Personal Notes ─────────────────────────────────────────────────── */}
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <FaStickyNote className="w-4 h-4 text-[#6794D1]" />
+        <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-bold text-text-dark mb-4 flex items-center gap-2">
+            <FaStickyNote className="w-4 h-4 text-primary" />
             My Notes
-            <span className="text-xs font-normal text-gray-400">
-              (private — only visible to you)
-            </span>
+            <span className="text-xs font-normal text-subtle">(private — only visible to you)</span>
           </h2>
 
           <AlertBanner type="error" message={notesError} />
@@ -431,15 +428,15 @@ const SeekerApplicationDetail = () => {
             rows={4}
             maxLength={500}
             placeholder="Keep personal notes about this application..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none text-sm resize-none"
+            className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm resize-none"
           />
           <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-gray-400">{personalNotes.length}/500</p>
+            <p className="text-xs text-subtle">{personalNotes.length}/500</p>
             <button
               type="button"
               onClick={handleSaveNotes}
               disabled={notesLoading}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {notesLoading ? <Spinner size="sm" /> : <FaSave className="w-4 h-4" />}
               Save Notes
@@ -449,12 +446,12 @@ const SeekerApplicationDetail = () => {
 
         {/* ── Withdraw Section ───────────────────────────────────────────────── */}
         {canWithdraw && !withdrawSuccess && (
-          <section className="bg-white rounded-xl shadow-sm border border-red-200 p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-              <FaExclamationTriangle className="w-4 h-4 text-red-500" />
+          <section className="bg-surface rounded-xl shadow-sm border border-error/30 p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-2 flex items-center gap-2">
+              <FaExclamationTriangle className="w-4 h-4 text-error" />
               Withdraw Application
             </h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-subtle mb-4">
               Once withdrawn, this action cannot be undone. The employer will be notified.
             </p>
 
@@ -464,7 +461,7 @@ const SeekerApplicationDetail = () => {
               <button
                 type="button"
                 onClick={() => setShowWithdrawConfirm(true)}
-                className="px-4 py-2 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium"
+                className="px-4 py-2 border-2 border-error text-error rounded-lg hover:bg-error/10 transition-colors text-sm font-medium"
               >
                 Withdraw Application
               </button>
@@ -476,14 +473,14 @@ const SeekerApplicationDetail = () => {
                   rows={3}
                   maxLength={500}
                   placeholder="Reason for withdrawal (optional)..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-300 focus:border-transparent outline-none text-sm resize-none"
+                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-red-300 focus:border-transparent outline-none text-sm resize-none"
                 />
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={handleWithdraw}
                     disabled={withdrawLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-error text-white rounded-lg hover:bg-error transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {withdrawLoading ? (
                       <Spinner size="sm" />
@@ -498,7 +495,7 @@ const SeekerApplicationDetail = () => {
                       setShowWithdrawConfirm(false);
                       setWithdrawalReason('');
                     }}
-                    className="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                    className="px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors text-sm font-medium"
                   >
                     Cancel
                   </button>
@@ -510,7 +507,7 @@ const SeekerApplicationDetail = () => {
 
         {/* ── Reviews Panel (when accepted) ──────────────────────────────────── */}
         {application.status === 'accepted' && currentUser && (
-          <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <ApplicationReviewsPanel
               jobId={getJobId()}
               employerId={getEmployerId()}

@@ -44,20 +44,20 @@ const UserReviewsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-screen bg-surface-muted">
       {/* Page header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-surface border-b border-border px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
           <Link
             to="/jobs"
-            className="p-2 rounded-lg text-gray-500 hover:text-[#6794D1] hover:bg-blue-50 transition-colors"
+            className="p-2 rounded-lg text-subtle hover:text-primary hover:bg-info/10 transition-colors"
             aria-label="Back"
           >
             <FaArrowLeft />
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-[#2B373F]">User Reviews</h1>
-            <p className="text-sm text-gray-500">Reviews and ratings received by this user</p>
+            <h1 className="text-xl font-bold text-text-dark">User Reviews</h1>
+            <p className="text-sm text-subtle">Reviews and ratings received by this user</p>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@ const UserReviewsPage = () => {
             <div className="mt-4">
               <Link
                 to={`/reviews/submit?revieweeId=${userId}`}
-                className="block w-full text-center px-4 py-2.5 bg-[#6794D1] text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                className="block w-full text-center px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
               >
                 Write a Review
               </Link>
@@ -113,17 +113,17 @@ const UserReviewsPage = () => {
                       <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 rounded-lg border border-border text-sm disabled:opacity-40 hover:bg-surface-muted transition-colors"
                       >
                         Previous
                       </button>
-                      <span className="px-4 py-2 text-sm text-gray-600">
+                      <span className="px-4 py-2 text-sm text-muted">
                         {page} / {pagination.totalPages}
                       </span>
                       <button
                         onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
                         disabled={page === pagination.totalPages}
-                        className="px-4 py-2 rounded-lg border border-gray-300 text-sm disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                        className="px-4 py-2 rounded-lg border border-border text-sm disabled:opacity-40 hover:bg-surface-muted transition-colors"
                       >
                         Next
                       </button>

@@ -12,12 +12,12 @@ import { FaEdit, FaFlag, FaTrash } from 'react-icons/fa';
  * @param {Function} onReport    – report handler (others)
  */
 const ReviewCardActions = ({ isOwner, isDeleting, isReporting, onEdit, onDelete, onReport }) => (
-  <div className="flex gap-3 mt-4 pt-3 border-t border-gray-100">
+  <div className="flex gap-3 mt-4 pt-3 border-t border-neutral-100">
     {isOwner && (
       <>
         <button
           onClick={onEdit}
-          className="flex items-center gap-1 text-xs text-[#6794D1] hover:text-[#4a7bbf] transition-colors"
+          className="flex items-center gap-1 text-xs text-primary hover:text-deep-blue transition-colors"
         >
           <FaEdit className="text-xs" />
           Edit
@@ -25,7 +25,7 @@ const ReviewCardActions = ({ isOwner, isDeleting, isReporting, onEdit, onDelete,
         <button
           onClick={onDelete}
           disabled={isDeleting}
-          className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1 text-xs text-error hover:text-error transition-colors disabled:opacity-50"
         >
           <FaTrash className="text-xs" />
           {isDeleting ? 'Deleting…' : 'Delete'}
@@ -36,7 +36,7 @@ const ReviewCardActions = ({ isOwner, isDeleting, isReporting, onEdit, onDelete,
       <button
         onClick={onReport}
         disabled={isReporting}
-        className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+        className="flex items-center gap-1 text-xs text-subtle hover:text-error transition-colors disabled:opacity-50"
       >
         <FaFlag className="text-xs" />
         {isReporting ? 'Reporting…' : 'Report'}

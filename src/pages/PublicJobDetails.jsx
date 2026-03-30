@@ -25,9 +25,9 @@ import {
 import { getImageUrl } from '../utils/imageUrls';
 
 const STATUS_COLORS = {
-  open: 'bg-green-100 text-green-800',
-  closed: 'bg-red-100 text-red-800',
-  filled: 'bg-blue-100 text-blue-800',
+  open: 'bg-success/10 text-success',
+  closed: 'bg-error/10 text-error',
+  filled: 'bg-info/10 text-info',
 };
 
 const PublicJobDetails = () => {
@@ -159,21 +159,21 @@ const PublicJobDetails = () => {
   // ── Loading / Error states ──────────────────────────────────
   if (loading || isInitialLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-success border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!isInitialLoading && (error || !job)) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
-          <p className="text-gray-600 mb-4">{error || 'Job not found'}</p>
+      <div className="min-h-screen bg-surface flex items-center justify-center p-4">
+        <div className="bg-surface rounded-xl shadow-sm border border-error/30 p-6 max-w-md w-full text-center">
+          <h2 className="text-xl font-bold text-error mb-2">Error</h2>
+          <p className="text-muted mb-4">{error || 'Job not found'}</p>
           <Link
             to="/jobs"
-            className="inline-block px-6 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors"
+            className="inline-block px-6 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors"
           >
             Back to Jobs
           </Link>
@@ -189,7 +189,7 @@ const PublicJobDetails = () => {
         {/* Back */}
         <Link
           to="/jobs"
-          className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors mb-6"
+          className="inline-flex items-center text-muted hover:text-info transition-colors mb-6"
         >
           <FaArrowLeft className="w-5 h-5 mr-2" />
           Back to Jobs
@@ -198,7 +198,7 @@ const PublicJobDetails = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+            <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center overflow-hidden border border-neutral-100">
               {employerLogo ? (
                 <img
                   src={getImageUrl(employerLogo)}
@@ -210,43 +210,43 @@ const PublicJobDetails = () => {
                   }}
                 />
               ) : (
-                <FaBriefcase className="w-8 h-8 text-gray-400" />
+                <FaBriefcase className="w-8 h-8 text-subtle" />
               )}
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-gray-900">{job.title}</h1>
+                <h1 className="text-3xl font-bold text-text-dark">{job.title}</h1>
                 <span
-                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_COLORS[job.status] || 'bg-gray-100 text-gray-800'}`}
+                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_COLORS[job.status] || 'bg-neutral-100 text-text-dark'}`}
                 >
                   {job.status}
                 </span>
               </div>
-              <p className="text-lg text-gray-600">{job.jobRole || 'Job Position'}</p>
-              <p className="text-sm text-gray-500 mt-1">{employerCompany}</p>
+              <p className="text-lg text-muted">{job.jobRole || 'Job Position'}</p>
+              <p className="text-sm text-subtle mt-1">{employerCompany}</p>
             </div>
           </div>
         </div>
 
         {/* Details bar */}
-        <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-gray-200">
-          <div className="flex items-center gap-2 text-gray-700">
-            <FaBriefcase className="w-5 h-5 text-gray-400" />
+        <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-border">
+          <div className="flex items-center gap-2 text-muted">
+            <FaBriefcase className="w-5 h-5 text-subtle" />
             <span className="capitalize">{job.employmentType || 'Full-time'}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <FaGlobe className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center gap-2 text-muted">
+            <FaGlobe className="w-5 h-5 text-subtle" />
             <button
               type="button"
               onClick={openLocationInGoogleMaps}
-              className="text-left hover:text-[#6794D1] hover:underline transition-colors"
+              className="text-left hover:text-primary hover:underline transition-colors"
               title="Open location in Google Maps"
             >
               {locationText}
             </button>
           </div>
-          <div className="flex items-center gap-2 text-gray-700">
-            <FaDollarSign className="w-5 h-5 text-gray-400" />
+          <div className="flex items-center gap-2 text-muted">
+            <FaDollarSign className="w-5 h-5 text-subtle" />
             <span className="font-semibold">
               {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
             </span>
@@ -254,43 +254,43 @@ const PublicJobDetails = () => {
         </div>
 
         {/* Job info grid */}
-        <div className="bg-gray-50 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">JOB INFORMATION</h2>
+        <div className="bg-surface-muted rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-text-dark mb-4">JOB INFORMATION</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Company</p>
-              <p className="font-medium text-gray-900">{employerCompany}</p>
+              <p className="text-sm text-muted mb-1">Company</p>
+              <p className="font-medium text-text-dark">{employerCompany}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Category</p>
-              <p className="font-medium text-gray-900 capitalize">{job.category}</p>
+              <p className="text-sm text-muted mb-1">Category</p>
+              <p className="font-medium text-text-dark capitalize">{job.category}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Employment Type</p>
-              <p className="font-medium text-gray-900 capitalize">
+              <p className="text-sm text-muted mb-1">Employment Type</p>
+              <p className="font-medium text-text-dark capitalize">
                 {job.employmentType || 'Full-time'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Positions Available</p>
-              <p className="font-medium text-gray-900">
+              <p className="text-sm text-muted mb-1">Positions Available</p>
+              <p className="font-medium text-text-dark">
                 {job.positions} position{job.positions > 1 ? 's' : ''}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Experience Level</p>
-              <p className="font-medium text-gray-900 capitalize">
+              <p className="text-sm text-muted mb-1">Experience Level</p>
+              <p className="font-medium text-text-dark capitalize">
                 {job.experienceRequired || 'None'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Start Date</p>
-              <p className="font-medium text-gray-900">{formatDate(job.startDate)}</p>
+              <p className="text-sm text-muted mb-1">Start Date</p>
+              <p className="font-medium text-text-dark">{formatDate(job.startDate)}</p>
             </div>
             {job.endDate && (
               <div>
-                <p className="text-sm text-gray-600 mb-1">End Date</p>
-                <p className="font-medium text-gray-900">{formatDate(job.endDate)}</p>
+                <p className="text-sm text-muted mb-1">End Date</p>
+                <p className="font-medium text-text-dark">{formatDate(job.endDate)}</p>
               </div>
             )}
           </div>
@@ -298,7 +298,7 @@ const PublicJobDetails = () => {
 
         {/* Description */}
         <div className="mb-8">
-          <div className="prose prose-lg max-w-none text-gray-700">
+          <div className="prose prose-lg max-w-none text-muted">
             {parse(job.description || 'No description provided.')}
           </div>
         </div>
@@ -306,11 +306,11 @@ const PublicJobDetails = () => {
         {/* Skills */}
         {job.skillsRequired?.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">SKILLS</h2>
+            <h2 className="text-xl font-bold text-text-dark mb-4">SKILLS</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, i) => (
-                <li key={i} className="flex items-start gap-2 text-gray-700">
-                  <span className="text-[#2CD2BD] mt-1">•</span>
+                <li key={i} className="flex items-start gap-2 text-muted">
+                  <span className="text-success mt-1">•</span>
                   <span>{skill}</span>
                 </li>
               ))}
@@ -319,12 +319,12 @@ const PublicJobDetails = () => {
         )}
 
         {/* ── CTA Section ──────────────────────────────────────── */}
-        <div className="pt-6 border-t border-gray-200">
+        <div className="pt-6 border-t border-border">
           {/* Guest → Login to Apply */}
           {isGuest && (
             <button
               onClick={() => navigate('/login', { state: { from: `/jobs/${id}` } })}
-              className="px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium flex items-center gap-2"
             >
               <FaSignInAlt className="w-5 h-5" />
               Login to Apply
@@ -334,13 +334,13 @@ const PublicJobDetails = () => {
           {/* Job seeker → Already applied (show regardless of job status) */}
           {isSeeker && hasApplied && (
             <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex px-6 py-3 bg-gray-100 text-gray-600 rounded-lg font-medium items-center gap-2">
-                <FaCheckCircle className="w-5 h-5 text-green-500" />
+              <div className="inline-flex px-6 py-3 bg-neutral-100 text-muted rounded-lg font-medium items-center gap-2">
+                <FaCheckCircle className="w-5 h-5 text-success" />
                 You have already applied
               </div>
               <Link
                 to="/my-applications"
-                className="text-sm text-[#6794D1] hover:underline font-medium"
+                className="text-sm text-primary hover:underline font-medium"
               >
                 View My Applications
               </Link>
@@ -351,7 +351,7 @@ const PublicJobDetails = () => {
           {isSeeker && job.status === 'open' && !hasApplied && (
             <button
               onClick={() => setApplyModalOpen(true)}
-              className="px-6 py-3 bg-[#2CD2BD] text-white rounded-lg hover:bg-[#25b8a5] transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-medium flex items-center gap-2"
             >
               <FaPaperPlane className="w-5 h-5" />
               Apply Now
@@ -362,7 +362,7 @@ const PublicJobDetails = () => {
           {isOwner && (
             <Link
               to={`/employer/applications/job/${job._id}`}
-              className="inline-flex px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium items-center gap-2"
+              className="inline-flex px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium items-center gap-2"
             >
               <FaUsers className="w-5 h-5" />
               Manage Applications

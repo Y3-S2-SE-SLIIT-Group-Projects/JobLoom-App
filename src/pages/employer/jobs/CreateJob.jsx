@@ -899,7 +899,7 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded }) => {
 
   if (!googleMapsLoaded) {
     return (
-      <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
+      <div className="w-full px-4 py-2 border border-border rounded-lg bg-surface-muted text-subtle">
         Google Maps is loading...
       </div>
     );
@@ -981,15 +981,15 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded }) => {
         onChange={handleInput}
         disabled={!ready}
         placeholder="Search for a location in Sri Lanka..."
-        className={`w-full px-4 py-2 border ${error ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+        className={`w-full px-4 py-2 border ${error ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
       />
       {status === 'OK' && data && data.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-60 overflow-auto">
           {data.map(({ place_id, description }) => (
             <li
               key={place_id}
               onClick={() => handleSelect(description)}
-              className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700 transition-colors"
+              className="px-4 py-2 hover:bg-info/10 cursor-pointer text-sm text-muted transition-colors"
             >
               {description}
             </li>
@@ -1155,10 +1155,10 @@ const CreateJob = () => {
   // Error boundary for this component - check AFTER all hooks
   if (componentError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-sm border border-red-200 p-6 max-w-md w-full">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h2>
-          <p className="text-gray-600 mb-4">
+      <div className="min-h-screen bg-surface-muted flex items-center justify-center p-4">
+        <div className="bg-surface rounded-xl shadow-sm border border-error/30 p-6 max-w-md w-full">
+          <h2 className="text-xl font-bold text-error mb-2">Something went wrong</h2>
+          <p className="text-muted mb-4">
             {componentError.message || 'An error occurred while loading the page.'}
           </p>
           <button
@@ -1166,7 +1166,7 @@ const CreateJob = () => {
               setComponentError(null);
               window.location.reload();
             }}
-            className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0]"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue"
           >
             Reload Page
           </button>
@@ -1585,11 +1585,11 @@ const CreateJob = () => {
     <DottedBackground>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Job</h1>
-          <p className="text-gray-600">Fill in the details below to post your job opening</p>
+          <h1 className="text-3xl font-bold text-text-dark mb-2">Create New Job</h1>
+          <p className="text-muted">Fill in the details below to post your job opening</p>
         </div>
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+          <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
             <FaTimes className="w-5 h-5 mr-2" />
             {error}
           </div>
@@ -1597,33 +1597,33 @@ const CreateJob = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaBriefcase className="w-5 h-5 mr-2 text-[#6794D1]" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaBriefcase className="w-5 h-5 mr-2 text-primary" />
               Basic Information
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                <label className="block text-sm font-medium text-muted mb-1">Job Title</label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.title ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.title ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                   placeholder="e.g., Senior Farm Worker"
                 />
-                {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
+                {errors.title && <p className="mt-1 text-sm text-error">{errors.title}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Category</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors.category ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.category ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                   >
                     <option value="">Select a category</option>
                     {JOB_CATEGORIES.map(cat => (
@@ -1632,20 +1632,18 @@ const CreateJob = () => {
                       </option>
                     ))}
                   </select>
-                  {errors.category && (
-                    <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-                  )}
+                  {errors.category && <p className="mt-1 text-sm text-error">{errors.category}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Job Role</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Job Role</label>
                   <input
                     type="text"
                     name="jobRole"
                     value={formData.jobRole}
                     onChange={handleChange}
                     list="job-roles"
-                    className={`w-full px-4 py-2 border ${errors.jobRole ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.jobRole ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Farm Supervisor"
                   />
                   <datalist id="job-roles">
@@ -1653,19 +1651,17 @@ const CreateJob = () => {
                       <option key={role} value={role} />
                     ))}
                   </datalist>
-                  {errors.jobRole && <p className="mt-1 text-sm text-red-600">{errors.jobRole}</p>}
+                  {errors.jobRole && <p className="mt-1 text-sm text-error">{errors.jobRole}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Employment Type
-                </label>
+                <label className="block text-sm font-medium text-muted mb-1">Employment Type</label>
                 <select
                   name="employmentType"
                   value={formData.employmentType}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.employmentType ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.employmentType ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map(type => (
@@ -1675,21 +1671,21 @@ const CreateJob = () => {
                   ))}
                 </select>
                 {errors.employmentType && (
-                  <p className="mt-1 text-sm text-red-600">{errors.employmentType}</p>
+                  <p className="mt-1 text-sm text-error">{errors.employmentType}</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaMapMarkerAlt className="w-5 h-5 mr-2 text-[#6794D1]" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaMapMarkerAlt className="w-5 h-5 mr-2 text-primary" />
               Location
             </h2>
 
             {/* Location Type Toggle */}
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className="mb-4 p-4 bg-surface-muted rounded-lg">
               <div className="flex items-center space-x-4">
                 <label className="flex items-center cursor-pointer">
                   <input
@@ -1698,7 +1694,7 @@ const CreateJob = () => {
                     onChange={() => setUseMapLocation(false)}
                     className="mr-2"
                   />
-                  <span className="text-sm font-medium text-gray-700">Manual Entry</span>
+                  <span className="text-sm font-medium text-muted">Manual Entry</span>
                 </label>
                 <label className="flex items-center cursor-pointer">
                   <input
@@ -1709,7 +1705,7 @@ const CreateJob = () => {
                     disabled={!googleMapsLoaded}
                   />
                   <span
-                    className={`text-sm font-medium ${googleMapsLoaded ? 'text-gray-700' : 'text-gray-400'} flex items-center`}
+                    className={`text-sm font-medium ${googleMapsLoaded ? 'text-muted' : 'text-subtle'} flex items-center`}
                   >
                     <FaMap className="w-4 h-4 mr-1" />
                     Search on Map {!googleMapsLoaded && '(Loading...)'}
@@ -1717,7 +1713,7 @@ const CreateJob = () => {
                 </label>
               </div>
               {useMapLocation && !googleMapsLoaded && (
-                <p className="mt-2 text-sm text-amber-600">
+                <p className="mt-2 text-sm text-secondary">
                   Google Maps is loading. Please wait or use manual entry.
                 </p>
               )}
@@ -1726,42 +1722,42 @@ const CreateJob = () => {
             {!useMapLocation ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Village</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Village</label>
                   <input
                     type="text"
                     name="location.village"
                     value={formData.location.village}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.village'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.village'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Maharagama"
                   />
                   {errors['location.village'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.village']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.village']}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
+                  <label className="block text-sm font-medium text-muted mb-1">District</label>
                   <input
                     type="text"
                     name="location.district"
                     value={formData.location.district}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.district'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.district'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                     placeholder="e.g., Colombo"
                   />
                   {errors['location.district'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.district']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.district']}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                  <label className="block text-sm font-medium text-muted mb-1">Province</label>
                   <select
                     name="location.province"
                     value={formData.location.province}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors['location.province'] ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors['location.province'] ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                   >
                     <option value="">Select province</option>
                     {PROVINCES.map(prov => (
@@ -1771,27 +1767,25 @@ const CreateJob = () => {
                     ))}
                   </select>
                   {errors['location.province'] && (
-                    <p className="mt-1 text-sm text-red-600">{errors['location.province']}</p>
+                    <p className="mt-1 text-sm text-error">{errors['location.province']}</p>
                   )}
                 </div>
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Search Location
-                </label>
+                <label className="block text-sm font-medium text-muted mb-2">Search Location</label>
                 <PlacesAutocomplete
                   onSelect={handlePlaceSelect}
                   error={errors.location}
                   googleMapsLoaded={googleMapsLoaded}
                 />
                 {formData.location.fullAddress && (
-                  <div className="mt-2 p-3 bg-[#6794D1]/10 text-[#6794D1] rounded-lg text-sm">
+                  <div className="mt-2 p-3 bg-primary/10 text-primary rounded-lg text-sm">
                     <strong>Selected:</strong> {formData.location.fullAddress}
                   </div>
                 )}
-                {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
-                <p className="mt-2 text-sm text-gray-500">
+                {errors.location && <p className="mt-1 text-sm text-error">{errors.location}</p>}
+                <p className="mt-2 text-sm text-subtle">
                   Search and select a location from the dropdown
                 </p>
               </div>
@@ -1799,14 +1793,14 @@ const CreateJob = () => {
           </div>
 
           {/* Salary */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaDollarSign className="w-5 h-5 mr-2 text-[#6794D1]" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaDollarSign className="w-5 h-5 mr-2 text-primary" />
               Salary Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   Salary Amount (LKR)
                 </label>
                 <input
@@ -1814,22 +1808,22 @@ const CreateJob = () => {
                   name="salaryAmount"
                   value={formData.salaryAmount}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.salaryAmount ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.salaryAmount ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                   placeholder="e.g., 1500"
                   min="0"
                 />
                 {errors.salaryAmount && (
-                  <p className="mt-1 text-sm text-red-600">{errors.salaryAmount}</p>
+                  <p className="mt-1 text-sm text-error">{errors.salaryAmount}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Salary Type</label>
+                <label className="block text-sm font-medium text-muted mb-1">Salary Type</label>
                 <select
                   name="salaryType"
                   value={formData.salaryType}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 >
                   {SALARY_TYPES.map(type => (
                     <option key={type} value={type}>
@@ -1842,15 +1836,15 @@ const CreateJob = () => {
           </div>
 
           {/* Requirements */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaUsers className="w-5 h-5 mr-2 text-blue-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaUsers className="w-5 h-5 mr-2 text-info" />
               Requirements
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Number of Positions
                   </label>
                   <input
@@ -1858,24 +1852,24 @@ const CreateJob = () => {
                     name="positions"
                     value={formData.positions}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border ${errors.positions ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                    className={`w-full px-4 py-2 border ${errors.positions ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                     min="1"
                     max="100"
                   />
                   {errors.positions && (
-                    <p className="mt-1 text-sm text-red-600">{errors.positions}</p>
+                    <p className="mt-1 text-sm text-error">{errors.positions}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-muted mb-1">
                     Experience Level
                   </label>
                   <select
                     name="experienceRequired"
                     value={formData.experienceRequired}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   >
                     {EXPERIENCE_LEVELS.map(level => (
                       <option key={level} value={level}>
@@ -1887,9 +1881,7 @@ const CreateJob = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Required Skills
-                </label>
+                <label className="block text-sm font-medium text-muted mb-1">Required Skills</label>
                 <div className="relative flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -1909,7 +1901,7 @@ const CreateJob = () => {
                       }}
                       onFocus={() => setSkillDropdownOpen(true)}
                       onBlur={() => setTimeout(() => setSkillDropdownOpen(false), 150)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                       placeholder={
                         formData.category
                           ? 'Type to search or add a skill…'
@@ -1917,7 +1909,7 @@ const CreateJob = () => {
                       }
                     />
                     {skillDropdownOpen && skillSuggestions.length > 0 && (
-                      <ul className="absolute z-20 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <ul className="absolute z-20 left-0 right-0 top-full mt-1 bg-surface border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
                         {skillSuggestions.map((s, i) => (
                           <li
                             key={i}
@@ -1926,7 +1918,7 @@ const CreateJob = () => {
                               setSkillInput('');
                               setSkillDropdownOpen(false);
                             }}
-                            className="px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer"
+                            className="px-4 py-2 text-sm text-muted hover:bg-info/10 cursor-pointer"
                           >
                             {s}
                           </li>
@@ -1940,7 +1932,7 @@ const CreateJob = () => {
                       handleAddSkill();
                       setSkillDropdownOpen(false);
                     }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors flex items-center"
                   >
                     <FaPlus className="w-4 h-4" />
                   </button>
@@ -1950,11 +1942,11 @@ const CreateJob = () => {
                   CATEGORY_SKILLS[formData.category].length > 0 && (
                     <div className="mt-3">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm text-gray-600">Suggested skills</div>
+                        <div className="text-sm text-muted">Suggested skills</div>
                         <button
                           type="button"
                           onClick={handleAddAllSuggested}
-                          className="text-sm text-blue-600 hover:underline"
+                          className="text-sm text-info hover:underline"
                         >
                           Add all
                         </button>
@@ -1963,8 +1955,8 @@ const CreateJob = () => {
                         {CATEGORY_SKILLS[formData.category].map((sug, i) => {
                           const already = formData.skillsRequired.includes(sug);
                           const btnClass = already
-                            ? 'inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-sm opacity-70 cursor-not-allowed'
-                            : 'inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200';
+                            ? 'inline-flex items-center px-3 py-1 bg-neutral-100 text-subtle rounded-full text-sm opacity-70 cursor-not-allowed'
+                            : 'inline-flex items-center px-3 py-1 bg-info/10 text-info rounded-full text-sm hover:bg-info/20';
                           return (
                             <button
                               key={i}
@@ -1987,13 +1979,13 @@ const CreateJob = () => {
                     {formData.skillsRequired.map((skill, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
+                        className="inline-flex items-center px-3 py-1 bg-success/10 text-success rounded-full text-sm"
                       >
                         {skill}
                         <button
                           type="button"
                           onClick={() => handleRemoveSkill(skill)}
-                          className="ml-2 text-green-700 hover:text-green-900"
+                          className="ml-2 text-success hover:text-deep-blue"
                         >
                           <FaTimes className="w-3 h-3" />
                         </button>
@@ -2006,29 +1998,27 @@ const CreateJob = () => {
           </div>
 
           {/* Duration */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FaCalendar className="w-5 h-5 mr-2 text-blue-600" />
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
+              <FaCalendar className="w-5 h-5 mr-2 text-info" />
               Job Duration
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <label className="block text-sm font-medium text-muted mb-1">Start Date</label>
                 <input
                   type="date"
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleChange}
                   min={todayDate}
-                  className={`w-full px-4 py-2 border ${errors.startDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.startDate ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-red-600">{errors.startDate}</p>
-                )}
+                {errors.startDate && <p className="mt-1 text-sm text-error">{errors.startDate}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-muted mb-1">
                   End Date (Optional)
                 </label>
                 <input
@@ -2041,47 +2031,47 @@ const CreateJob = () => {
                       ? formData.startDate
                       : todayDate
                   }
-                  className={`w-full px-4 py-2 border ${errors.endDate ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+                  className={`w-full px-4 py-2 border ${errors.endDate ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
                 />
-                {errors.endDate && <p className="mt-1 text-sm text-red-600">{errors.endDate}</p>}
+                {errors.endDate && <p className="mt-1 text-sm text-error">{errors.endDate}</p>}
               </div>
             </div>
           </div>
 
           {/* Job Description */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Job Description</h2>
+              <h2 className="text-lg font-semibold text-text-dark">Job Description</h2>
               <button
                 type="button"
                 onClick={handleGenerateDescription}
                 disabled={isGeneratingDescription}
-                className="px-4 py-2 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isGeneratingDescription ? 'Generating...' : 'Generate Description'}
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-muted mb-3">
               Use the details above, then generate and edit the description before creating the job.
             </p>
 
             {generationMessage && (
-              <div className="mb-3 p-3 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm">
+              <div className="mb-3 p-3 bg-success/10 text-success border border-success/30 rounded-lg text-sm">
                 {generationMessage}
               </div>
             )}
 
             <div
-              className={`border ${errors.description ? 'border-red-300' : 'border-gray-300'} rounded-lg overflow-hidden bg-white`}
+              className={`border ${errors.description ? 'border-error' : 'border-border'} rounded-lg overflow-hidden bg-surface`}
             >
-              <div className="border-b border-gray-200 bg-gray-50 px-3 py-2">
+              <div className="border-b border-border bg-surface-muted px-3 py-2">
                 <div className="flex flex-wrap gap-1 items-center">
-                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                  <div className="flex gap-1 border-r border-border pr-2 mr-2">
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleBold().run()}
-                      className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bold') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-sm font-bold rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('bold') ? 'bg-neutral-300' : ''}`}
                       title="Bold"
                     >
                       B
@@ -2089,7 +2079,7 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleItalic().run()}
-                      className={`px-2 py-1.5 text-sm italic rounded hover:bg-gray-200 transition-colors ${editor?.isActive('italic') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-sm italic rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('italic') ? 'bg-neutral-300' : ''}`}
                       title="Italic"
                     >
                       I
@@ -2097,18 +2087,18 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleUnderline().run()}
-                      className={`px-2 py-1.5 text-sm underline rounded hover:bg-gray-200 transition-colors ${editor?.isActive('underline') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-sm underline rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('underline') ? 'bg-neutral-300' : ''}`}
                       title="Underline"
                     >
                       U
                     </button>
                   </div>
 
-                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                  <div className="flex gap-1 border-r border-border pr-2 mr-2">
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 1 }) ? 'bg-neutral-300' : ''}`}
                       title="Heading 1"
                     >
                       H1
@@ -2116,7 +2106,7 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 2 }) ? 'bg-neutral-300' : ''}`}
                       title="Heading 2"
                     >
                       H2
@@ -2124,7 +2114,7 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('heading', { level: 3 }) ? 'bg-neutral-300' : ''}`}
                       title="Heading 3"
                     >
                       H3
@@ -2132,18 +2122,18 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().setParagraph().run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('paragraph') ? 'bg-neutral-300' : ''}`}
                       title="Paragraph"
                     >
                       P
                     </button>
                   </div>
 
-                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                  <div className="flex gap-1 border-r border-border pr-2 mr-2">
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'left' }) ? 'bg-neutral-300' : ''}`}
                       title="Align Left"
                     >
                       Left
@@ -2151,7 +2141,7 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'center' }) ? 'bg-neutral-300' : ''}`}
                       title="Align Center"
                     >
                       Center
@@ -2159,18 +2149,18 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive({ textAlign: 'right' }) ? 'bg-neutral-300' : ''}`}
                       title="Align Right"
                     >
                       Right
                     </button>
                   </div>
 
-                  <div className="flex gap-1 border-r border-gray-300 pr-2 mr-2">
+                  <div className="flex gap-1 border-r border-border pr-2 mr-2">
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('bulletList') ? 'bg-neutral-300' : ''}`}
                       title="Bullet List"
                     >
                       UL
@@ -2178,7 +2168,7 @@ const CreateJob = () => {
                     <button
                       type="button"
                       onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                      className={`px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-gray-300' : ''}`}
+                      className={`px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors ${editor?.isActive('orderedList') ? 'bg-neutral-300' : ''}`}
                       title="Numbered List"
                     >
                       OL
@@ -2190,7 +2180,7 @@ const CreateJob = () => {
                       type="button"
                       onClick={() => editor?.chain().focus().undo().run()}
                       disabled={!editor?.can().undo()}
-                      className="px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Undo"
                     >
                       Undo
@@ -2199,7 +2189,7 @@ const CreateJob = () => {
                       type="button"
                       onClick={() => editor?.chain().focus().redo().run()}
                       disabled={!editor?.can().redo()}
-                      className="px-2 py-1.5 text-xs rounded hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-2 py-1.5 text-xs rounded hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Redo"
                     >
                       Redo
@@ -2215,9 +2205,9 @@ const CreateJob = () => {
 
             <div className="flex justify-between items-center mt-2">
               {errors.description ? (
-                <p className="text-sm text-red-600">{errors.description}</p>
+                <p className="text-sm text-error">{errors.description}</p>
               ) : (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-subtle">
                   {charCount > 0 && charCount < 20
                     ? `Minimum ${20 - charCount} more characters recommended`
                     : charCount >= 20
@@ -2225,7 +2215,7 @@ const CreateJob = () => {
                       : 'Description is optional'}
                 </p>
               )}
-              <p className="text-xs text-gray-400">{charCount} characters</p>
+              <p className="text-xs text-subtle">{charCount} characters</p>
             </div>
           </div>
 
@@ -2233,14 +2223,14 @@ const CreateJob = () => {
           <div className="flex justify-end gap-4">
             <Link
               to="/employer/dashboard"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
             >
               {loading ? (
                 <>

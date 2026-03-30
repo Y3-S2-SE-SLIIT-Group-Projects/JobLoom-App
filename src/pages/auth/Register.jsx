@@ -33,16 +33,16 @@ const Register = () => {
       <div className="flex items-center justify-center min-h-screen px-4 py-12">
         <div className="w-full max-w-lg">
           {apiError && (
-            <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50 animate-in fade-in slide-in-from-top-2">
-              <p className="text-sm text-red-700">{apiError}</p>
+            <div className="p-4 mb-5 border border-error/30 rounded-lg bg-error/10 animate-in fade-in slide-in-from-top-2">
+              <p className="text-sm text-error">{apiError}</p>
             </div>
           )}
 
           <RegistrationForm role={role} onSubmit={handleSubmit} loading={loading} />
 
-          <p className="mt-6 text-center text-sm text-[#516876]">
+          <p className="mt-6 text-center text-sm text-muted">
             {t('auth.already_have_account')}{' '}
-            <Link to="/login" className="text-[#6794D1] font-medium hover:underline">
+            <Link to="/login" className="text-primary font-medium hover:underline">
               {t('navbar.sign_in')}
             </Link>
           </p>
@@ -52,14 +52,14 @@ const Register = () => {
             {role === 'employer' ? (
               <button
                 onClick={() => navigate('/register?role=job_seeker')}
-                className="text-xs text-[#516876] hover:text-[#6794D1] transition-colors"
+                className="text-xs text-muted hover:text-primary transition-colors"
               >
                 {t('auth.switch_to_job_seeker')}
               </button>
             ) : (
               <button
                 onClick={() => navigate('/register?role=employer')}
-                className="text-xs text-[#516876] hover:text-[#6794D1] transition-colors"
+                className="text-xs text-muted hover:text-primary transition-colors"
               >
                 {t('auth.switch_to_employer')}
               </button>

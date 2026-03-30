@@ -50,20 +50,20 @@ const CalendlyCallback = () => {
   return (
     <DottedBackground>
       <div className="max-w-md mx-auto mt-24 px-6">
-        <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+        <div className="bg-surface rounded-2xl shadow-lg p-8 text-center">
           {status === 'loading' && (
             <>
               <Spinner size="lg" className="mb-4" />
-              <h2 className="text-xl font-semibold text-[#2B373F] mb-2">Connecting Calendly...</h2>
-              <p className="text-[#516876]">Please wait while we link your account.</p>
+              <h2 className="text-xl font-semibold text-text-dark mb-2">Connecting Calendly...</h2>
+              <p className="text-muted">Please wait while we link your account.</p>
             </>
           )}
 
           {status === 'success' && (
             <>
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-8 h-8 text-green-600"
+                  className="w-8 h-8 text-success"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -76,14 +76,14 @@ const CalendlyCallback = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-[#2B373F] mb-2">Calendly Connected!</h2>
-              <p className="text-[#516876] mb-6">
+              <h2 className="text-xl font-semibold text-text-dark mb-2">Calendly Connected!</h2>
+              <p className="text-muted mb-6">
                 Your Calendly account has been linked. You can now schedule interviews through
                 Calendly.
               </p>
               <button
                 onClick={() => navigate('/employer/settings/calendly')}
-                className="w-full bg-[#6794D1] text-white py-3 rounded-xl font-medium hover:bg-[#5a82b8] transition-colors"
+                className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-deep-blue transition-colors"
               >
                 Go to Calendly Settings
               </button>
@@ -92,9 +92,9 @@ const CalendlyCallback = () => {
 
           {status === 'error' && (
             <>
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-8 h-8 text-red-600"
+                  className="w-8 h-8 text-error"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -107,11 +107,11 @@ const CalendlyCallback = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-[#2B373F] mb-2">Connection Failed</h2>
-              <p className="text-[#516876] mb-6">{errorMsg}</p>
+              <h2 className="text-xl font-semibold text-text-dark mb-2">Connection Failed</h2>
+              <p className="text-muted mb-6">{errorMsg}</p>
               <button
                 onClick={() => navigate('/employer/settings/calendly')}
-                className="w-full bg-[#6794D1] text-white py-3 rounded-xl font-medium hover:bg-[#5a82b8] transition-colors"
+                className="w-full bg-primary text-white py-3 rounded-xl font-medium hover:bg-deep-blue transition-colors"
               >
                 Back to Calendly Settings
               </button>
