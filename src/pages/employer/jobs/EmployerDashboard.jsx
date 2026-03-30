@@ -7,7 +7,7 @@ import { loadAllJobStats, selectJobStatsMap } from '../../../store/slices/applic
 import DottedBackground from '../../../components/DottedBackground';
 import { FaArrowRight, FaUserCircle, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 import createJobImg from '../../../assets/images/create-job.png';
-import myJobsImg from '../../../assets/images/my-jobs.png';
+import myJobsImg from '../../../assets/images/employer-illustration.svg';
 import applicationListImg from '../../../assets/images/application-list.png';
 
 const EmployerDashboard = () => {
