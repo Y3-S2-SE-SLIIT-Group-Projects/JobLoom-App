@@ -1,3 +1,5 @@
+import api from './api';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 /**
@@ -24,4 +26,36 @@ export async function uploadFile({ file, folder }) {
   }
 
   return data;
+}
+
+/**
+ * Get a short-lived signed URL for downloading/viewing a Cloudinary asset.
+ * Backend route: GET /api/upload/signed-url
+ *
+ * Prefer passing `url` (existing Cloudinary URL) if you don't have `publicId`.
+ * @param {{publicId?: string, format?: string, resourceType?: string, deliveryType?: string, url?: string, attachment?: boolean, expiresIn?: number}} params
+ * @returns {Promise<string>} signedUrl
+ */
+export async function getSignedDownloadUrl({
+  publicId,
+  format,
+  resourceType,
+  deliveryType,
+  url,
+  attachment = false,
+  expiresIn,
+}) {
+  const response = await api.get('/upload/signed-url', {
+    params: {
+      public_id: publicId,
+      format,
+      resource_type: resourceType,
+      type: deliveryType,
+      url,
+      attachment,
+      expiresIn,
+    },
+  });
+
+  return response.data?.url;
 }
