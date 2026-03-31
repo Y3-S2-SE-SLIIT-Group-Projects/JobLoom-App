@@ -131,6 +131,7 @@ const Navbar = () => {
 
   const isActive = path => {
     if (path === '/employer/dashboard') return location.pathname === '/employer/dashboard';
+    if (path === '/admin/dashboard') return location.pathname === '/admin/dashboard';
     return location.pathname.startsWith(path);
   };
 
@@ -146,6 +147,7 @@ const Navbar = () => {
 
   const getDashboardPath = () => {
     if (!currentUser) return null;
+    if (currentUser.role === 'admin') return '/admin/dashboard';
     if (currentUser.role === 'employer') return '/employer/dashboard';
     return '/my-applications';
   };
@@ -175,6 +177,14 @@ const Navbar = () => {
     { to: '/employer/analytics', label: t('navbar.analytics') },
   ];
 
+  const adminNavLinks = [
+    { to: '/admin/dashboard', label: t('navbar.dashboard'), exact: true },
+    { to: '/admin/users', label: t('navbar.users') || 'Users' },
+    { to: '/admin/jobs', label: t('navbar.jobs') || 'Jobs' },
+  ];
+
+  const isAdminSection = location.pathname.startsWith('/admin');
+
   return (
     <header className="bg-surface border-b border-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
@@ -194,7 +204,21 @@ const Navbar = () => {
         </Link>
 
         {/* Center nav links */}
-        {isEmployerSection && !isAuthPage ? (
+        {isAdminSection && !isAuthPage ? (
+          <nav className="hidden md:flex items-center gap-8">
+            {adminNavLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={navLinkClass(
+                  link.exact ? location.pathname === link.to : isActive(link.to)
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        ) : isEmployerSection && !isAuthPage ? (
           <nav className="hidden md:flex items-center gap-8">
             {employerNavLinks.map(link => (
               <Link

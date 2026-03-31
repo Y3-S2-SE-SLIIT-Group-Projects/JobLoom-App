@@ -15,6 +15,7 @@
   "navbar": {
     "dashboard": "Dashboard",
     "jobs": "Jobs",
+    "users": "Users",
     "applications": "Applications",
     "analytics": "Analytics",
     "post_job": "Post a Job",
