@@ -30,7 +30,7 @@ const StarRating = ({ value = 0, interactive = false, onChange, size = 'text-lg'
             className={[
               size,
               'transition-transform',
-              position <= value ? 'text-amber-400' : 'text-gray-300',
+              position <= value ? 'text-secondary' : 'text-neutral-300',
               interactive ? 'cursor-pointer hover:scale-110' : 'cursor-default',
             ].join(' ')}
             aria-label={interactive ? `Rate ${position} out of 5` : undefined}

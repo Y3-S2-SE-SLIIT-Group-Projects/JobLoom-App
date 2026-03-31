@@ -70,9 +70,9 @@ const MyJobs = () => {
 
   const getStatusBadge = status => {
     const styles = {
-      open: 'bg-green-100 text-green-700 border-green-200',
-      closed: 'bg-red-100 text-red-700 border-red-200',
-      filled: 'bg-blue-100 text-blue-700 border-blue-200',
+      open: 'bg-success/10 text-success border-success/30',
+      closed: 'bg-error/10 text-error border-error/30',
+      filled: 'bg-info/10 text-info border-info/20',
     };
     return styles[status] || styles.open;
   };
@@ -90,35 +90,35 @@ const MyJobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-muted">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-surface shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link
                 to="/employer/dashboard"
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-surface-muted rounded-lg transition-colors"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <ArrowLeft className="w-5 h-5 text-muted" />
               </Link>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
                   <Briefcase className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">My Jobs</h1>
-                  <p className="text-sm text-gray-500">{filteredJobs.length} jobs found</p>
+                  <h1 className="text-xl font-bold text-text-dark">My Jobs</h1>
+                  <p className="text-sm text-subtle">{filteredJobs.length} jobs found</p>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 text-gray-400" />
+              <Filter className="w-5 h-5 text-subtle" />
               <select
                 value={filterStatus}
                 onChange={e => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               >
                 <option value="all">All Jobs</option>
                 <option value="open">Open</option>
@@ -132,7 +132,7 @@ const MyJobs = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
+          <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
             <AlertCircle className="w-5 h-5 mr-2" />
             {error}
           </div>
@@ -140,20 +140,20 @@ const MyJobs = () => {
 
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : filteredJobs.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs found</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-12 text-center">
+            <Briefcase className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-text-dark mb-2">No jobs found</h3>
+            <p className="text-muted mb-6">
               {filterStatus === 'all'
                 ? "You haven't posted any jobs yet."
                 : `No ${filterStatus} jobs found.`}
             </p>
             <Link
               to="/employer/create-job"
-              className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-6 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors"
             >
               <Briefcase className="w-4 h-4 mr-2" />
               Create Your First Job
@@ -164,14 +164,14 @@ const MyJobs = () => {
             {filteredJobs.map(job => (
               <div
                 key={job._id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                className="bg-surface rounded-xl shadow-sm border border-border hover:shadow-md transition-shadow"
               >
                 {/* Card Header */}
-                <div className="p-6 border-b border-gray-100">
+                <div className="p-6 border-b border-neutral-100">
                   <div className="flex items-start justify-between mb-3">
                     <Link
                       to={`/employer/jobs/${job._id}`}
-                      className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1 hover:text-blue-600 transition-colors cursor-pointer"
+                      className="text-lg font-semibold text-text-dark line-clamp-2 flex-1 hover:text-info transition-colors cursor-pointer"
                     >
                       {job.title}
                     </Link>
@@ -182,14 +182,14 @@ const MyJobs = () => {
                     </span>
                   </div>
                   <Link to={`/employer/jobs/${job._id}`} className="block">
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-3 hover:text-gray-800 transition-colors">
+                    <p className="text-sm text-muted line-clamp-2 mb-3 hover:text-text-dark transition-colors">
                       {job.description
                         ? job.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
                         : 'No description'}
                     </p>
                   </Link>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                  <div className="flex items-center text-sm text-subtle">
+                    <span className="px-2 py-1 bg-neutral-100 rounded text-xs font-medium">
                       {job.category}
                     </span>
                   </div>
@@ -197,32 +197,32 @@ const MyJobs = () => {
 
                 {/* Card Body */}
                 <div className="p-6 space-y-3">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted">
+                    <MapPin className="w-4 h-4 mr-2 text-subtle" />
                     {job.location.village}, {job.location.district}
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted">
+                    <DollarSign className="w-4 h-4 mr-2 text-subtle" />
                     {formatSalary(job.salaryAmount, job.salaryType)}
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Users className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted">
+                    <Users className="w-4 h-4 mr-2 text-subtle" />
                     {job.positions} position{job.positions > 1 ? 's' : ''} ·{' '}
                     {job.applicantsCount || 0} applicants
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-muted">
+                    <Calendar className="w-4 h-4 mr-2 text-subtle" />
                     Posted {formatDate(job.createdAt)}
                   </div>
                 </div>
 
                 {/* Card Footer */}
-                <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+                <div className="p-4 bg-surface-muted border-t border-neutral-100 rounded-b-xl">
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => handleAction(job, 'close')}
                       disabled={job.status !== 'open'}
-                      className="px-3 py-2 text-sm font-medium text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="px-3 py-2 text-sm font-medium text-accent hover:bg-accent/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                       <XCircle className="w-4 h-4 mr-1" />
                       Close
@@ -230,21 +230,21 @@ const MyJobs = () => {
                     <button
                       onClick={() => handleAction(job, 'filled')}
                       disabled={job.status !== 'open'}
-                      className="px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="px-3 py-2 text-sm font-medium text-success hover:bg-success/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                       <CheckCircle className="w-4 h-4 mr-1" />
                       Filled
                     </button>
                     <button
                       onClick={() => handleAction(job, 'delete')}
-                      className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center"
+                      className="px-3 py-2 text-sm font-medium text-error hover:bg-error/10 rounded-lg transition-colors flex items-center justify-center"
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
                       Delete
                     </button>
                     <button
                       disabled
-                      className="px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="px-3 py-2 text-sm font-medium text-info hover:bg-info/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                     >
                       <Edit className="w-4 h-4 mr-1" />
                       Edit
@@ -260,16 +260,16 @@ const MyJobs = () => {
       {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Confirm Action</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-surface rounded-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-text-dark mb-2">Confirm Action</h3>
+            <p className="text-muted mb-6">
               Are you sure you want to {actionType} the job "{selectedJob?.title}"?
               {actionType === 'delete' && ' This action cannot be undone.'}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowConfirmDialog(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-muted hover:bg-surface-muted rounded-lg transition-colors"
               >
                 Cancel
               </button>
@@ -277,8 +277,8 @@ const MyJobs = () => {
                 onClick={confirmAction}
                 className={`px-4 py-2 text-white rounded-lg transition-colors ${
                   actionType === 'delete'
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
+                    ? 'bg-error hover:bg-error'
+                    : 'bg-primary hover:bg-deep-blue'
                 }`}
               >
                 Confirm

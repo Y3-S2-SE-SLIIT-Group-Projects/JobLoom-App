@@ -43,27 +43,27 @@ const PhoneStep = ({ onNext, loading }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 bg-[#6794D1]/10 rounded-full flex items-center justify-center">
-          <FaPhone className="w-7 h-7 text-[#6794D1]" />
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+          <FaPhone className="w-7 h-7 text-primary" />
         </div>
       </div>
       <div className="mb-4 text-center">
-        <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.forgot_pwd_title')}</h1>
-        <p className="text-[#516876]">{t('auth.forgot_pwd_subtitle')}</p>
+        <h1 className="text-2xl font-bold text-text-dark mb-1">{t('auth.forgot_pwd_title')}</h1>
+        <p className="text-muted">{t('auth.forgot_pwd_subtitle')}</p>
       </div>
 
       {error && (
-        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="p-4 border border-error/30 rounded-lg bg-error/10">
+          <p className="text-sm text-error">{error}</p>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+        <label className="block text-sm font-medium text-text-dark mb-1.5">
           {t('auth.phone_number')}
         </label>
         <div className="relative">
-          <FaPhone className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+          <FaPhone className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
           <input
             type="tel"
             value={phone}
@@ -72,7 +72,7 @@ const PhoneStep = ({ onNext, loading }) => {
               setError('');
             }}
             placeholder={t('auth.phone_placeholder')}
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${error ? 'border-error bg-error/10' : 'border-border'}`}
           />
         </div>
       </div>
@@ -80,7 +80,7 @@ const PhoneStep = ({ onNext, loading }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? (
           <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
@@ -148,20 +148,20 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 bg-[#6794D1]/10 rounded-full flex items-center justify-center">
-          <FaShieldAlt className="w-7 h-7 text-[#6794D1]" />
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+          <FaShieldAlt className="w-7 h-7 text-primary" />
         </div>
       </div>
       <div className="mb-4 text-center">
-        <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.enter_otp')}</h1>
-        <p className="text-[#516876]">
-          {t('auth.verify_desc')} <span className="font-medium text-[#2B373F]">{phone}</span>
+        <h1 className="text-2xl font-bold text-text-dark mb-1">{t('auth.enter_otp')}</h1>
+        <p className="text-muted">
+          {t('auth.verify_desc')} <span className="font-medium text-text-dark">{phone}</span>
         </p>
       </div>
 
       {error && (
-        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="p-4 border border-error/30 rounded-lg bg-error/10">
+          <p className="text-sm text-error">{error}</p>
         </div>
       )}
 
@@ -176,7 +176,7 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
             value={digit}
             onChange={e => handleChange(index, e.target.value)}
             onKeyDown={e => handleKeyDown(index, e)}
-            className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-all ${digit ? 'border-[#6794D1] bg-[#6794D1]/5' : 'border-[#D2D5D9]'}`}
+            className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${digit ? 'border-primary bg-primary/5' : 'border-border'}`}
           />
         ))}
       </div>
@@ -185,14 +185,14 @@ const OtpStep = ({ phone, onNext, onBack, loading }) => {
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-[#D2D5D9] text-[#516876] rounded-lg hover:bg-[#F4F6F9] transition-colors font-medium"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors font-medium"
         >
           <FaArrowLeft className="w-4 h-4" /> {t('common.back')}
         </button>
         <button
           type="submit"
           disabled={loading || otp.join('').length < 6}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
             <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
@@ -243,12 +243,12 @@ const ResetStep = ({ phone, resetToken, loading }) => {
     return (
       <div className="py-4 space-y-4 text-center">
         <div className="flex justify-center">
-          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
-            <FaCheckCircle className="w-8 h-8 text-green-600" />
+          <div className="flex items-center justify-center w-16 h-16 bg-success/10 rounded-full">
+            <FaCheckCircle className="w-8 h-8 text-success" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-[#2B373F]">{t('auth.password_reset_success')}</h2>
-        <p className="text-[#516876]">{t('auth.password_reset_success_desc')}</p>
+        <h2 className="text-2xl font-bold text-text-dark">{t('auth.password_reset_success')}</h2>
+        <p className="text-muted">{t('auth.password_reset_success_desc')}</p>
       </div>
     );
   }
@@ -256,27 +256,27 @@ const ResetStep = ({ phone, resetToken, loading }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex justify-center mb-2">
-        <div className="w-16 h-16 bg-[#6794D1]/10 rounded-full flex items-center justify-center">
-          <FaLock className="w-7 h-7 text-[#6794D1]" />
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+          <FaLock className="w-7 h-7 text-primary" />
         </div>
       </div>
       <div className="mb-4 text-center">
-        <h1 className="text-2xl font-bold text-[#2B373F] mb-1">{t('auth.set_new_password')}</h1>
-        <p className="text-[#516876]">{t('auth.set_new_password_subtitle')}</p>
+        <h1 className="text-2xl font-bold text-text-dark mb-1">{t('auth.set_new_password')}</h1>
+        <p className="text-muted">{t('auth.set_new_password_subtitle')}</p>
       </div>
 
       {error && (
-        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="p-4 border border-error/30 rounded-lg bg-error/10">
+          <p className="text-sm text-error">{error}</p>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+        <label className="block text-sm font-medium text-text-dark mb-1.5">
           {t('auth.new_password')}
         </label>
         <div className="relative">
-          <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+          <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={password}
@@ -285,12 +285,12 @@ const ResetStep = ({ phone, resetToken, loading }) => {
               setError('');
             }}
             placeholder={t('errors.password_min_length')}
-            className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+            className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${error ? 'border-error bg-error/10' : 'border-border'}`}
           />
           <button
             type="button"
             onClick={() => setShowPwd(p => !p)}
-            className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2"
+            className="absolute text-subtle -translate-y-1/2 right-3 top-1/2"
           >
             {showPwd ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
           </button>
@@ -298,11 +298,11 @@ const ResetStep = ({ phone, resetToken, loading }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#2B373F] mb-1.5">
+        <label className="block text-sm font-medium text-text-dark mb-1.5">
           {t('auth.confirm_password')}
         </label>
         <div className="relative">
-          <FaLock className="absolute w-4 h-4 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+          <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
           <input
             type={showPwd ? 'text' : 'password'}
             value={confirm}
@@ -311,7 +311,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
               setError('');
             }}
             placeholder={t('auth.confirm_password_placeholder')}
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-colors ${error ? 'border-red-400 bg-red-50' : 'border-[#D2D5D9]'}`}
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${error ? 'border-error bg-error/10' : 'border-border'}`}
           />
         </div>
       </div>
@@ -319,7 +319,7 @@ const ResetStep = ({ phone, resetToken, loading }) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading ? (
           <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
@@ -346,19 +346,19 @@ const ForgotPassword = () => {
       <DottedBackground>
         <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
+            <div className="bg-surface rounded-2xl shadow-sm border border-border p-8">
               {/* Step indicator */}
               <div className="flex items-center gap-2 mb-8">
                 {steps.map((s, i) => (
                   <div key={s} className="flex items-center flex-1">
                     <div className="flex items-center gap-2">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${i + 1 <= step ? 'bg-[#6794D1] text-white' : 'bg-[#F4F6F9] text-[#516876]'}`}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${i + 1 <= step ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
                       >
                         {i + 1 < step ? '✓' : i + 1}
                       </div>
                       <span
-                        className={`text-xs font-medium hidden sm:block ${i + 1 <= step ? 'text-[#6794D1]' : 'text-[#516876]'}`}
+                        className={`text-xs font-medium hidden sm:block ${i + 1 <= step ? 'text-primary' : 'text-muted'}`}
                       >
                         {i === 0
                           ? t('auth.phone_number')
@@ -369,7 +369,7 @@ const ForgotPassword = () => {
                     </div>
                     {i < steps.length - 1 && (
                       <div
-                        className={`flex-1 h-1 rounded-full mx-2 ${i + 2 <= step ? 'bg-[#6794D1]' : 'bg-[#D2D5D9]'}`}
+                        className={`flex-1 h-1 rounded-full mx-2 ${i + 2 <= step ? 'bg-primary' : 'bg-neutral-200'}`}
                       />
                     )}
                   </div>
@@ -406,9 +406,9 @@ const ForgotPassword = () => {
               )}
 
               {step === 1 && (
-                <p className="mt-6 text-center text-sm text-[#516876]">
+                <p className="mt-6 text-center text-sm text-muted">
                   {t('auth.remembered_password')}{' '}
-                  <Link to="/login" className="text-[#6794D1] font-medium hover:underline">
+                  <Link to="/login" className="text-primary font-medium hover:underline">
                     {t('navbar.sign_in')}
                   </Link>
                 </p>

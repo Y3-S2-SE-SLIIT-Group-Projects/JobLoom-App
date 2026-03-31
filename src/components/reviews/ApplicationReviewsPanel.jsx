@@ -85,10 +85,10 @@ const ApplicationReviewsPanel = ({
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <FaStar className="text-sm text-amber-400" />
-          <h3 className="text-sm font-bold text-[#2B373F]">Reviews</h3>
+          <FaStar className="text-sm text-secondary" />
+          <h3 className="text-sm font-bold text-text-dark">Reviews</h3>
           {reviews.length > 0 && (
-            <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
+            <span className="text-xs bg-neutral-100 text-subtle rounded-full px-2 py-0.5">
               {reviews.length}
             </span>
           )}
@@ -100,13 +100,13 @@ const ApplicationReviewsPanel = ({
           (canWriteReview ? (
             <button
               onClick={() => setModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#6794D1] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"
             >
               <FaPen className="text-xs" />
               Write a Review
             </button>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-medium text-green-600">
+            <span className="flex items-center gap-1 text-xs font-medium text-success">
               <FaStar className="text-xs" />
               Review submitted
             </span>
@@ -114,7 +114,7 @@ const ApplicationReviewsPanel = ({
 
         {/* Not accepted — show why reviews are locked */}
         {!isAccepted && (
-          <span className="flex items-center gap-1 text-xs text-gray-400">
+          <span className="flex items-center gap-1 text-xs text-subtle">
             <FaLock className="text-xs" />
             {applicationStatus === 'rejected'
               ? 'Reviews only available for accepted applications'
@@ -132,7 +132,7 @@ const ApplicationReviewsPanel = ({
 
       {/* No reviews yet */}
       {!isLoading && reviews.length === 0 && (
-        <p className="py-4 text-xs text-center text-gray-400">
+        <p className="py-4 text-xs text-center text-subtle">
           {isAccepted
             ? 'No reviews yet for this job. Be the first to leave one!'
             : 'Reviews will be available once the application is accepted.'}
@@ -142,7 +142,7 @@ const ApplicationReviewsPanel = ({
       {/* Seeker → Employer review */}
       {seekerReview && (
         <div>
-          <p className="mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase">
+          <p className="mb-2 text-xs font-medium tracking-wide text-subtle uppercase">
             {seekerName}&rsquo;s review of {employerName}
           </p>
           <ReviewCard review={seekerReview} currentUserId={currentUserId} showActions />
@@ -152,7 +152,7 @@ const ApplicationReviewsPanel = ({
       {/* Employer → Seeker review */}
       {employerReview && (
         <div>
-          <p className="mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase">
+          <p className="mb-2 text-xs font-medium tracking-wide text-subtle uppercase">
             {employerName}&rsquo;s review of {seekerName}
           </p>
           <ReviewCard review={employerReview} currentUserId={currentUserId} showActions />

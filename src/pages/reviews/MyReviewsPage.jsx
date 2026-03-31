@@ -60,10 +60,10 @@ const MyReviewsPage = () => {
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
+      <div className="min-h-screen bg-surface-muted flex items-center justify-center">
         <div className="text-center">
-          <FaStar className="text-5xl text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 font-medium">Please log in to view your reviews.</p>
+          <FaStar className="text-5xl text-neutral-300 mx-auto mb-3" />
+          <p className="text-subtle font-medium">Please log in to view your reviews.</p>
         </div>
       </div>
     );
@@ -83,17 +83,17 @@ const MyReviewsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] relative">
+    <div className="min-h-screen bg-surface-muted relative">
       <DottedBackground />
 
       {/* Page header */}
-      <div className="relative bg-white border-b border-gray-200 px-6 py-5">
+      <div className="relative bg-surface border-b border-border px-6 py-5">
         <div className="max-w-6xl mx-auto">
-          <p className="text-xs text-[#6794D1] font-semibold uppercase tracking-widest mb-1">
+          <p className="text-xs text-primary font-semibold uppercase tracking-widest mb-1">
             Profile
           </p>
-          <h1 className="text-2xl font-bold text-[#2B373F]">My Reviews</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-text-dark">My Reviews</h1>
+          <p className="text-sm text-subtle mt-0.5">
             Reviews you have received and reviews you have written.
           </p>
         </div>
@@ -105,7 +105,7 @@ const MyReviewsPage = () => {
           {/* ── Sidebar ─────────────────────────────────────────────────── */}
           <aside className="lg:w-72 shrink-0 space-y-4">
             {statsLoading ? (
-              <div className="bg-white rounded-xl border border-gray-200 p-6 flex justify-center">
+              <div className="bg-surface rounded-xl border border-border p-6 flex justify-center">
                 <Spinner />
               </div>
             ) : (
@@ -113,14 +113,14 @@ const MyReviewsPage = () => {
             )}
 
             {/* Quick legend */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 text-xs text-gray-500 space-y-2">
-              <p className="font-semibold text-gray-700">How it works</p>
+            <div className="bg-surface rounded-xl border border-border p-4 text-xs text-subtle space-y-2">
+              <p className="font-semibold text-muted">How it works</p>
               <p>
-                <span className="font-medium text-[#2B373F]">Received</span> — reviews others wrote
+                <span className="font-medium text-text-dark">Received</span> — reviews others wrote
                 about you after a completed job.
               </p>
               <p>
-                <span className="font-medium text-[#2B373F]">Sent</span> — reviews you wrote. You
+                <span className="font-medium text-text-dark">Sent</span> — reviews you wrote. You
                 can edit within 7 days or delete at any time.
               </p>
             </div>
@@ -129,15 +129,15 @@ const MyReviewsPage = () => {
           {/* ── Main ────────────────────────────────────────────────────── */}
           <main className="flex-1 min-w-0">
             {/* Tabs */}
-            <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1 mb-5 w-fit">
+            <div className="flex gap-1 bg-surface border border-border rounded-xl p-1 mb-5 w-fit">
               {TABS.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => handleTabChange(tab.key)}
                   className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
                     activeTab === tab.key
-                      ? 'bg-[#6794D1] text-white shadow-sm'
-                      : 'text-gray-500 hover:text-[#2B373F]'
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'text-subtle hover:text-text-dark'
                   }`}
                 >
                   {tab.icon}
@@ -145,7 +145,7 @@ const MyReviewsPage = () => {
                   {tab.key === 'received' && receivedPagination?.total != null && (
                     <span
                       className={`text-xs rounded-full px-1.5 py-0.5 ${
-                        activeTab === 'received' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
+                        activeTab === 'received' ? 'bg-surface/25' : 'bg-neutral-100 text-subtle'
                       }`}
                     >
                       {receivedPagination.total}
@@ -154,7 +154,7 @@ const MyReviewsPage = () => {
                   {tab.key === 'sent' && sentPagination?.total != null && (
                     <span
                       className={`text-xs rounded-full px-1.5 py-0.5 ${
-                        activeTab === 'sent' ? 'bg-white/25' : 'bg-gray-100 text-gray-500'
+                        activeTab === 'sent' ? 'bg-surface/25' : 'bg-neutral-100 text-subtle'
                       }`}
                     >
                       {sentPagination.total}
@@ -222,17 +222,17 @@ const MyReviewsPage = () => {
                     <button
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:border-[#6794D1] transition-colors"
+                      className="px-4 py-2 text-sm bg-surface border border-border rounded-lg disabled:opacity-40 hover:border-primary transition-colors"
                     >
                       Previous
                     </button>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-subtle">
                       Page {page} of {totalPages}
                     </span>
                     <button
                       onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages}
-                      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-lg disabled:opacity-40 hover:border-[#6794D1] transition-colors"
+                      className="px-4 py-2 text-sm bg-surface border border-border rounded-lg disabled:opacity-40 hover:border-primary transition-colors"
                     >
                       Next
                     </button>

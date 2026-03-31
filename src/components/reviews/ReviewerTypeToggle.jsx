@@ -12,7 +12,7 @@ const REVIEWER_TYPES = [
  */
 const ReviewerTypeToggle = ({ value, onChange }) => (
   <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-2">I am reviewing as…</label>
+    <label className="block text-sm font-semibold text-muted mb-2">I am reviewing as…</label>
     <div className="flex gap-3">
       {REVIEWER_TYPES.map(type => (
         <button
@@ -22,8 +22,8 @@ const ReviewerTypeToggle = ({ value, onChange }) => (
           className={[
             'flex-1 py-2.5 rounded-xl border text-sm font-medium transition-colors',
             value === type.value
-              ? 'bg-[#6794D1] border-[#6794D1] text-white'
-              : 'bg-white border-gray-300 text-gray-700 hover:border-[#6794D1]',
+              ? 'bg-primary border-primary text-white'
+              : 'bg-surface border-border text-muted hover:border-primary',
           ].join(' ')}
         >
           {type.label}

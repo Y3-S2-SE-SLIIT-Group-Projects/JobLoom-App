@@ -62,8 +62,8 @@ const ConfirmModal = ({
 
   const confirmClasses =
     confirmVariant === 'danger'
-      ? 'bg-red-500 hover:bg-red-600 text-white'
-      : 'bg-[#6794D1] hover:opacity-90 text-white';
+      ? 'bg-error/100 hover:bg-error text-white'
+      : 'bg-primary hover:opacity-90 text-white';
 
   return (
     <div
@@ -75,22 +75,22 @@ const ConfirmModal = ({
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
 
       {/* Panel */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
+      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
         {/* Close */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-subtle hover:text-muted transition-colors"
         >
           <FaTimes />
         </button>
 
-        <h3 className="text-base font-bold text-[#2B373F] mb-2 pr-6">{title}</h3>
-        {message && <p className="text-sm text-gray-500 mb-4 leading-relaxed">{message}</p>}
+        <h3 className="text-base font-bold text-text-dark mb-2 pr-6">{title}</h3>
+        {message && <p className="text-sm text-subtle mb-4 leading-relaxed">{message}</p>}
 
         {withInput && (
           <div className="mb-4">
-            <label className="block text-xs font-semibold text-gray-600 mb-1">
-              {inputLabel} <span className="text-red-500">*</span>
+            <label className="block text-xs font-semibold text-muted mb-1">
+              {inputLabel} <span className="text-error">*</span>
             </label>
             <textarea
               ref={inputRef}
@@ -98,7 +98,7 @@ const ConfirmModal = ({
               placeholder={inputPlaceholder}
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm resize-none focus:outline-none focus:border-[#6794D1]"
+              className="w-full px-3 py-2 border border-border rounded-xl text-sm resize-none focus:outline-none focus:border-primary"
             />
           </div>
         )}
@@ -106,7 +106,7 @@ const ConfirmModal = ({
         <div className="flex gap-3 justify-end">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+            className="px-4 py-2 text-sm text-muted bg-neutral-100 hover:bg-neutral-200 rounded-xl transition-colors"
           >
             Cancel
           </button>

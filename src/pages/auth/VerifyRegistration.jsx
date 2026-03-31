@@ -82,31 +82,31 @@ const VerifyRegistration = () => {
       <DottedBackground>
         <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
-            <div className="bg-white rounded-2xl shadow-sm border border-[#D2D5D9] p-8">
+            <div className="bg-surface rounded-2xl shadow-sm border border-border p-8">
               {/* Icon */}
               <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-[#6794D1]/10 rounded-full flex items-center justify-center">
-                  <FaShieldAlt className="w-8 h-8 text-[#6794D1]" />
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                  <FaShieldAlt className="w-8 h-8 text-primary" />
                 </div>
               </div>
 
               <div className="mb-6 text-center">
-                <h1 className="text-2xl font-bold text-[#2B373F] mb-2">{t('auth.verify_title')}</h1>
-                <p className="text-[#516876]">
+                <h1 className="text-2xl font-bold text-text-dark mb-2">{t('auth.verify_title')}</h1>
+                <p className="text-muted">
                   {t('auth.verify_desc')}{' '}
-                  <span className="font-medium text-[#2B373F]">{phone}</span>
+                  <span className="font-medium text-text-dark">{phone}</span>
                 </p>
               </div>
 
               {error && (
-                <div className="p-4 mb-5 border border-red-200 rounded-lg bg-red-50">
-                  <p className="text-sm text-red-700">{error}</p>
+                <div className="p-4 mb-5 border border-error/30 rounded-lg bg-error/10">
+                  <p className="text-sm text-error">{error}</p>
                 </div>
               )}
 
               {success && (
-                <div className="p-4 mb-5 border border-green-200 rounded-lg bg-green-50">
-                  <p className="text-sm text-green-700">{success}</p>
+                <div className="p-4 mb-5 border border-success/30 rounded-lg bg-success/10">
+                  <p className="text-sm text-success">{success}</p>
                 </div>
               )}
 
@@ -123,8 +123,8 @@ const VerifyRegistration = () => {
                       value={digit}
                       onChange={e => handleChange(index, e.target.value)}
                       onKeyDown={e => handleKeyDown(index, e)}
-                      className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg focus:ring-2 focus:ring-[#6794D1] focus:border-transparent outline-none transition-all ${
-                        digit ? 'border-[#6794D1] bg-[#6794D1]/5' : 'border-[#D2D5D9]'
+                      className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all ${
+                        digit ? 'border-primary bg-primary/5' : 'border-border'
                       }`}
                     />
                   ))}
@@ -133,7 +133,7 @@ const VerifyRegistration = () => {
                 <button
                   type="submit"
                   disabled={loading || otp.join('').length < 6}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#6794D1] text-white rounded-lg hover:bg-[#5a83c0] transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
@@ -146,16 +146,16 @@ const VerifyRegistration = () => {
               <div className="flex items-center justify-between mt-6">
                 <Link
                   to="/register"
-                  className="flex items-center gap-2 text-sm text-[#516876] hover:text-[#2B373F]"
+                  className="flex items-center gap-2 text-sm text-muted hover:text-text-dark"
                 >
                   <FaArrowLeft className="w-3 h-3" />
                   {t('auth.already_have_account') ? t('common.back') : 'Back to Register'}
                 </Link>
-                <p className="text-sm text-[#516876]">
+                <p className="text-sm text-muted">
                   {t('auth.resend_label')}{' '}
                   <button
                     type="button"
-                    className="text-[#6794D1] font-medium hover:underline"
+                    className="text-primary font-medium hover:underline"
                     onClick={() => setError(t('errors.resend_error'))}
                   >
                     {t('auth.resend_button')}

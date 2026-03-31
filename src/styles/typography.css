@@ -1,0 +1,37 @@
+/**
+ * Typography system for JobLoom (SaaS dashboard / marketing).
+ * Fonts loaded in index.css (Google Fonts).
+ */
+:root {
+  /* Font families */
+  --font-heading: 'Poppins', 'Montserrat', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Type scale */
+  --text-xs: 0.75rem; /* captions */
+  --text-sm: 0.875rem; /* labels */
+  --text-base: 1rem; /* body */
+  --text-lg: 1.125rem; /* paragraph emphasis */
+  --text-xl: 1.5rem; /* section titles */
+  --text-2xl: 2rem; /* sub headings */
+  --text-3xl: 2.75rem; /* large headings */
+  --text-4xl: 3.5rem; /* hero small */
+  --text-5xl: 4.5rem; /* hero main */
+
+  /* Line heights */
+  --leading-tight: 1.1;
+  --leading-normal: 1.5;
+  --leading-loose: 1.7;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+}

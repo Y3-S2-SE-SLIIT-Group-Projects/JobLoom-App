@@ -14,7 +14,7 @@ const SIZE_MAP = {
 const Spinner = ({ size = 'md', className = '' }) => (
   <div className={`flex justify-center items-center ${className}`}>
     <div
-      className={`${SIZE_MAP[size]} animate-spin rounded-full border-[#6794D1] border-t-transparent`}
+      className={`${SIZE_MAP[size]} animate-spin rounded-full border-primary border-t-transparent`}
     />
   </div>
 );

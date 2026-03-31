@@ -1,0 +1,42 @@
+/**
+ * Central color tokens for JobLoom.
+ */
+:root {
+  /* ----- Brand primitives ----- */
+  --color-sky-light: #8ecae6;
+  --color-blue-green: #219ebc;
+  --color-deep-blue: #023047;
+  --color-amber: #ffb703;
+  --color-orange: #fb8500;
+
+  /* ----- Brand semantics (roles → brand) ----- */
+  --color-primary: var(--color-blue-green);
+  --color-secondary: var(--color-amber);
+  --color-accent: var(--color-orange);
+  --color-background: var(--color-sky-light);
+
+  /* ----- Neutrals (slate-scale subset) ----- */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-500: #64748b;
+  --color-neutral-700: #334155;
+  --color-neutral-900: #0f172a;
+
+  /* ----- System / feedback semantics ----- */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* ----- Semantic UI mapping (components) ----- */
+  --color-text-primary: var(--color-deep-blue);
+  --color-text-muted: var(--color-neutral-700);
+  --color-text-subtle: var(--color-neutral-500);
+  --color-border: var(--color-neutral-200);
+  --color-border-strong: var(--color-neutral-300);
+  --color-surface: #ffffff;
+  --color-surface-muted: var(--color-neutral-50);
+  --color-text-dark: var(--color-text-primary);
+}

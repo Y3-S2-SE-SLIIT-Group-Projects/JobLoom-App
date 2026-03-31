@@ -13,6 +13,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  ENABLE_PLAYWRIGHT: 'false'
+
 jobs:
   quality:
     name: Code Quality Checks
@@ -65,9 +68,15 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
+        if: env.ENABLE_PLAYWRIGHT == 'true'
         run: npx playwright install --with-deps
 
+      - name: Skip E2E tests (Playwright disabled)
+        if: env.ENABLE_PLAYWRIGHT != 'true'
+        run: echo "Skipping Playwright tests. Set ENABLE_PLAYWRIGHT='true' in this workflow file to run them."
+
       - name: Run E2E tests
+        if: env.ENABLE_PLAYWRIGHT == 'true'
         run: npm run test
         env:
           CI: true

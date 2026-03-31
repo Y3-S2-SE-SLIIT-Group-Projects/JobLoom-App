@@ -15,19 +15,19 @@ const RatingStatsCard = ({ stats }) => {
   const bars = [5, 4, 3, 2, 1];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+    <div className="bg-surface rounded-xl border border-border p-6 shadow-sm">
+      <h3 className="text-sm font-semibold text-subtle uppercase tracking-wide mb-4">
         Rating Summary
       </h3>
 
       {/* Big average */}
       <div className="flex items-center gap-4 mb-5">
-        <span className="text-5xl font-bold text-[#2B373F]">
+        <span className="text-5xl font-bold text-text-dark">
           {(stats.averageRating ?? 0).toFixed(1)}
         </span>
         <div>
           <StarRating value={stats.averageRating ?? 0} size="text-xl" />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-subtle mt-1">
             {stats.totalReviews ?? 0} review{stats.totalReviews !== 1 ? 's' : ''}
           </p>
         </div>

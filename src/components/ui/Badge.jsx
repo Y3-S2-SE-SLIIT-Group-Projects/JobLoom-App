@@ -6,11 +6,11 @@
  * @param {string} label   - Text inside the badge
  */
 const VARIANT_CLASSES = {
-  success: 'bg-green-100 text-green-700 border-green-200',
-  warning: 'bg-amber-100 text-amber-700 border-amber-200',
-  danger: 'bg-red-100 text-red-700 border-red-200',
-  info: 'bg-blue-100 text-blue-700 border-blue-200',
-  neutral: 'bg-gray-100 text-gray-600 border-gray-200',
+  success: 'bg-success/10 text-success border-success/30',
+  warning: 'bg-secondary/10 text-secondary border-secondary/30',
+  danger: 'bg-error/10 text-error border-error/30',
+  info: 'bg-info/10 text-info border-info/20',
+  neutral: 'bg-neutral-100 text-muted border-border',
 };
 
 const Badge = ({ variant = 'neutral', label }) => (

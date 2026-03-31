@@ -15,8 +15,8 @@ const tabClass = (active, current) =>
   [
     'flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors',
     active === current
-      ? 'border-[#6794D1] text-[#6794D1]'
-      : 'border-transparent text-[#516876] hover:text-[#2B373F] hover:border-[#D2D5D9]',
+      ? 'border-primary text-primary'
+      : 'border-transparent text-muted hover:text-text-dark hover:border-border',
   ].join(' ');
 
 const ProfileRecommendations = () => {
@@ -47,27 +47,25 @@ const ProfileRecommendations = () => {
   return (
     <section
       aria-labelledby="recommendations-heading"
-      className="bg-white rounded-xl shadow-sm border border-[#D2D5D9] overflow-hidden"
+      className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden"
     >
       <div className="px-6 pt-6 pb-0">
         <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 bg-[#6794D1]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-            <FaStar className="w-4 h-4 text-[#6794D1]" />
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <FaStar className="w-4 h-4 text-primary" />
           </div>
-          <h2 id="recommendations-heading" className="text-xl font-bold text-[#2B373F]">
+          <h2 id="recommendations-heading" className="text-xl font-bold text-text-dark">
             Recommendations
           </h2>
           {(receivedCount > 0 || givenCount > 0) && (
-            <span className="ml-auto text-sm text-[#516876]">
-              {receivedCount + givenCount} total
-            </span>
+            <span className="ml-auto text-sm text-muted">{receivedCount + givenCount} total</span>
           )}
         </div>
 
         <div
           role="tablist"
           aria-label="Recommendations tabs"
-          className="flex border-b border-[#D2D5D9]"
+          className="flex border-b border-border"
         >
           <button
             role="tab"
