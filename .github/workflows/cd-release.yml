@@ -202,6 +202,7 @@ jobs:
             fi
 
             COMPOSE_FILES="--env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml"
+            export VITE_API_URL="${VITE_API_URL:-}"
             CURRENT_CONTAINER_ID=$(docker compose $COMPOSE_FILES ps -q app || true)
             PREVIOUS_IMAGE=""
             if [[ -n "$CURRENT_CONTAINER_ID" ]]; then
@@ -214,13 +215,22 @@ jobs:
               echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             fi
 
-            APP_IMAGE="$IMAGE_URI" docker compose \
+            TARGET_IMAGE="$IMAGE_URI"
+            if ! APP_IMAGE="$TARGET_IMAGE" docker compose \
               --env-file .env.prod \
               -f docker-compose.yml \
               -f docker-compose.prod.yml \
-              pull app
+              pull app; then
+              echo "Digest pull failed, falling back to tag: $IMAGE_TAG_URI"
+              TARGET_IMAGE="$IMAGE_TAG_URI"
+              APP_IMAGE="$TARGET_IMAGE" docker compose \
+                --env-file .env.prod \
+                -f docker-compose.yml \
+                -f docker-compose.prod.yml \
+                pull app
+            fi
 
-            APP_IMAGE="$IMAGE_URI" docker compose \
+            APP_IMAGE="$TARGET_IMAGE" docker compose \
               --env-file .env.prod \
               -f docker-compose.yml \
               -f docker-compose.prod.yml \
