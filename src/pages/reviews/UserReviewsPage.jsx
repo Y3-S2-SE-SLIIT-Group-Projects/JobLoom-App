@@ -49,7 +49,7 @@ const UserReviewsPage = () => {
       <div className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
           <Link
-            to="/jobs"
+            to="/"
             aria-label={t('common.back')}
             className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
           >

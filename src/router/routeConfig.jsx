@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 import NotFound from '../pages/NotFound';
 import publicRoutes from './routes/publicRoutes';
@@ -16,7 +15,6 @@ const routeConfig = [
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <Navigate to="/jobs" replace /> },
       ...publicRoutes,
       ...userRoutes,
       ...employerRoutes,

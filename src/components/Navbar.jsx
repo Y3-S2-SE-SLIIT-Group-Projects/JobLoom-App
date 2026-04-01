@@ -32,7 +32,7 @@ const LanguageSelector = () => {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 px-3 py-2 rounded-button text-base text-muted hover:bg-surface-muted hover:text-deep-blue transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-base transition-colors rounded-button text-muted hover:bg-surface-muted hover:text-deep-blue"
         aria-label="Select language"
       >
         <FaGlobe className="w-5 h-5" />
@@ -71,7 +71,7 @@ const ProfileAvatar = ({ user }) => {
     <img
       src={getImageUrl(user.profileImage)}
       alt=""
-      className="w-8 h-8 rounded-full object-cover border border-border"
+      className="object-cover w-8 h-8 border rounded-full border-border"
       onError={e => {
         e.currentTarget.onerror = null;
         e.currentTarget.style.display = 'none';
@@ -95,7 +95,7 @@ const Navbar = () => {
   const { currentUser, logoutUser } = useUser();
   const [activeSection, setActiveSection] = useState('home');
 
-  const isDashboard = location.pathname === '/jobs';
+  const isDashboard = location.pathname === '/';
 
   useEffect(() => {
     if (!isDashboard) return;
@@ -123,7 +123,7 @@ const Navbar = () => {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       } else {
-        navigate(`/jobs#${id}`);
+        navigate(`/#${id}`);
       }
     },
     [isDashboard, navigate]
@@ -176,26 +176,26 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="bg-surface border-b border-border sticky top-0 z-50">
+    <header className="sticky top-0 z-50 border-b bg-surface border-border">
       <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
         {/* Logo */}
-        <Link to="/jobs" className="flex items-center gap-3 shrink-0 group">
+        <Link to="/" className="flex items-center gap-3 shrink-0 group">
           <img
             src={LOGO_SRC}
             alt=""
             width={40}
             height={40}
-            className="h-10 w-10 object-contain transition-transform group-hover:scale-105"
+            className="object-contain w-10 h-10 transition-transform group-hover:scale-105"
             decoding="async"
           />
-          <span className="text-2xl font-bold text-deep-blue font-heading tracking-tight">
+          <span className="text-2xl font-bold tracking-tight text-deep-blue font-heading">
             JobLoom
           </span>
         </Link>
 
         {/* Center nav links */}
         {isEmployerSection && !isAuthPage ? (
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="items-center hidden gap-8 md:flex">
             {employerNavLinks.map(link => (
               <Link
                 key={link.to}
@@ -210,7 +210,7 @@ const Navbar = () => {
           </nav>
         ) : (
           !isAuthPage && (
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="items-center hidden gap-8 md:flex">
               {publicNavLinks.map(link => (
                 <button
                   key={link.id}
@@ -235,7 +235,7 @@ const Navbar = () => {
             <>
               {isEmployerSection && (
                 <Link
-                  to="/jobs"
+                  to="/"
                   className="hidden md:inline-flex items-center px-3.5 py-2 text-muted hover:text-primary font-medium transition-colors"
                 >
                   {t('navbar.browse_jobs') || 'Browse Jobs'}
@@ -251,7 +251,7 @@ const Navbar = () => {
               {currentUser && getDashboardPath() && !isEmployerSection && (
                 <Link
                   to={getDashboardPath()}
-                  className="hidden md:inline-flex items-center px-4 py-2 bg-primary/10 text-primary font-semibold rounded-button hover:bg-primary/20 transition-colors"
+                  className="items-center hidden px-4 py-2 font-semibold transition-colors md:inline-flex bg-primary/10 text-primary rounded-button hover:bg-primary/20"
                 >
                   {t('navbar.dashboard')}
                 </Link>
@@ -285,13 +285,13 @@ const Navbar = () => {
             <div className="flex items-center gap-3 ml-1">
               <Link
                 to="/login"
-                className="px-4 py-2 font-semibold text-primary hover:text-deep-blue transition-colors"
+                className="px-4 py-2 font-semibold transition-colors text-primary hover:text-deep-blue"
               >
                 {t('navbar.sign_in')}
               </Link>
               <Link
                 to="/register"
-                className="px-5 py-2 bg-primary text-white font-semibold rounded-button hover:bg-deep-blue transition-colors shadow-sm"
+                className="px-5 py-2 font-semibold text-white transition-colors shadow-sm bg-primary rounded-button hover:bg-deep-blue"
               >
                 {t('navbar.register')}
               </Link>

@@ -4,7 +4,7 @@ const PublicDashboard = lazy(() => import('../../pages/dashboard/Dashboard'));
 const PublicJobDetails = lazy(() => import('../../pages/PublicJobDetails'));
 
 const publicRoutes = [
-  { path: 'jobs', element: <PublicDashboard /> },
+  { index: true, element: <PublicDashboard /> },
   { path: 'jobs/:id', element: <PublicJobDetails /> },
 ];
 

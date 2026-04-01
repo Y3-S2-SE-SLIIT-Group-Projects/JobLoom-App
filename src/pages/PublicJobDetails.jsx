@@ -172,7 +172,7 @@ const PublicJobDetails = () => {
           <h2 className="text-xl font-bold text-error mb-2">Error</h2>
           <p className="text-muted mb-4">{error || 'Job not found'}</p>
           <Link
-            to="/jobs"
+            to="/"
             className="inline-block px-6 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors"
           >
             Back to Jobs
@@ -188,7 +188,7 @@ const PublicJobDetails = () => {
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Back */}
         <Link
-          to="/jobs"
+          to="/"
           className="inline-flex items-center text-muted hover:text-info transition-colors mb-6"
         >
           <FaArrowLeft className="w-5 h-5 mr-2" />

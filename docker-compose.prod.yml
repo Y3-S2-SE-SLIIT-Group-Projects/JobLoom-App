@@ -1,31 +1,30 @@
 # Production Environment Configuration
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
-
-version: '3.8'
+# Usage: docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 services:
   app:
-    container_name: jobloom-prod
+    container_name: ${APP_CONTAINER_NAME}
     build:
       target: production
       args:
-        - NODE_ENV=production
+        - NODE_ENV=${NODE_ENV}
+        - VITE_API_URL=${VITE_API_URL}
     ports:
-      - '8080:80'
+      - '${APP_HOST_PORT}:80'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV}
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-    restart: always
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+      start_period: ${HEALTHCHECK_START_PERIOD}
+    restart: ${RESTART_POLICY}
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 512M
+          cpus: '${LIMIT_CPUS}'
+          memory: ${LIMIT_MEMORY}
         reservations:
-          cpus: '0.5'
-          memory: 256M
+          cpus: '${RESERVATION_CPUS}'
+          memory: ${RESERVATION_MEMORY}

@@ -184,7 +184,7 @@ const MyApplications = () => {
             </p>
             {!searchQuery.trim() && activeFilter === 'all' && (
               <Link
-                to="/jobs"
+                to="/"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium"
               >
                 <FaBriefcase className="w-4 h-4" />
