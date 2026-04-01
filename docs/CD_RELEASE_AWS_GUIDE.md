@@ -41,7 +41,7 @@ For Amazon Linux 2023 (recommended for your current server):
 
 ```bash
 sudo dnf update -y
-sudo dnf install -y docker git
+sudo dnf install -y docker git docker-compose-plugin
 sudo systemctl enable --now docker
 sudo usermod -aG docker ec2-user
 ```
@@ -50,6 +50,16 @@ Reconnect to SSH (or run `newgrp docker`), then verify:
 
 ```bash
 docker --version
+docker compose version
+```
+
+If `docker compose version` fails, install the Compose plugin manually:
+
+```bash
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
+sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 docker compose version
 ```
 
@@ -70,6 +80,10 @@ cp .env.prod.example .env.prod
 nano .env.prod
 ```
 
+Important: `.env.prod` is still required with the current compose files because `docker-compose.prod.yml` uses `${...}` variables for ports, healthcheck, restart policy, and resource limits.
+
+`VITE_API_URL` is build-time for the frontend image, but compose runtime variables are still required.
+
 Set at minimum:
 
 - `NODE_ENV=production`
@@ -77,6 +91,29 @@ Set at minimum:
 - `APP_CONTAINER_NAME=jobloom-prod`
 - `APP_HOST_PORT=8080` (or your desired port)
 - Healthcheck and resource values as needed
+
+Minimum working `.env.prod` example:
+
+```env
+NODE_ENV=production
+APP_CONTAINER_NAME=jobloom-prod
+APP_HOST_PORT=8080
+HEALTHCHECK_INTERVAL=30s
+HEALTHCHECK_TIMEOUT=3s
+HEALTHCHECK_RETRIES=3
+HEALTHCHECK_START_PERIOD=10s
+RESTART_POLICY=always
+LIMIT_CPUS=1
+LIMIT_MEMORY=512M
+RESERVATION_CPUS=0.5
+RESERVATION_MEMORY=256M
+```
+
+Optional for local/manual overrides:
+
+```env
+APP_IMAGE=ghcr.io/<org-or-user>/jobloom-app:latest
+```
 
 Security group best practice:
 
