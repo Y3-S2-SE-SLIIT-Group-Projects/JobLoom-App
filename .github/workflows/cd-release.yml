@@ -165,7 +165,7 @@ jobs:
           username: ${{ secrets.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ secrets.AWS_EC2_PORT || 22 }}
-          source: "docker-compose.yml,docker-compose.prod.yml"
+          source: 'docker-compose.yml,docker-compose.prod.yml'
           target: ${{ env.DEPLOY_DIR }}
           strip_components: 0
 
