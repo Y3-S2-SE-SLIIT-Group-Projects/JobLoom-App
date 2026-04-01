@@ -5,6 +5,7 @@
 ### Quick Start
 
 #### Using Makefile (Recommended)
+
 ```bash
 # Development
 make dev              # Start dev environment
@@ -31,24 +32,28 @@ make help             # Show all commands
 #### Using Docker Compose Directly
 
 **Development Mode**
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 # Access at http://localhost:5173
 ```
 
 **Production Mode**
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 # Access at http://localhost:8080
 ```
 
 **Test Mode**
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit
 # Runs tests and exits
 ```
 
 **Staging Mode**
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.staging.yml up
 # Access at http://localhost:8081
@@ -57,18 +62,21 @@ docker-compose -f docker-compose.yml -f docker-compose.staging.yml up
 ### Manual Docker Commands
 
 #### Build Development Image
+
 ```bash
 docker build -t jobloom-app:dev --target development .
 docker run -p 5173:5173 -v $(pwd):/app -v /app/node_modules jobloom-app:dev
 ```
 
 #### Build Production Image
+
 ```bash
 docker build -t jobloom-app:prod --target production .
 docker run -p 8080:80 jobloom-app:prod
 ```
 
 #### Health Check
+
 ```bash
 # Check if production container is healthy
 curl http://localhost:8080/health
@@ -79,36 +87,48 @@ curl http://localhost:8080/health
 ### Pipeline Overview
 
 The CI pipeline runs automatically on:
+
 - **Push** to `main`, `staging`, or `develop` branches
 - **Pull requests** targeting these branches
+
+Production CD is handled separately by `.github/workflows/cd-release.yml`:
+
+- Automatic deploy when a GitHub Release is published
+- Manual trigger from GitHub Actions with registry and deploy controls
 
 ### Pipeline Stages
 
 #### 1. **Code Quality** (~3-5 min)
+
 - ✅ ESLint checks
 - ✅ Prettier formatting validation
 - ✅ Security audit
 
 #### 2. **Tests** (~5-10 min)
+
 - ✅ Unit tests
 - ✅ E2E tests
 - ✅ Coverage reports
 
 #### 3. **Build** (~3-5 min)
+
 - ✅ Vite production build
 - ✅ Build artifact validation
 - ✅ Upload artifacts for deployment
 
 #### 4. **Docker** (~5-8 min)
+
 - ✅ Multi-stage Docker build
 - ✅ Image security scanning
 - ✅ Container health checks
 
 #### 5. **Performance** (PR only)
+
 - ✅ Lighthouse performance audit
 - ✅ Bundle size analysis
 
 #### 6. **Security** (~2-3 min)
+
 - ✅ Trivy vulnerability scanning
 - ✅ Dependency audit
 
@@ -136,11 +156,13 @@ docker build -t jobloom-app:test .
 ## 📝 Git Commit Standards
 
 ### Commit Message Format
+
 ```
 type(scope): description #TICKETID
 ```
 
 ### Valid Types
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation changes
@@ -153,6 +175,7 @@ type(scope): description #TICKETID
 - `build` - Build system changes
 
 ### Examples
+
 ```bash
 # Using custom alias (validates message first)
 git cm "feat(ui): add login page #AUTH123"
@@ -165,6 +188,7 @@ git commit -m "docs: update readme #DOC789"
 ## 🛠️ Available Scripts
 
 ### Development
+
 ```bash
 npm run dev              # Start dev server (http://localhost:5173)
 npm run build            # Production build
@@ -172,6 +196,7 @@ npm run preview          # Preview production build
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint             # Run ESLint
 npm run format           # Format code with Prettier
@@ -181,16 +206,18 @@ npm run audit:check      # Security vulnerability audit
 ```
 
 ### Testing
+
 ```bash
 npm run test             # Run unit tests (placeholder)
 npm run test:e2e         # Run E2E tests (placeholder)
 ```
 
 ### Docker
-```bash
+
+````bash
 # Using Makefile
 make dev              # Development
-make prod             # Production  
+make prod             # Production
 make test             # Tests
 make staging          # Staging
 
@@ -209,10 +236,11 @@ cp .env.example .env
 
 # Edit with your values
 nano .env
-```
+````
 
 Example `.env`:
-```env
+
+````env
 NODE_ENV=development
 VITE_API_URL=http://localhost:3000
 VITE_APP_NAME=JobLoom
@@ -224,9 +252,10 @@ Create a `.env` file for local development:
 VITE_API_URL=http://localhost:3000
 VITE_APP_NAME=JobLoom
 VITE_APP_VERSION=1.0.0
-```
+````
 
 For Docker:
+
 ```bash
 # Development
 docker run -p 5173:5173 \
@@ -241,6 +270,7 @@ VITE_API_URL=https://api.jobloom.com npm run build
 ## 🚀 Deployment
 
 ### Production Build
+
 ```bash
 # 1. Build the application
 npm run build
@@ -292,6 +322,7 @@ docker rm -f jobloom-test
 ## 🔧 Troubleshooting
 
 ### Docker Build Fails
+
 ```bash
 # Clear Docker cache
 docker builder prune -a
@@ -301,12 +332,14 @@ docker build --no-cache -t jobloom-app .
 ```
 
 ### CI Pipeline Fails
+
 1. Check the failed step in GitHub Actions
 2. Run the same command locally
 3. Fix the issue
 4. Commit with proper format: `fix(ci): resolve build issue #BUG123`
 
 ### Port Already in Use
+
 ```bash
 # Find process using port 5173 or 8080
 lsof -i :5173

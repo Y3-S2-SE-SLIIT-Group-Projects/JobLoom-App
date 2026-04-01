@@ -8,6 +8,11 @@ FROM node:20-alpine AS builder
 # Set working directory
 WORKDIR /app
 
+# Build-time variables used by Vite during `npm run build`
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+ENV HUSKY=0
+
 # Copy package files
 COPY package*.json ./
 

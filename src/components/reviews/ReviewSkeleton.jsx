@@ -1,19 +1,21 @@
 const ReviewSkeleton = () => (
-  <div className="p-5 bg-surface border border-neutral-100 shadow-sm rounded-xl animate-pulse">
-    <div className="flex items-start justify-between mb-3">
-      <div className="space-y-2">
-        <div className="w-32 h-4 bg-neutral-200 rounded" />
-        <div className="w-20 h-3 bg-neutral-100 rounded" />
+  <div className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse">
+    <div className="flex items-start gap-3 mb-4">
+      <div className="w-10 h-10 rounded-full bg-gray-100 shrink-0" />
+      <div className="flex-1 space-y-2">
+        <div className="h-3.5 bg-gray-100 rounded w-32" />
+        <div className="h-3 bg-gray-100 rounded w-20" />
       </div>
-      <div className="w-24 h-4 bg-neutral-200 rounded" />
+      <div className="h-7 w-14 bg-gray-100 rounded-lg" />
     </div>
-    <div className="flex gap-2 mb-3">
-      <div className="w-20 h-5 bg-neutral-100 rounded-full" />
-      <div className="w-16 h-5 bg-neutral-100 rounded-full" />
+    <div className="flex gap-2 mb-4">
+      <div className="h-5 w-20 bg-gray-100 rounded-full" />
+      <div className="h-5 w-24 bg-gray-100 rounded-full" />
     </div>
     <div className="space-y-2">
-      <div className="w-full h-3 bg-neutral-100 rounded" />
-      <div className="w-3/4 h-3 bg-neutral-100 rounded" />
+      <div className="h-3 bg-gray-100 rounded w-full" />
+      <div className="h-3 bg-gray-100 rounded w-4/5" />
+      <div className="h-3 bg-gray-100 rounded w-3/5" />
     </div>
   </div>
 );

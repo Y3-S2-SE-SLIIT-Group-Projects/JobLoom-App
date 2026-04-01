@@ -27,8 +27,15 @@ export const fetchJobSeekerReviews = (jobSeekerId, params = {}) =>
 /** @param {string} reviewId */
 export const fetchReviewById = reviewId => api.get(`/reviews/${reviewId}`);
 
-/** @param {Object} reviewData */
-export const createReview = reviewData => api.post('/reviews', reviewData);
+/** @param {Object|FormData} reviewData */
+export const createReview = reviewData => {
+  if (reviewData instanceof FormData) {
+    return api.post('/reviews', reviewData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
+  return api.post('/reviews', reviewData);
+};
 
 /** @param {string} reviewId @param {Object} updateData */
 export const updateReview = (reviewId, updateData) => api.put(`/reviews/${reviewId}`, updateData);

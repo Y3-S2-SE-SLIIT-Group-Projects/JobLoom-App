@@ -1,53 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { X, AlertTriangle } from 'lucide-react';
 
-/**
- * ConfirmModal
- * Reusable confirm / prompt dialog — replaces window.confirm and window.prompt.
- *
- * Props:
- *   isOpen      {boolean}  – controls visibility
- *   title       {string}   – modal heading
- *   message     {string}   – body text
- *   confirmLabel {string}  – confirm button text (default "Confirm")
- *   confirmVariant {string} – "danger" | "primary" (default "danger")
- *   withInput   {boolean}  – shows a textarea for user to type a reason
- *   inputLabel  {string}   – label above the textarea
- *   inputPlaceholder {string}
- *   onConfirm   {Function} – called with input value (or true if no input)
- *   onCancel    {Function} – called when dismissed
- */
 const ConfirmModal = ({
   isOpen,
   title,
   message,
-  confirmLabel = 'Confirm',
+  confirmLabel,
   confirmVariant = 'danger',
   withInput = false,
-  inputLabel = 'Reason',
-  inputPlaceholder = 'Enter reason…',
+  inputLabel,
+  inputPlaceholder,
   onConfirm,
   onCancel,
 }) => {
-  const [inputValue, setInputValue] = useState('');
+  const { t } = useTranslation();
+  const [value, setValue] = useState('');
   const inputRef = useRef(null);
 
-  // Reset input and focus when modal opens.
-  // Both calls are inside setTimeout so setState is not synchronous in the effect body.
   useEffect(() => {
     if (!isOpen) return;
     const t = setTimeout(() => {
-      setInputValue('');
+      setValue('');
       inputRef.current?.focus();
     }, 0);
     return () => clearTimeout(t);
   }, [isOpen]);
 
-  // Close on Escape key
   useEffect(() => {
-    const onKey = e => {
-      if (e.key === 'Escape') onCancel?.();
-    };
+    const onKey = e => e.key === 'Escape' && onCancel?.();
     if (isOpen) window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onCancel]);
@@ -55,15 +36,12 @@ const ConfirmModal = ({
   if (!isOpen) return null;
 
   const handleConfirm = () => {
-    if (withInput && !inputValue.trim()) return;
-    onConfirm?.(withInput ? inputValue.trim() : true);
-    setInputValue('');
+    if (withInput && !value.trim()) return;
+    onConfirm?.(withInput ? value.trim() : true);
+    setValue('');
   };
 
-  const confirmClasses =
-    confirmVariant === 'danger'
-      ? 'bg-error/100 hover:bg-error text-white'
-      : 'bg-primary hover:opacity-90 text-white';
+  const isDanger = confirmVariant === 'danger';
 
   return (
     <div
@@ -71,52 +49,66 @@ const ConfirmModal = ({
       aria-modal="true"
       role="dialog"
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onCancel} />
 
-      {/* Panel */}
-      <div className="relative bg-surface rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10">
-        {/* Close */}
-        <button
-          onClick={onCancel}
-          className="absolute top-4 right-4 text-subtle hover:text-muted transition-colors"
-        >
-          <FaTimes />
-        </button>
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm z-10 overflow-hidden">
+        <div className={`h-1 w-full ${isDanger ? 'bg-red-500' : 'bg-primary'}`} />
 
-        <h3 className="text-base font-bold text-text-dark mb-2 pr-6">{title}</h3>
-        {message && <p className="text-sm text-subtle mb-4 leading-relaxed">{message}</p>}
-
-        {withInput && (
-          <div className="mb-4">
-            <label className="block text-xs font-semibold text-muted mb-1">
-              {inputLabel} <span className="text-error">*</span>
-            </label>
-            <textarea
-              ref={inputRef}
-              rows={3}
-              placeholder={inputPlaceholder}
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-xl text-sm resize-none focus:outline-none focus:border-primary"
-            />
+        <div className="p-6">
+          <div className="flex items-start gap-3 mb-4">
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDanger ? 'bg-red-50' : 'bg-primary/10'}`}
+            >
+              <AlertTriangle className={`w-4 h-4 ${isDanger ? 'text-red-500' : 'text-primary'}`} />
+            </div>
+            <div className="flex-1 pr-4">
+              <h3 className="text-sm font-bold text-text">{title}</h3>
+              {message && <p className="text-xs text-gray-500 mt-1 leading-relaxed">{message}</p>}
+            </div>
+            <button
+              onClick={onCancel}
+              className="w-7 h-7 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
-        )}
 
-        <div className="flex gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 text-sm text-muted bg-neutral-100 hover:bg-neutral-200 rounded-xl transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={withInput && !inputValue.trim()}
-            className={`px-4 py-2 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${confirmClasses}`}
-          >
-            {confirmLabel}
-          </button>
+          {withInput && (
+            <div className="mb-5">
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                {inputLabel || t('reviews.report_reason_label')}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                ref={inputRef}
+                rows={3}
+                placeholder={inputPlaceholder}
+                value={value}
+                onChange={e => setValue(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={withInput && !value.trim()}
+              className={`px-4 py-2 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isDanger
+                  ? 'bg-red-500 hover:bg-red-600 text-white'
+                  : 'bg-primary hover:bg-primary/90 text-white'
+              }`}
+            >
+              {confirmLabel || t('common.confirm')}
+            </button>
+          </div>
         </div>
       </div>
     </div>

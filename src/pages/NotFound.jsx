@@ -44,7 +44,7 @@ const NotFound = () => {
               Go Back
             </button>
             <Link
-              to="/jobs"
+              to="/"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white font-medium text-sm hover:opacity-90 transition-opacity"
             >
               <FaHome className="text-xs" />

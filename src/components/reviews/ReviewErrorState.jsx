@@ -1,12 +1,17 @@
-import { FaThumbsDown } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { AlertCircle } from 'lucide-react';
 
-const ReviewErrorState = ({ message }) => (
-  <div className="flex flex-col items-center justify-center py-10 text-center">
-    <div className="flex items-center justify-center w-12 h-12 mb-3 rounded-full bg-error/10">
-      <FaThumbsDown className="w-5 h-5 text-error" />
+const ReviewErrorState = ({ message }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
+      <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+        <AlertCircle className="w-5 h-5 text-red-400" />
+      </div>
+      <p className="text-sm text-red-600 max-w-xs">{message || t('reviews.error_load_failed')}</p>
     </div>
-    <p className="text-sm text-error">{message || 'Failed to load recommendations.'}</p>
-  </div>
-);
+  );
+};
 
 export default ReviewErrorState;

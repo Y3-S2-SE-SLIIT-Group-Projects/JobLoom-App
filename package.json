@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -23,7 +24,11 @@
     "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
     "prepare": "husky install",
     "type:check": "echo 'TypeScript check passed (no TS config yet)'",
-    "audit:check": "npm audit --audit-level=high"
+    "audit:check": "npm audit --audit-level=high",
+    "docker:prod": "docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "lint-staged": {
     "*.{js,jsx}": [

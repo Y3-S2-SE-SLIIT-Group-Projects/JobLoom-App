@@ -1,48 +1,64 @@
-import { FaEdit, FaFlag, FaTrash } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { Pencil, Trash2, Flag, Loader2 } from 'lucide-react';
 
-/**
- * ReviewCardActions
- * Edit (owner), Delete (owner) and Report (others) action buttons.
- *
- * @param {boolean}  isOwner     – whether the current user wrote this review
- * @param {boolean}  isDeleting  – loading state for delete
- * @param {boolean}  isReporting – loading state for report
- * @param {Function} onEdit      – edit handler (owner)
- * @param {Function} onDelete    – delete handler (owner)
- * @param {Function} onReport    – report handler (others)
- */
-const ReviewCardActions = ({ isOwner, isDeleting, isReporting, onEdit, onDelete, onReport }) => (
-  <div className="flex gap-3 mt-4 pt-3 border-t border-neutral-100">
-    {isOwner && (
-      <>
+const ReviewCardActions = ({
+  isOwner,
+  canEdit,
+  canDelete,
+  isDeleting,
+  isReporting,
+  onEdit,
+  onDelete,
+  onReport,
+}) => {
+  const { t } = useTranslation();
+  const showEdit = isOwner && canEdit;
+  const showDelete = isOwner && canDelete;
+  const showReport = !isOwner;
+
+  if (!showEdit && !showDelete && !showReport) return null;
+
+  return (
+    <div className="flex items-center gap-1">
+      {showEdit && (
         <button
           onClick={onEdit}
-          className="flex items-center gap-1 text-xs text-primary hover:text-deep-blue transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 rounded-lg transition-colors"
         >
-          <FaEdit className="text-xs" />
-          Edit
+          <Pencil className="w-3 h-3" />
+          {t('common.edit')}
         </button>
+      )}
+      {showDelete && (
         <button
           onClick={onDelete}
           disabled={isDeleting}
-          className="flex items-center gap-1 text-xs text-error hover:text-error transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
         >
-          <FaTrash className="text-xs" />
-          {isDeleting ? 'Deleting…' : 'Delete'}
+          {isDeleting ? (
+            <Loader2 className="w-3 h-3 animate-spin" />
+          ) : (
+            <Trash2 className="w-3 h-3" />
+          )}
+          {isDeleting ? t('reviews.deleting') : t('common.delete')}
         </button>
-      </>
-    )}
-    {!isOwner && (
-      <button
-        onClick={onReport}
-        disabled={isReporting}
-        className="flex items-center gap-1 text-xs text-subtle hover:text-error transition-colors disabled:opacity-50"
-      >
-        <FaFlag className="text-xs" />
-        {isReporting ? 'Reporting…' : 'Report'}
-      </button>
-    )}
-  </div>
-);
+      )}
+      {showReport && (
+        <button
+          onClick={onReport}
+          disabled={isReporting}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 ml-auto"
+        >
+          {isReporting ? (
+            <Loader2 className="w-3 h-3 animate-spin" />
+          ) : (
+            <Flag className="w-3 h-3" />
+          )}
+          {isReporting ? t('reviews.reporting') : t('common.report')}
+        </button>
+      )}
+    </div>
+  );
+};
 
 export default ReviewCardActions;

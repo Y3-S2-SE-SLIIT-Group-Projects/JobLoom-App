@@ -1,5 +1,5 @@
-import { FaPaperPlane } from 'react-icons/fa';
-
+import { useTranslation } from 'react-i18next';
+import { Send } from 'lucide-react';
 import ReviewCard from './ReviewCard';
 import RevieweeLabel from './RevieweeLabel';
 import ReviewSkeleton from './ReviewSkeleton';
@@ -7,6 +7,8 @@ import ReviewErrorState from './ReviewErrorState';
 import EmptyState from '../ui/EmptyState';
 
 const GivenReviewsPanel = ({ reviews, isLoading, error, userId }) => {
+  const { t } = useTranslation();
+
   if (isLoading)
     return (
       <div className="space-y-4">
@@ -21,9 +23,9 @@ const GivenReviewsPanel = ({ reviews, isLoading, error, userId }) => {
   if (!reviews?.length)
     return (
       <EmptyState
-        icon={<FaPaperPlane />}
-        title="No recommendations given yet"
-        message="Recommendations you write for others will show up here."
+        icon={<Send className="w-8 h-8" />}
+        title={t('reviews.no_recommendations_given')}
+        message={t('reviews.no_recommendations_given_desc')}
       />
     );
 

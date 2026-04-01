@@ -123,6 +123,14 @@ const initialState = {
   pagination: null,
   sentPagination: null,
 
+  // ── UI State (moved from local useState) ──────────────────────────────────
+  ui: {
+    activeTab: 'received', // 'received' | 'sent'
+    reviewerType: '', // '' | 'employer' | 'job_seeker'
+    sort: '-createdAt', // sort param
+    page: 1, // current page
+  },
+
   loading: {
     userReviews: false,
     sentReviews: false,
@@ -163,6 +171,25 @@ const reviewSlice = createSlice({
     },
     resetReviewState() {
       return initialState;
+    },
+
+    // ── UI Reducers ───────────────────────────────────────────────────────────
+    setActiveTab(state, { payload }) {
+      state.ui.activeTab = payload;
+      state.ui.reviewerType = '';
+      state.ui.sort = '-createdAt';
+      state.ui.page = 1;
+    },
+    setReviewerType(state, { payload }) {
+      state.ui.reviewerType = payload;
+      state.ui.page = 1;
+    },
+    setSort(state, { payload }) {
+      state.ui.sort = payload;
+      state.ui.page = 1;
+    },
+    setPage(state, { payload }) {
+      state.ui.page = payload;
     },
   },
   extraReducers: builder => {
@@ -221,6 +248,11 @@ const reviewSlice = createSlice({
       .addCase(submitReview.fulfilled, (state, { payload }) => {
         state.loading.submit = false;
         state.lastSubmittedReview = payload;
+
+        const alreadyInJobReviews = state.jobReviews.some(r => r._id === payload._id);
+        if (!alreadyInJobReviews) {
+          state.jobReviews = [payload, ...state.jobReviews];
+        }
       })
       .addCase(submitReview.rejected, (state, { payload }) => {
         state.loading.submit = false;
@@ -253,6 +285,7 @@ const reviewSlice = createSlice({
         state.loading.edit = false;
         state.userReviews = state.userReviews.map(r => (r._id === payload._id ? payload : r));
         state.sentReviews = state.sentReviews.map(r => (r._id === payload._id ? payload : r));
+        state.jobReviews = state.jobReviews.map(r => (r._id === payload._id ? payload : r));
       })
       .addCase(editReview.rejected, (state, { payload }) => {
         state.loading.edit = false;
@@ -269,6 +302,7 @@ const reviewSlice = createSlice({
         state.loading.delete = false;
         state.userReviews = state.userReviews.filter(r => r._id !== reviewId);
         state.sentReviews = state.sentReviews.filter(r => r._id !== reviewId);
+        state.jobReviews = state.jobReviews.filter(r => r._id !== reviewId);
       })
       .addCase(removeReview.rejected, (state, { payload }) => {
         state.loading.delete = false;
@@ -291,7 +325,15 @@ const reviewSlice = createSlice({
   },
 });
 
-export const { clearSubmitError, clearLastSubmitted, resetReviewState } = reviewSlice.actions;
+export const {
+  clearSubmitError,
+  clearLastSubmitted,
+  resetReviewState,
+  setActiveTab,
+  setReviewerType,
+  setSort,
+  setPage,
+} = reviewSlice.actions;
 
 // ─── Selectors ─────────────────────────────────────────────────────────────────
 
@@ -304,5 +346,12 @@ export const selectSentReviewPagination = state => state.reviews.sentPagination;
 export const selectLastSubmittedReview = state => state.reviews.lastSubmittedReview;
 export const selectReviewLoading = key => state => state.reviews.loading[key];
 export const selectReviewError = key => state => state.reviews.error[key];
+
+// UI selectors
+export const selectReviewUI = state => state.reviews.ui;
+export const selectActiveTab = state => state.reviews.ui.activeTab;
+export const selectReviewerTypeFilter = state => state.reviews.ui.reviewerType;
+export const selectReviewSort = state => state.reviews.ui.sort;
+export const selectReviewPage = state => state.reviews.ui.page;
 
 export default reviewSlice.reducer;
