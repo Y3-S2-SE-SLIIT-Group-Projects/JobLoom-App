@@ -9,6 +9,8 @@ import {
   ThumbsUp,
   Quote,
   Images,
+  ChevronDown,
+  ChevronUp,
   X,
 } from 'lucide-react';
 import StarRating from '../ui/StarRating';
@@ -57,12 +59,17 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
   const [showReportConfirm, setShowReportConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const reviewer = review.reviewerId;
   const reviewerName = getPersonName(reviewer);
   const revieweeName = getPersonName(review.revieweeId);
   const displayName = reviewerName || (showActions ? revieweeName : '') || t('reviews.anonymous');
   const reviewImages = Array.isArray(review.images) ? review.images.filter(Boolean) : [];
+  const hasDetailedRatings = ['workQuality', 'communication', 'punctuality', 'paymentOnTime'].some(
+    key => review[key] != null
+  );
+  const hasExpandableContent = hasDetailedRatings || reviewImages.length > 0;
   const reviewerIdValue = normalizeId(reviewer);
   const currentUserIdValue = normalizeId(currentUserId);
   const isOwner = Boolean(currentUserIdValue) && reviewerIdValue === currentUserIdValue;
@@ -150,11 +157,38 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
               )}
             </div>
 
-            {/* Job reference */}
-            {review.jobId?.title && (
-              <div className="mb-3 inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5">
-                <Briefcase className="w-3 h-3 text-primary" />
-                {review.jobId.title}
+            {(review.jobId?.title || hasExpandableContent) && (
+              <div
+                className={`mb-3 flex items-center gap-3 ${
+                  review.jobId?.title ? 'justify-between' : 'justify-end'
+                }`}
+              >
+                {review.jobId?.title && (
+                  <div className="inline-flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 border border-gray-100 rounded-lg px-3 py-1.5">
+                    <Briefcase className="w-3 h-3 text-primary" />
+                    {review.jobId.title}
+                  </div>
+                )}
+
+                {/* Expand/collapse */}
+                {hasExpandableContent && (
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded(prev => !prev)}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-primary transition-colors"
+                    aria-expanded={isExpanded}
+                    aria-controls={`review-details-${review._id}`}
+                  >
+                    {isExpanded
+                      ? t('reviews.show_less_details', 'Show less details')
+                      : t('reviews.show_more_details', 'Show more details')}
+                    {isExpanded ? (
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                )}
               </div>
             )}
 
@@ -166,39 +200,43 @@ const ReviewCard = ({ review, showActions = false, currentUserId }) => {
               </div>
             )}
 
-            {/* Criteria */}
-            <ReviewCriteriaDisplay review={review} />
+            {isExpanded && (
+              <div id={`review-details-${review._id}`}>
+                {/* Criteria */}
+                <ReviewCriteriaDisplay review={review} />
 
-            {/* Photos */}
-            {reviewImages.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase mb-2 flex items-center gap-1.5">
-                  <Images className="w-3 h-3" />
-                  {t('reviews.photos')} ({reviewImages.length})
-                </p>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {reviewImages.map((src, i) => (
-                    <button
-                      key={`${review._id}-img-${i}`}
-                      type="button"
-                      onClick={() => setExpandedImage(getImageUrl(src))}
-                      aria-label={`${t('reviews.photos')} ${i + 1}`}
-                      className="aspect-square overflow-hidden rounded-lg border border-gray-100 bg-gray-50 group/img"
-                    >
-                      <img
-                        src={getImageUrl(src)}
-                        alt={`Review attachment ${i + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-200 group-hover/img:scale-105"
-                        loading="lazy"
-                      />
-                    </button>
-                  ))}
-                </div>
+                {/* Photos */}
+                {reviewImages.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase mb-2 flex items-center gap-1.5">
+                      <Images className="w-3 h-3" />
+                      {t('reviews.photos')} ({reviewImages.length})
+                    </p>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {reviewImages.map((src, i) => (
+                        <button
+                          key={`${review._id}-img-${i}`}
+                          type="button"
+                          onClick={() => setExpandedImage(getImageUrl(src))}
+                          aria-label={`${t('reviews.photos')} ${i + 1}`}
+                          className="aspect-square overflow-hidden rounded-lg border border-gray-100 bg-gray-50 group/img"
+                        >
+                          <img
+                            src={getImageUrl(src)}
+                            alt={`Review attachment ${i + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-200 group-hover/img:scale-105"
+                            loading="lazy"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Actions */}
-            {showActions && (
+            {showActions && isExpanded && (
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <ReviewCardActions
                   isOwner={isOwner}

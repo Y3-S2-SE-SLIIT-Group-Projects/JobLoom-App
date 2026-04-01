@@ -5,12 +5,12 @@ const CommentRecommendationSection = ({ form, handleChange, commentFieldId, onPr
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-5">
-      <div>
-        <label
-          htmlFor={commentFieldId}
-          className="block text-sm font-medium text-gray-700 mb-1.5"
-        >
+    <div className="space-y-6">
+      <div className="border-l-2 border-primary/30 pl-4 sm:pl-5 py-1">
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-primary mb-1.5">
+          {t('reviews.section_comment')}
+        </p>
+        <label htmlFor={commentFieldId} className="block text-lg font-semibold text-text mb-1.5">
           {t('reviews.comment_label')}
         </label>
         <textarea
@@ -21,19 +21,21 @@ const CommentRecommendationSection = ({ form, handleChange, commentFieldId, onPr
           placeholder={t('reviews.comment_placeholder')}
           value={form.comment}
           onChange={handleChange}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors placeholder:text-gray-300 bg-white"
+          className="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors placeholder:text-gray-300 bg-white"
         />
-        <p className="mt-1 text-xs text-right text-gray-400">
+        <p className="mt-2 text-xs text-right text-gray-400">
           {t('reviews.comment_count', { count: form.comment.length })}
         </p>
       </div>
 
-      <label className="flex items-center gap-3 cursor-pointer select-none rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3 hover:border-primary/20 transition-colors group">
-        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
-          form.wouldRecommend
-            ? 'bg-primary border-primary'
-            : 'border-gray-300 group-hover:border-primary/50'
-        }`}>
+      <label className="flex items-center gap-3 cursor-pointer select-none rounded-xl border border-gray-100 bg-gray-50/50 px-4 sm:px-5 py-3.5 hover:border-primary/20 transition-colors group">
+        <div
+          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
+            form.wouldRecommend
+              ? 'bg-primary border-primary'
+              : 'border-gray-300 group-hover:border-primary/50'
+          }`}
+        >
           {form.wouldRecommend && <ThumbsUp className="w-2.5 h-2.5 text-white" />}
         </div>
         <input
@@ -46,11 +48,11 @@ const CommentRecommendationSection = ({ form, handleChange, commentFieldId, onPr
         <span className="text-sm text-gray-700">{t('reviews.would_recommend_label')}</span>
       </label>
 
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-3">
         <button
           type="button"
           onClick={onPrev}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-medium text-sm hover:border-primary/30 hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-medium text-sm hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           {t('common.previous')}
@@ -58,7 +60,7 @@ const CommentRecommendationSection = ({ form, handleChange, commentFieldId, onPr
         <button
           type="button"
           onClick={onNext}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-primary/90 shadow-sm hover:shadow transition-colors"
         >
           {t('common.next')}
           <ChevronRight className="w-4 h-4" />

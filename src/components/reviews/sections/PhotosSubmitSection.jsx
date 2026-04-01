@@ -20,19 +20,24 @@ const PhotosSubmitSection = ({
   const fileInputRef = useRef(null);
 
   return (
-    <div className="space-y-5">
-      <div>
-        <p className="text-sm font-medium text-gray-700 mb-0.5">
+    <div className="space-y-6">
+      <div className="border-l-2 border-primary/30 pl-4 sm:pl-5 py-1">
+        <p className="text-[11px] font-semibold tracking-[0.12em] uppercase text-primary mb-1.5">
+          {t('reviews.section_photos')}
+        </p>
+        <p className="text-lg font-semibold text-text mb-1">
           {t('reviews.attach_photos')}{' '}
-          <span className="text-xs font-normal text-gray-400">{t('reviews.attach_photos_hint')}</span>
+          <span className="text-xs font-medium text-gray-400">
+            {t('reviews.attach_photos_hint')}
+          </span>
         </p>
 
         {imagePreviews.length > 0 && (
-          <div className="flex flex-wrap gap-2.5 mt-3">
+          <div className="flex flex-wrap gap-3 mt-3.5">
             {imagePreviews.map((src, i) => (
               <div
                 key={i}
-                className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-100 group"
+                className="relative w-24 h-24 rounded-xl overflow-hidden border border-gray-100 group"
               >
                 <img src={src} alt={`preview-${i}`} className="w-full h-full object-cover" />
                 <button
@@ -52,7 +57,7 @@ const PhotosSubmitSection = ({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="mt-3 flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-primary hover:text-primary transition-colors"
+            className="mt-3.5 w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 border-2 border-dashed border-gray-200 rounded-xl text-sm font-medium text-gray-500 hover:border-primary hover:text-primary hover:bg-primary/5 transition-colors"
           >
             <Camera className="w-4 h-4" />
             {images.length === 0
@@ -71,11 +76,11 @@ const PhotosSubmitSection = ({
         />
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <button
           type="button"
           onClick={onPrev}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-medium text-sm hover:border-primary/30 hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-medium text-sm hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           {t('common.previous')}
@@ -86,14 +91,14 @@ const PhotosSubmitSection = ({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
+              className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
             >
               {cancelLabel}
             </button>
             <button
               type="submit"
               disabled={!canSubmit}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-primary/90 shadow-sm hover:shadow transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {isSubmitting ? submittingLabel : submitLabel}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import AlertBanner from '../ui/AlertBanner';
 import FormTextField from '../ui/FormTextField';
@@ -37,7 +36,6 @@ const ReviewForm = ({
   children,
 }) => {
   const { t } = useTranslation();
-  const currentUser = useSelector(state => state.user?.currentUser);
   const isEmployer = form.reviewerType === 'employer';
   const [step, setStep] = useState(1);
 
@@ -45,40 +43,27 @@ const ReviewForm = ({
   const goPrev = () => setStep(s => Math.max(1, s - 1));
 
   return (
-    <form id={formId} onSubmit={onSubmit} noValidate className="space-y-5">
+    <form id={formId} onSubmit={onSubmit} noValidate className="space-y-6">
       <AlertBanner type="error" message={submitError} />
 
       {/* Step progress */}
       <div>
-        <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+        <div className="flex items-center justify-between text-[11px] text-gray-400 mb-2">
           <span>{t('reviews.section_x_of_y', { current: step, total: 3 })}</span>
-          <span className="font-medium text-primary">{t(SECTIONS[step - 1].key)}</span>
+          <span className="font-medium text-gray-500">{t(SECTIONS[step - 1].key)}</span>
         </div>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-3 gap-2">
           {SECTIONS.map(s => (
             <div key={s.id} className="h-1 rounded-full overflow-hidden bg-gray-100">
               <div
                 className={`h-full rounded-full transition-all duration-400 ${
-                  s.id <= step ? 'bg-primary' : ''
+                  s.id <= step ? 'bg-primary/80' : ''
                 }`}
                 style={{ width: s.id <= step ? '100%' : '0%' }}
               />
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Reviewer badge */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-primary/5 border border-primary/10 rounded-xl">
-        <span className="text-xs text-gray-500">{t('reviews.reviewing_as')}</span>
-        <span className="px-2.5 py-0.5 rounded-full bg-primary text-white text-xs font-semibold">
-          {isEmployer ? t('reviews.employer') : t('reviews.job_seeker')}
-        </span>
-        {currentUser && (
-          <span className="ml-auto text-xs text-gray-400">
-            {currentUser.firstName} {currentUser.lastName}
-          </span>
-        )}
       </div>
 
       {showRevieweeField && (
