@@ -34,6 +34,27 @@ Flow:
 
 ## Prerequisites
 
+### 0. Make EC2 IP permanent (Elastic IP)
+
+Before connecting any domain, make your EC2 public IP permanent.
+
+If you use the default EC2 public IP, it can change when the instance is stopped/started.
+
+Do this once in AWS:
+
+1. Open AWS Console -> **EC2** -> **Elastic IPs**
+1. Click **Allocate Elastic IP address**
+1. Select the new Elastic IP -> **Actions** -> **Associate Elastic IP address**
+1. Resource type: **Instance**
+1. Choose your EC2 instance and its primary private IP
+1. Confirm association
+
+After this:
+
+- Use the Elastic IP for access and DNS records
+- Update `AWS_EC2_HOST` GitHub secret to this Elastic IP (or the final domain pointing to it)
+- Use the Elastic IP in verification commands instead of temporary public IPs
+
 ### 1. AWS EC2 host setup
 
 Install Docker and Compose on EC2.
@@ -118,6 +139,136 @@ Security group best practice:
 
 - Open only required inbound ports (typically `80`/`443`)
 - Restrict SSH (`22`) to your IP or VPN
+
+### Open port 8080 if app is healthy locally but unreachable externally
+
+If `curl http://localhost:8080/health` works on EC2 but your browser cannot access the app from outside, open inbound TCP `8080` in the EC2 Security Group.
+
+1. Open AWS Console -> EC2 -> Instances
+1. Select your instance
+1. In the **Security** tab, click the attached **Security group**
+1. Go to **Inbound rules** -> **Edit inbound rules**
+1. Add rule:
+   - Type: `Custom TCP`
+   - Port range: `8080`
+   - Source:
+     - Quick test: `0.0.0.0/0`
+1. (Optional IPv6) Add another rule for `8080` with source `::/0` if you use IPv6
+1. Save rules
+
+Verify from outside EC2:
+
+```bash
+curl -i http://<EC2_PUBLIC_IP>:8080/health
+```
+
+Expected response:
+
+- HTTP `200`
+- body contains `healthy`
+
+If still unreachable:
+
+- Confirm EC2 public IP is correct and unchanged
+- Check subnet Network ACL allows inbound `8080` and outbound ephemeral ports
+- Check OS firewall (if enabled) allows `8080`
+
+After testing, tighten security:
+
+- Restrict `8080` source to trusted IP ranges
+- Prefer exposing `80/443` only and place app behind reverse proxy / load balancer
+
+### Nginx setup on EC2 (recommended for domain + HTTPS)
+
+Use Nginx on the host as a reverse proxy and keep the app container bound to `8080`.
+
+1. Ensure app runs on `8080` in `.env.prod`:
+
+```env
+APP_HOST_PORT=8080
+```
+
+Apply if changed:
+
+```bash
+cd ~/jobloom-deploy
+docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --no-build --pull always app
+curl -i http://localhost:8080/health
+```
+
+1. Install and start Nginx:
+
+```bash
+sudo dnf install -y nginx
+sudo systemctl enable --now nginx
+```
+
+1. Add TLS certificate files (for example Cloudflare Origin Certificate):
+
+```bash
+sudo mkdir -p /etc/nginx/ssl
+sudo chmod 700 /etc/nginx/ssl
+```
+
+Save certificate and key to:
+
+- `/etc/nginx/ssl/jobloom-origin.crt`
+- `/etc/nginx/ssl/jobloom-origin.key`
+
+Set secure permissions:
+
+```bash
+sudo chmod 644 /etc/nginx/ssl/jobloom-origin.crt
+sudo chmod 600 /etc/nginx/ssl/jobloom-origin.key
+```
+
+1. Create `/etc/nginx/conf.d/jobloom.conf`:
+
+```nginx
+server {
+  listen 80;
+  server_name jobloom.dilzhan.com;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name jobloom.dilzhan.com;
+
+  ssl_certificate /etc/nginx/ssl/jobloom-origin.crt;
+  ssl_certificate_key /etc/nginx/ssl/jobloom-origin.key;
+
+  location / {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}
+```
+
+1. Validate and reload Nginx:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+1. Security Group and DNS requirements:
+
+- Open inbound TCP `80` and `443`
+- Keep SSH `22` restricted
+- Point your domain A record to the EC2 Elastic IP
+
+1. Verify:
+
+```bash
+curl -i http://jobloom.dilzhan.com
+curl -i https://jobloom.dilzhan.com
+curl -i https://jobloom.dilzhan.com/health
+```
 
 ### 3. GitHub repository secrets
 
