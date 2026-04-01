@@ -1,5 +1,6 @@
 import AppLayout from '../layouts/AppLayout';
 import NotFound from '../pages/NotFound';
+import RouteErrorElement from '../components/RouteErrorElement';
 import publicRoutes from './routes/publicRoutes';
 import userRoutes from './routes/userRoutes';
 import employerRoutes from './routes/employerRoutes';
@@ -14,6 +15,7 @@ const routeConfig = [
   {
     path: '/',
     element: <AppLayout />,
+    errorElement: <RouteErrorElement />,
     children: [
       ...publicRoutes,
       ...userRoutes,

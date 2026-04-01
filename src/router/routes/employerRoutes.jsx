@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 import ProtectedRoute from '../../components/auth/ProtectedRoute';
+import Analytics from '../../pages/employer/jobs/Analytics';
 
 const EmployerDashboard = lazy(() => import('../../pages/employer/jobs/EmployerDashboard'));
 const CreateJob = lazy(() => import('../../pages/employer/jobs/CreateJob'));
 const JobList = lazy(() => import('../../pages/employer/jobs/JobList'));
 const JobDetails = lazy(() => import('../../pages/employer/jobs/JobDetails'));
 const EditJob = lazy(() => import('../../pages/employer/jobs/EditJob'));
-const Analytics = lazy(() => import('../../pages/employer/jobs/Analytics'));
 const EmployerApplications = lazy(
   () => import('../../pages/employer/applications/EmployerApplications')
 );
