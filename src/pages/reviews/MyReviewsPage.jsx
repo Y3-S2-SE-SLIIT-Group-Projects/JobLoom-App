@@ -44,19 +44,27 @@ const MyReviewsPage = () => {
     [reviewerType, sort, page]
   );
 
-  const { reviews: received, pagination: receivedPagination, isLoading: receivedLoading, error: receivedError } =
-    useUserReviews(currentUserId, activeTab === 'received' ? queryParams : {});
+  const {
+    reviews: received,
+    pagination: receivedPagination,
+    isLoading: receivedLoading,
+    error: receivedError,
+  } = useUserReviews(currentUserId, activeTab === 'received' ? queryParams : {});
 
-  const { reviews: sent, pagination: sentPagination, isLoading: sentLoading, error: sentError } =
-    useSentReviews(currentUserId, activeTab === 'sent' ? queryParams : {});
+  const {
+    reviews: sent,
+    pagination: sentPagination,
+    isLoading: sentLoading,
+    error: sentError,
+  } = useSentReviews(currentUserId, activeTab === 'sent' ? queryParams : {});
 
   const { stats, isLoading: statsLoading } = useRatingStats(currentUserId);
 
   if (!currentUserId) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center max-w-sm w-full shadow-card">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen p-4 bg-background">
+        <div className="w-full max-w-sm p-10 text-center bg-white border border-gray-100 rounded-2xl shadow-card">
+          <div className="flex items-center justify-center mx-auto mb-4 rounded-full w-14 h-14 bg-gray-50">
             <Star className="w-6 h-6 text-gray-300" />
           </div>
           <p className="text-sm text-gray-500">{t('reviews.please_login')}</p>
@@ -76,13 +84,13 @@ const MyReviewsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="relative min-h-screen bg-background">
       <DottedBackground />
 
       {/* Page header */}
-      <div className="relative bg-white border-b border-gray-100 px-6 py-5">
+      <div className="relative px-6 py-5 bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-1">
+          <p className="mb-1 text-xs font-semibold tracking-widest uppercase text-primary">
             {t('reviews.breadcrumb')}
           </p>
           <h1 className="text-2xl font-bold text-text">{t('reviews.my_reviews_title')}</h1>
@@ -90,13 +98,12 @@ const MyReviewsPage = () => {
         </div>
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-
+      <div className="relative max-w-6xl px-4 py-8 mx-auto sm:px-6">
+        <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar */}
-          <aside className="lg:w-72 shrink-0 space-y-4">
+          <aside className="space-y-4 lg:w-72 shrink-0">
             {statsLoading ? (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6 flex justify-center">
+              <div className="flex justify-center p-6 bg-white border border-gray-100 rounded-2xl">
                 <Spinner />
               </div>
             ) : (
@@ -104,8 +111,8 @@ const MyReviewsPage = () => {
             )}
 
             {/* How it works card */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-4">
-              <p className="text-xs font-semibold text-text flex items-center gap-2 mb-3">
+            <div className="p-4 bg-white border border-gray-100 rounded-2xl">
+              <p className="flex items-center gap-2 mb-3 text-xs font-semibold text-text">
                 <Info className="w-3.5 h-3.5 text-primary" />
                 {t('reviews.how_it_works')}
               </p>
@@ -113,10 +120,10 @@ const MyReviewsPage = () => {
                 <div className="flex gap-2.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                   <div>
-                    <span className="text-xs font-semibold text-text block">
+                    <span className="block text-xs font-semibold text-text">
                       {t('reviews.tab_received')}
                     </span>
-                    <span className="text-xs text-gray-400 leading-relaxed">
+                    <span className="text-xs leading-relaxed text-gray-400">
                       {t('reviews.received_description')}
                     </span>
                   </div>
@@ -124,10 +131,10 @@ const MyReviewsPage = () => {
                 <div className="flex gap-2.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
                   <div>
-                    <span className="text-xs font-semibold text-text block">
+                    <span className="block text-xs font-semibold text-text">
                       {t('reviews.tab_sent')}
                     </span>
-                    <span className="text-xs text-gray-400 leading-relaxed">
+                    <span className="text-xs leading-relaxed text-gray-400">
                       {t('reviews.given_description')}
                     </span>
                   </div>
@@ -139,8 +146,8 @@ const MyReviewsPage = () => {
           {/* Main content */}
           <main className="flex-1 min-w-0">
             {/* Tab switcher */}
-            <div className="flex gap-1 bg-white border border-gray-100 rounded-xl p-1 mb-5 w-fit">
-              {TABS.map(({ key, labelKey, icon: Icon }) => {
+            <div className="flex gap-1 p-1 mb-5 bg-white border border-gray-100 rounded-xl w-fit">
+              {TABS.map(({ key, labelKey }) => {
                 const count =
                   key === 'received' ? receivedPagination?.total : sentPagination?.total;
                 const isActive = activeTab === key;
@@ -185,7 +192,9 @@ const MyReviewsPage = () => {
             {/* Content */}
             {isLoading ? (
               <div className="space-y-4">
-                {Array.from({ length: 3 }, (_, i) => <ReviewSkeleton key={i} />)}
+                {Array.from({ length: 3 }, (_, i) => (
+                  <ReviewSkeleton key={i} />
+                ))}
               </div>
             ) : reviews.length === 0 ? (
               <EmptyState
@@ -225,7 +234,7 @@ const MyReviewsPage = () => {
                     <button
                       onClick={() => dispatch(setPage(Math.max(1, page - 1)))}
                       disabled={page === 1}
-                      className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-xl disabled:opacity-40 hover:border-primary/30 transition-colors"
+                      className="px-4 py-2 text-sm transition-colors bg-white border border-gray-200 rounded-xl disabled:opacity-40 hover:border-primary/30"
                     >
                       {t('common.previous')}
                     </button>
@@ -235,7 +244,7 @@ const MyReviewsPage = () => {
                     <button
                       onClick={() => dispatch(setPage(Math.min(totalPages, page + 1)))}
                       disabled={page === totalPages}
-                      className="px-4 py-2 text-sm border border-gray-200 bg-white rounded-xl disabled:opacity-40 hover:border-primary/30 transition-colors"
+                      className="px-4 py-2 text-sm transition-colors bg-white border border-gray-200 rounded-xl disabled:opacity-40 hover:border-primary/30"
                     >
                       {t('common.next')}
                     </button>
