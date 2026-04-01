@@ -19,6 +19,9 @@
     "close": "Close"
   },
   "navbar": {
+    "home": "Home",
+    "about": "About",
+    "explore": "Explore",
     "dashboard": "Dashboard",
     "jobs": "Jobs",
     "applications": "Applications",

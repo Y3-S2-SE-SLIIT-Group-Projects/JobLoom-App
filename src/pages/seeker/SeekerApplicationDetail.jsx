@@ -20,6 +20,7 @@ import {
   FaBriefcase,
   FaCalendarAlt,
   FaLink,
+  FaStickyNote,
   FaSave,
   FaExclamationTriangle,
   FaMapMarkerAlt,
