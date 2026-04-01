@@ -33,6 +33,7 @@ concurrency:
 
 env:
   IMAGE_NAME: jobloom-app
+  DEPLOY_DIR: ~/jobloom-deploy
 
 jobs:
   prepare:
@@ -154,11 +155,26 @@ jobs:
     if: needs.prepare.outputs.should_deploy == 'true'
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload compose files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ secrets.AWS_EC2_PORT || 22 }}
+          source: "docker-compose.yml,docker-compose.prod.yml"
+          target: ${{ env.DEPLOY_DIR }}
+          strip_components: 0
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
           IMAGE_URI: ${{ needs.prepare.outputs.image_repo }}@${{ needs.build_and_push.outputs.image_digest }}
           IMAGE_TAG_URI: ${{ needs.prepare.outputs.image_repo }}:${{ needs.prepare.outputs.image_tag }}
+          DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
           REGISTRY_TYPE: ${{ needs.prepare.outputs.registry }}
           GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
           GHCR_PAT: ${{ secrets.GHCR_PAT }}
@@ -170,11 +186,17 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           port: ${{ secrets.AWS_EC2_PORT || 22 }}
           script_stop: true
-          envs: IMAGE_URI,IMAGE_TAG_URI,REGISTRY_TYPE,GHCR_USERNAME,GHCR_PAT,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: IMAGE_URI,IMAGE_TAG_URI,DEPLOY_DIR,REGISTRY_TYPE,GHCR_USERNAME,GHCR_PAT,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
             set -euo pipefail
 
-            cd "$HOME/jobloom-app"
+            mkdir -p "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+
+            if [[ ! -f ".env.prod" ]]; then
+              echo "Missing $DEPLOY_DIR/.env.prod. Create it once with runtime variables before deploying."
+              exit 1
+            fi
 
             COMPOSE_FILES="--env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml"
             CURRENT_CONTAINER_ID=$(docker compose $COMPOSE_FILES ps -q app || true)

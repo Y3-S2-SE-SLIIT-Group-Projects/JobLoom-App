@@ -9,10 +9,9 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Build-time variables used by Vite during `npm run build`
-ARG NODE_ENV=production
 ARG VITE_API_URL
-ENV NODE_ENV=${NODE_ENV}
 ENV VITE_API_URL=${VITE_API_URL}
+ENV HUSKY=0
 
 # Copy package files
 COPY package*.json ./

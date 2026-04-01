@@ -16,6 +16,7 @@ Flow:
 1. Build production Docker image from `Dockerfile` (target `production`)
 1. Push image to selected registry (`ghcr` or `dockerhub`)
 1. Resolve immutable image digest from the pushed image
+1. Upload only runtime compose files to EC2 (no full repo clone required)
 1. SSH into AWS EC2
 1. Pull and deploy the exact digest with Docker Compose (no server-side image build)
 1. Run post-deploy health validation and auto-rollback on failure
@@ -65,18 +66,16 @@ docker compose version
 
 For Ubuntu/Debian servers, use apt-based Docker installation instead.
 
-### 2. App directory on EC2
+### 2. Runtime deploy directory on EC2
 
 ```bash
-mkdir -p ~/jobloom-app
-cd ~/jobloom-app
-git clone https://github.com/Y3-S2-SE-SLIIT-Group-Projects/JobLoom-App.git .
+mkdir -p ~/jobloom-deploy
+cd ~/jobloom-deploy
 ```
 
-Create production env file:
+Create production env file once:
 
 ```bash
-cp .env.prod.example .env.prod
 nano .env.prod
 ```
 
@@ -184,7 +183,7 @@ Use cases:
 ### Check deployed container on EC2
 
 ```bash
-cd ~/jobloom-app
+cd ~/jobloom-deploy
 docker ps
 docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml logs -f app
 curl -f http://localhost:${APP_HOST_PORT:-8080}/health
@@ -193,7 +192,7 @@ curl -f http://localhost:${APP_HOST_PORT:-8080}/health
 ### Rollback to previous image
 
 ```bash
-cd ~/jobloom-app
+cd ~/jobloom-deploy
 APP_IMAGE=<registry>/<repo>/jobloom-app:<previous-tag> docker compose \
   --env-file .env.prod \
   -f docker-compose.yml \
@@ -270,7 +269,7 @@ Complete these steps in order.
 
 - Docker installed
 - Docker Compose plugin installed
-- App repository present at $HOME/jobloom-app
+- Runtime deploy folder exists at $HOME/jobloom-deploy
 - .env.prod exists (only non-secret operational values are needed)
 
 1. Run a manual pipeline test
