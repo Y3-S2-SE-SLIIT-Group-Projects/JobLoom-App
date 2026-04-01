@@ -1,0 +1,242 @@
+name: CD Release Pipeline
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      registry:
+        description: Container registry to publish the image
+        required: true
+        default: ghcr
+        type: choice
+        options:
+          - ghcr
+          - dockerhub
+      image_tag:
+        description: Optional image tag override (defaults to release tag or short SHA)
+        required: false
+        type: string
+      deploy:
+        description: Deploy to AWS EC2 after image push
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: cd-release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: jobloom-app
+
+jobs:
+  prepare:
+    name: Prepare metadata
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      registry: ${{ steps.meta.outputs.registry }}
+      image_repo: ${{ steps.meta.outputs.image_repo }}
+      should_deploy: ${{ steps.meta.outputs.should_deploy }}
+
+    steps:
+      - name: Prepare image metadata
+        id: meta
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ github.event.inputs.image_tag }}
+          INPUT_REGISTRY: ${{ github.event.inputs.registry }}
+          INPUT_DEPLOY: ${{ github.event.inputs.deploy }}
+          OWNER: ${{ github.repository_owner }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "release" && -n "${RELEASE_TAG:-}" ]]; then
+            IMAGE_TAG="$RELEASE_TAG"
+          elif [[ -n "${INPUT_TAG:-}" ]]; then
+            IMAGE_TAG="$INPUT_TAG"
+          else
+            IMAGE_TAG="sha-${GITHUB_SHA::7}"
+          fi
+
+          if [[ "$EVENT_NAME" == "release" ]]; then
+            REGISTRY="ghcr"
+            SHOULD_DEPLOY="true"
+          else
+            REGISTRY="${INPUT_REGISTRY:-ghcr}"
+            SHOULD_DEPLOY="${INPUT_DEPLOY:-false}"
+          fi
+
+          OWNER_LOWER="$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')"
+
+          if [[ "$REGISTRY" == "ghcr" ]]; then
+            IMAGE_REPO="ghcr.io/$OWNER_LOWER/$IMAGE_NAME"
+          elif [[ "$REGISTRY" == "dockerhub" ]]; then
+            if [[ -z "${DOCKERHUB_USERNAME:-}" ]]; then
+              echo "DOCKERHUB_USERNAME secret is required when registry=dockerhub"
+              exit 1
+            fi
+            USERNAME_LOWER="$(echo "$DOCKERHUB_USERNAME" | tr '[:upper:]' '[:lower:]')"
+            IMAGE_REPO="$USERNAME_LOWER/$IMAGE_NAME"
+          else
+            echo "Unsupported registry: $REGISTRY"
+            exit 1
+          fi
+
+          echo "image_tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+          echo "registry=$REGISTRY" >> "$GITHUB_OUTPUT"
+          echo "image_repo=$IMAGE_REPO" >> "$GITHUB_OUTPUT"
+          echo "should_deploy=$SHOULD_DEPLOY" >> "$GITHUB_OUTPUT"
+
+  build_and_push:
+    name: Build and push production image
+    runs-on: ubuntu-latest
+    needs: prepare
+    outputs:
+      image_digest: ${{ steps.build_output.outputs.digest }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        if: needs.prepare.outputs.registry == 'ghcr'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to Docker Hub
+        if: needs.prepare.outputs.registry == 'dockerhub'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        id: build_output
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ needs.prepare.outputs.image_repo }}:${{ needs.prepare.outputs.image_tag }}
+            ${{ needs.prepare.outputs.image_repo }}:latest
+          build-args: |
+            NODE_ENV=production
+            VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify pushed image reference
+        run: |
+          echo "Pushed image: ${{ needs.prepare.outputs.image_repo }}:${{ needs.prepare.outputs.image_tag }}"
+          echo "Pushed image digest: ${{ steps.build_output.outputs.digest }}"
+
+  deploy_aws_ec2:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+    needs: [prepare, build_and_push]
+    if: needs.prepare.outputs.should_deploy == 'true'
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          IMAGE_URI: ${{ needs.prepare.outputs.image_repo }}@${{ needs.build_and_push.outputs.image_digest }}
+          IMAGE_TAG_URI: ${{ needs.prepare.outputs.image_repo }}:${{ needs.prepare.outputs.image_tag }}
+          REGISTRY_TYPE: ${{ needs.prepare.outputs.registry }}
+          GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          port: ${{ secrets.AWS_EC2_PORT || 22 }}
+          script_stop: true
+          envs: IMAGE_URI,IMAGE_TAG_URI,REGISTRY_TYPE,GHCR_USERNAME,GHCR_PAT,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            set -euo pipefail
+
+            cd "$HOME/jobloom-app"
+
+            COMPOSE_FILES="--env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml"
+            CURRENT_CONTAINER_ID=$(docker compose $COMPOSE_FILES ps -q app || true)
+            PREVIOUS_IMAGE=""
+            if [[ -n "$CURRENT_CONTAINER_ID" ]]; then
+              PREVIOUS_IMAGE=$(docker inspect "$CURRENT_CONTAINER_ID" --format '{{.Config.Image}}' || true)
+            fi
+
+            if [[ "$REGISTRY_TYPE" == "ghcr" ]]; then
+              echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+            else
+              echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            fi
+
+            APP_IMAGE="$IMAGE_URI" docker compose \
+              --env-file .env.prod \
+              -f docker-compose.yml \
+              -f docker-compose.prod.yml \
+              pull app
+
+            APP_IMAGE="$IMAGE_URI" docker compose \
+              --env-file .env.prod \
+              -f docker-compose.yml \
+              -f docker-compose.prod.yml \
+              up -d --no-build --pull always app
+
+            NEW_CONTAINER_ID=$(docker compose $COMPOSE_FILES ps -q app)
+            ATTEMPTS=0
+            MAX_ATTEMPTS=12
+            STATUS="unknown"
+
+            while [[ "$ATTEMPTS" -lt "$MAX_ATTEMPTS" ]]; do
+              STATUS=$(docker inspect "$NEW_CONTAINER_ID" --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}')
+              if [[ "$STATUS" == "healthy" || "$STATUS" == "running" ]]; then
+                break
+              fi
+              sleep 5
+              ATTEMPTS=$((ATTEMPTS + 1))
+            done
+
+            if [[ "$STATUS" != "healthy" && "$STATUS" != "running" ]]; then
+              echo "Post-deploy health check failed (status=$STATUS)."
+              docker compose $COMPOSE_FILES logs --no-color app || true
+
+              if [[ -n "$PREVIOUS_IMAGE" ]]; then
+                echo "Rolling back to previous image: $PREVIOUS_IMAGE"
+                APP_IMAGE="$PREVIOUS_IMAGE" docker compose \
+                  --env-file .env.prod \
+                  -f docker-compose.yml \
+                  -f docker-compose.prod.yml \
+                  up -d --no-build --pull always app
+              fi
+
+              exit 1
+            fi
+
+            docker image prune -f
+            docker logout ghcr.io || true
+            docker logout || true
+
+      - name: Deployment summary
+        run: |
+          echo "Deployment completed"
+          echo "Image tag: ${{ needs.prepare.outputs.image_repo }}:${{ needs.prepare.outputs.image_tag }}"
+          echo "Image digest: ${{ needs.build_and_push.outputs.image_digest }}"

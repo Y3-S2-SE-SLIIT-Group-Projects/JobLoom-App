@@ -6,7 +6,7 @@
 
 services:
   app:
-    image: jobloom-app:latest
+    image: ${APP_IMAGE:-jobloom-app:latest}
     build:
       context: .
       dockerfile: Dockerfile

@@ -35,6 +35,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 ## 📚 Documentation
 
 - [Docker & CI/CD Guide](DOCKER_CI_GUIDE.md) - Comprehensive Docker and CI/CD documentation
+- [Release CD to AWS Guide](docs/CD_RELEASE_AWS_GUIDE.md) - Auto release + manual deployment pipeline guide
 - Backend API documentation: [Link to backend repo]
 
 ## 🛠️ Tech Stack
