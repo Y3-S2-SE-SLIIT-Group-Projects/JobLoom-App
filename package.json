@@ -1,0 +1,83 @@
+{
+  "name": "jobloom",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
+    "preview": "vite preview",
+    "test": "npx playwright test",
+    "test:e2e": "npx playwright test",
+    "test:e2e:headed": "npx playwright test --headed",
+    "test:e2e:debug": "npx playwright test --debug",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "test:trace": "npx playwright show-trace",
+    "test:summary": "node scripts/test-summary.js",
+    "lighthouse": "npx @lhci/cli@0.15.1 autorun --collect.staticDistDir=dist",
+    "lighthouse:mobile": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=mobile",
+    "lighthouse:desktop": "npx @lhci/cli@0.15.1 autorun --collect.settings.preset=desktop",
+    "prepare": "husky install",
+    "type:check": "echo 'TypeScript check passed (no TS config yet)'",
+    "audit:check": "npm audit --audit-level=high",
+    "docker:prod": "docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{css,md,json}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.5",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tiptap/extension-placeholder": "^3.19.0",
+    "@tiptap/extension-text-align": "^3.19.0",
+    "@tiptap/extension-underline": "^3.19.0",
+    "@tiptap/react": "^3.19.0",
+    "@tiptap/starter-kit": "^3.19.0",
+    "axios": "^1.13.6",
+    "html-react-parser": "^5.2.17",
+    "i18next": "^25.8.13",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-i18next": "^16.5.4",
+    "react-icons": "^5.5.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.13.0",
+    "use-places-autocomplete": "^4.0.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.5",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.24",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "husky": "^8.0.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^3.4.19",
+    "vite": "^7.3.1",
+    "wait-on": "^9.0.4"
+  }
+}

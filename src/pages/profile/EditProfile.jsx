@@ -1,0 +1,841 @@
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useUser } from '../../hooks/useUser';
+import DottedBackground from '../../components/DottedBackground';
+import {
+  FaArrowLeft,
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaTimes,
+  FaPlus,
+  FaSave,
+  FaCamera,
+  FaFileUpload,
+  FaTrash,
+  FaBriefcase,
+  FaCheckCircle,
+} from 'react-icons/fa';
+import { getImageUrl } from '../../utils/imageUrls';
+import { uploadFile } from '../../services/uploadApi';
+
+const PROVINCES = [
+  'Western',
+  'Central',
+  'Southern',
+  'Northern',
+  'Eastern',
+  'North Western',
+  'North Central',
+  'Uva',
+  'Sabaragamuwa',
+];
+
+const SKILL_SUGGESTIONS = [
+  'Communication',
+  'Teamwork',
+  'Leadership',
+  'Problem Solving',
+  'Microsoft Office',
+  'Customer Service',
+  'Sales',
+  'Cooking',
+  'Driving',
+  'Construction',
+  'Carpentry',
+  'Plumbing',
+  'Electrical',
+  'Farming',
+  'Tailoring',
+  'Teaching',
+  'Nursing',
+  'Security',
+  'Cleaning',
+  'Accounting',
+  'Computer Skills',
+  'English Language',
+  'Sinhala',
+  'Tamil',
+];
+
+// Utility moved to utils/imageUrls.js
+
+const EditProfile = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { currentUser, getMyProfile, updateUserProfile, loading } = useUser();
+  const fileInputRef = useRef(null);
+  const cvInputRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    location: { village: '', district: '', province: '' },
+    skills: [],
+    experience: [],
+    // Employer fields
+    companyName: '',
+    companyWebsite: '',
+    companyDescription: '',
+    industry: '',
+  });
+  const [skillInput, setSkillInput] = useState('');
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState('');
+  const [cvFiles, setCvFiles] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getMyProfile();
+        setFormData({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          phone: data.phone || '',
+          location: {
+            village: data.location?.village || '',
+            district: data.location?.district || '',
+            province: data.location?.province || '',
+          },
+          skills: data.skills || [],
+          experience: data.experience || [],
+          companyName: data.companyName || '',
+          companyWebsite: data.companyWebsite || '',
+          companyDescription: data.companyDescription || '',
+          industry: data.industry || '',
+        });
+        if (data.profileImage) {
+          setProfileImagePreview(getImageUrl(data.profileImage));
+        } else {
+          setProfileImagePreview('');
+        }
+      } catch (err) {
+        setApiError(err.message || 'Failed to load profile');
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [currentRole, setCurrentRole] = useState('job_seeker');
+  useEffect(() => {
+    setCurrentRole(currentUser?.role || 'job_seeker');
+  }, [currentUser]);
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    if (name.startsWith('location.')) {
+      const key = name.split('.')[1];
+      setFormData(prev => ({ ...prev, location: { ...prev.location, [key]: value } }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    setApiError('');
+    setSuccessMsg('');
+  };
+
+  // Skills
+  const addSkill = skill => {
+    const s = skill.trim();
+    if (s && !formData.skills.includes(s)) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, s] }));
+    }
+    setSkillInput('');
+  };
+
+  const removeSkill = skill => {
+    setFormData(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+  };
+
+  // Experience
+  const addExperience = () => {
+    setFormData(prev => ({
+      ...prev,
+      experience: [...prev.experience, { title: '', company: '', duration: '', description: '' }],
+    }));
+  };
+
+  const updateExperience = (index, field, value) => {
+    setFormData(prev => {
+      const updated = [...prev.experience];
+      updated[index] = { ...updated[index], [field]: value };
+      return { ...prev, experience: updated };
+    });
+  };
+
+  const removeExperience = index => {
+    setFormData(prev => ({ ...prev, experience: prev.experience.filter((_, i) => i !== index) }));
+  };
+
+  // Profile Image
+  const handleProfileImageChange = e => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImageFile(file);
+      setProfileImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  // CV Upload
+  const handleCvChange = e => {
+    const files = Array.from(e.target.files);
+    setCvFiles(prev => [...prev, ...files]);
+  };
+
+  const removeCv = index => {
+    setCvFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!formData.firstName.trim()) errs.firstName = t('errors.first_name_required');
+    if (!formData.lastName.trim()) errs.lastName = t('errors.last_name_required');
+    if (!formData.phone.trim()) errs.phone = t('errors.phone_required');
+    else {
+      const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
+      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+        errs.phone = t('errors.invalid_phone');
+      }
+    }
+    if (!formData.location.province.trim())
+      errs['location.province'] = t('errors.province_required');
+    if (!formData.location.village.trim()) errs['location.village'] = t('errors.village_required');
+    if (!formData.location.district.trim())
+      errs['location.district'] = t('errors.district_required');
+
+    if (currentRole === 'employer') {
+      if (!formData.companyName.trim()) errs.companyName = t('errors.company_name_required');
+      if (!formData.industry.trim()) errs.industry = t('errors.industry_required');
+    }
+    return errs;
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    try {
+      const updates = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+        location: formData.location,
+      };
+
+      if (currentRole === 'job_seeker') {
+        updates.skills = formData.skills;
+        updates.experience = formData.experience;
+
+        if (cvFiles.length > 0) {
+          const uploadedCVs = await Promise.all(
+            cvFiles.map(async file => {
+              const result = await uploadFile({ file, folder: 'jobloom/cvs' });
+              return { name: file?.name || 'CV', url: result.url, public_id: result.public_id };
+            })
+          );
+          updates.newCVs = uploadedCVs;
+        }
+      } else {
+        updates.companyName = formData.companyName;
+        updates.companyWebsite = formData.companyWebsite;
+        updates.companyDescription = formData.companyDescription;
+        updates.industry = formData.industry;
+      }
+
+      if (profileImageFile) {
+        const result = await uploadFile({
+          file: profileImageFile,
+          folder: 'jobloom/profile_images',
+        });
+        updates.profileImage = result.url;
+      }
+
+      await updateUserProfile(updates);
+      setSuccessMsg(t('profile.update_success'));
+      setCvFiles([]);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(() => navigate('/profile'), 1500);
+    } catch (err) {
+      setApiError(err.message || 'Failed to update profile');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  if (loadingProfile) {
+    return (
+      <DottedBackground>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </DottedBackground>
+    );
+  }
+
+  return (
+    <DottedBackground>
+      <div className="max-w-3xl px-6 py-8 mx-auto">
+        {/* Back Button */}
+        <Link
+          to="/profile"
+          className="inline-flex items-center text-muted hover:text-primary transition-colors mb-6"
+        >
+          <FaArrowLeft className="w-4 h-4 mr-2" />
+          {t('common.back')}
+        </Link>
+
+        {/* Page Title */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-text-dark mb-1">{t('profile.edit_profile')}</h1>
+          <p className="text-muted">{t('profile.complete_profile_desc')}</p>
+        </div>
+
+        {/* Alerts */}
+        {apiError && (
+          <div className="p-4 mb-5 border border-error/30 rounded-lg bg-error/10">
+            <p className="text-sm text-error">{apiError}</p>
+          </div>
+        )}
+        {successMsg && (
+          <div className="flex items-center gap-2 p-4 mb-5 border border-success/30 rounded-lg bg-success/10">
+            <FaCheckCircle className="w-4 h-4 text-success" />
+            <p className="text-sm text-success">{successMsg}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Image */}
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+              <FaCamera className="w-5 h-5 text-primary" />
+              {currentRole === 'employer'
+                ? t('profile.edit_profile_photo')
+                : t('profile.edit_profile_photo')}
+            </h2>
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                {profileImagePreview ? (
+                  <img
+                    src={profileImagePreview}
+                    alt="Profile"
+                    className="w-24 h-24 rounded-full object-cover border-4 border-border"
+                    onError={e => {
+                      e.currentTarget.onerror = null; // Prevent infinite loop
+                      e.currentTarget.style.display = 'none';
+                      if (e.currentTarget.nextSibling) {
+                        e.currentTarget.nextSibling.style.display = 'flex';
+                      }
+                    }}
+                  />
+                ) : null}
+                <div
+                  className={`w-24 h-24 bg-gradient-to-br from-primary to-deep-blue rounded-full flex items-center justify-center border-4 border-primary/20 ${profileImagePreview ? 'hidden' : 'flex'}`}
+                >
+                  {currentRole === 'employer' ? (
+                    <FaBriefcase className="w-10 h-10 text-white" />
+                  ) : (
+                    <FaUser className="w-10 h-10 text-white" />
+                  )}
+                </div>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors text-sm font-medium mb-2"
+                >
+                  <FaCamera className="w-4 h-4" />
+                  {t('profile.change_photo')}
+                </button>
+                <p className="text-xs text-subtle">JPG, PNG up to 5MB</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfileImageChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Personal Information */}
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+              <FaUser className="w-5 h-5 text-primary" />
+              {t('auth.step_create_account')}
+            </h2>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              {/* First Name */}
+              <div>
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.first_name')} <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="John"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.firstName ? 'border-error bg-error/10' : 'border-border'}`}
+                />
+                {errors.firstName && <p className="mt-1 text-xs text-error">{errors.firstName}</p>}
+              </div>
+              {/* Last Name */}
+              <div>
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.last_name')} <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Doe"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.lastName ? 'border-error bg-error/10' : 'border-border'}`}
+                />
+                {errors.lastName && <p className="mt-1 text-xs text-error">{errors.lastName}</p>}
+              </div>
+              {/* Email (read-only) */}
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('auth.email')}{' '}
+                  <span className="text-xs font-normal text-subtle">{t('common.optional')}</span>
+                </label>
+                <div className="relative">
+                  <FaEnvelope className="absolute w-4 h-4 text-neutral-300 -translate-y-1/2 left-3 top-1/2" />
+                  <input
+                    type="email"
+                    disabled
+                    placeholder="Email not editable here"
+                    className="w-full pl-10 pr-4 py-3 border border-border rounded-lg bg-surface-muted text-subtle cursor-not-allowed outline-none"
+                  />
+                </div>
+              </div>
+              {/* Phone */}
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.phone')} <span className="text-error">*</span>
+                </label>
+                <div className="relative">
+                  <FaPhone className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+94 77 123 4567"
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.phone ? 'border-error bg-error/10' : 'border-border'}`}
+                  />
+                </div>
+                {errors.phone && <p className="mt-1 text-xs text-error">{errors.phone}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Location */}
+          <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+              <FaMapMarkerAlt className="w-5 h-5 text-primary" />
+              {t('profile.location')}
+            </h2>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.village')} <span className="text-error">*</span>
+                </label>
+                <div className="relative">
+                  <FaMapMarkerAlt className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
+                  <input
+                    type="text"
+                    name="location.village"
+                    value={formData.location.village}
+                    onChange={handleChange}
+                    placeholder="e.g. Gampaha"
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors['location.village'] ? 'border-error bg-error/10' : 'border-border'}`}
+                  />
+                </div>
+                {errors['location.village'] && (
+                  <p className="mt-1 text-xs text-error">{errors['location.village']}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.district')} <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="location.district"
+                  value={formData.location.district}
+                  onChange={handleChange}
+                  placeholder="e.g. Gampaha"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors['location.district'] ? 'border-error bg-error/10' : 'border-border'}`}
+                />
+                {errors['location.district'] && (
+                  <p className="mt-1 text-xs text-error">{errors['location.district']}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-dark mb-1.5">
+                  {t('profile.province')} <span className="text-error">*</span>
+                </label>
+                <select
+                  name="location.province"
+                  value={formData.location.province}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors['location.province'] ? 'border-error bg-error/10' : 'border-border'}`}
+                >
+                  <option value="">{t('auth.select_province')}</option>
+                  {PROVINCES.map(p => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+                {errors['location.province'] && (
+                  <p className="mt-1 text-xs text-error">{errors['location.province']}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Employer Specific Sections */}
+          {currentRole === 'employer' && (
+            <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+              <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+                <FaBriefcase className="w-5 h-5 text-primary" />
+                {t('profile.company_overview')}
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-1.5">
+                    {t('profile.company_name')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    placeholder="e.g. Acme Corporation"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.companyName ? 'border-error bg-error/10' : 'border-border'}`}
+                  />
+                  {errors.companyName && (
+                    <p className="mt-1 text-xs text-error">{errors.companyName}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-1.5">
+                    {t('profile.company_industry')} <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleChange}
+                    placeholder="e.g. Technology, Healthcare"
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.industry ? 'border-error bg-error/10' : 'border-border'}`}
+                  />
+                  {errors.industry && <p className="mt-1 text-xs text-error">{errors.industry}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-1.5">
+                    {t('profile.company_website')}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute text-sm text-subtle -translate-y-1/2 left-3 top-1/2">
+                      https://
+                    </span>
+                    <input
+                      type="text"
+                      name="companyWebsite"
+                      value={formData.companyWebsite}
+                      onChange={handleChange}
+                      placeholder="www.example.com"
+                      className="w-full pl-16 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-text-dark mb-1.5">
+                    {t('profile.about_company')}
+                  </label>
+                  <textarea
+                    name="companyDescription"
+                    value={formData.companyDescription}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder="Briefly describe your company..."
+                    className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Job Seeker Specific Sections */}
+          {currentRole === 'job_seeker' && (
+            <>
+              {/* Skills */}
+              <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+                  <FaCheckCircle className="w-5 h-5 text-primary" />
+                  Skills
+                </h2>
+
+                {/* Added Skills */}
+                {formData.skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {formData.skills.map(skill => (
+                      <span
+                        key={skill}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full border border-primary/20"
+                      >
+                        {skill}
+                        <button
+                          type="button"
+                          onClick={() => removeSkill(skill)}
+                          className="hover:text-error"
+                        >
+                          <FaTimes className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Skill Input */}
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={skillInput}
+                    onChange={e => setSkillInput(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addSkill(skillInput);
+                      }
+                    }}
+                    placeholder="Type a skill and press Enter"
+                    className="flex-1 px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addSkill(skillInput)}
+                    className="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm"
+                  >
+                    <FaPlus className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Skill Suggestions */}
+                <div>
+                  <p className="mb-2 text-xs text-subtle">Suggestions:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {SKILL_SUGGESTIONS.filter(s => !formData.skills.includes(s))
+                      .slice(0, 12)
+                      .map(skill => (
+                        <button
+                          key={skill}
+                          type="button"
+                          onClick={() => addSkill(skill)}
+                          className="px-3 py-1 text-xs text-muted border border-border rounded-full hover:border-primary hover:text-primary transition-colors"
+                        >
+                          + {skill}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Work Experience */}
+              <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-text-dark flex items-center gap-2">
+                    <FaBriefcase className="w-5 h-5 text-primary" />
+                    {t('profile.experience')}
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={addExperience}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors"
+                  >
+                    <FaPlus className="w-3 h-3" />
+                    {t('profile.add_experience')}
+                  </button>
+                </div>
+
+                {formData.experience.length === 0 ? (
+                  <div className="text-center py-8 text-muted">
+                    <FaBriefcase className="w-10 h-10 mx-auto mb-3 text-neutral-200" />
+                    <p className="text-sm">
+                      No experience added yet. Click &quot;Add Experience&quot; to get started.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {formData.experience.map((exp, index) => (
+                      <div key={index} className="border border-border rounded-lg p-4 relative">
+                        <button
+                          type="button"
+                          onClick={() => removeExperience(index)}
+                          className="absolute text-subtle transition-colors top-3 right-3 hover:text-error"
+                        >
+                          <FaTimes className="w-4 h-4" />
+                        </button>
+                        <div className="grid grid-cols-1 gap-4 pr-8 sm:grid-cols-2">
+                          <div>
+                            <label className="block text-xs font-medium text-muted mb-1">
+                              {t('profile.job_title')}
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.title}
+                              onChange={e => updateExperience(index, 'title', e.target.value)}
+                              placeholder="e.g. Farm Supervisor"
+                              className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-muted mb-1">
+                              {t('profile.company')}
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.company}
+                              onChange={e => updateExperience(index, 'company', e.target.value)}
+                              placeholder="e.g. AgriCo Ltd"
+                              className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-muted mb-1">
+                              {t('profile.duration')}
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.duration}
+                              onChange={e => updateExperience(index, 'duration', e.target.value)}
+                              placeholder="e.g. Jan 2022 - Dec 2023"
+                              className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-muted mb-1">
+                              {t('profile.description')}
+                            </label>
+                            <input
+                              type="text"
+                              value={exp.description}
+                              onChange={e => updateExperience(index, 'description', e.target.value)}
+                              placeholder="Brief description of responsibilities"
+                              className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-sm"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* CV Upload */}
+              <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
+                <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center gap-2">
+                  <FaFileUpload className="w-5 h-5 text-primary" />
+                  {t('profile.step_cv')}
+                </h2>
+
+                <div
+                  onClick={() => cvInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                >
+                  <FaFileUpload className="w-10 h-10 mx-auto mb-3 text-neutral-300" />
+                  <p className="text-text-dark font-medium mb-1">{t('profile.upload_cv_desc')}</p>
+                  <p className="text-sm text-subtle">{t('profile.upload_cv_limit')}</p>
+                  <input
+                    ref={cvInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    multiple
+                    onChange={handleCvChange}
+                    className="hidden"
+                  />
+                </div>
+
+                {cvFiles.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {cvFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 bg-surface-muted rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-8 h-8 bg-error/10 rounded-lg">
+                            <FaFileUpload className="w-4 h-4 text-error" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-text-dark">{file.name}</p>
+                            <p className="text-xs text-subtle">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeCv(index)}
+                          className="text-subtle transition-colors hover:text-error"
+                        >
+                          <FaTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Submit */}
+          <div className="flex gap-4 pb-8">
+            <Link
+              to="/profile"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors font-medium"
+            >
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+              ) : (
+                <>
+                  <FaSave className="w-4 h-4" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </DottedBackground>
+  );
+};
+
+export default EditProfile;
