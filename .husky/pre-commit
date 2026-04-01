@@ -4,6 +4,10 @@
 
 echo "Running pre-commit checks..."
 
+# Run full formatter before commit
+echo "Running project formatter..."
+npm run format || exit 1
+
 # Run lint-staged for formatting and linting staged files
 echo "Checking code formatting and linting..."
 npx lint-staged
