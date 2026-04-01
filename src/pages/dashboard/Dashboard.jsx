@@ -510,6 +510,7 @@ const Dashboard = () => {
       status: 'open',
       search: query || undefined,
       category: category || undefined,
+      employmentType: employmentType || undefined,
       district,
       province: prov,
       minSalary: selectedRange.min || undefined,
@@ -544,14 +545,26 @@ const Dashboard = () => {
           const title = (job.title || '').toLowerCase();
           const desc = (job.description || '').toLowerCase();
           const role = (job.jobRole || '').toLowerCase();
+          const jobEmploymentType = (job.employmentType || '').toLowerCase();
+          const jobProvince = normalizeRegionName(job.location?.province || '');
           const salary = Number(job.salaryAmount || 0);
 
           const matchesQuery = !q || title.includes(q) || desc.includes(q) || role.includes(q);
           const matchesCategory = !category || job.category === category;
+          const matchesEmploymentType =
+            !employmentType || jobEmploymentType === employmentType.toLowerCase();
+          const matchesProvince = !prov || jobProvince === prov;
           const matchesMin = min === null || salary >= min;
           const matchesMax = max === null || salary <= max;
 
-          return matchesQuery && matchesCategory && matchesMin && matchesMax;
+          return (
+            matchesQuery &&
+            matchesCategory &&
+            matchesEmploymentType &&
+            matchesProvince &&
+            matchesMin &&
+            matchesMax
+          );
         });
 
         const mergedMap = new Map();
@@ -636,7 +649,39 @@ const Dashboard = () => {
               ? payload.data
               : [];
 
-          setNearbyJobs(jobsFromApi);
+          const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
+          const q = query.trim().toLowerCase();
+          const min = selectedRange.min ? Number(selectedRange.min) : null;
+          const max = selectedRange.max ? Number(selectedRange.max) : null;
+          const normalizedProvince = normalizeRegionName(province || '');
+
+          const filteredNearbyJobs = jobsFromApi.filter(job => {
+            const title = (job.title || '').toLowerCase();
+            const desc = (job.description || '').toLowerCase();
+            const role = (job.jobRole || '').toLowerCase();
+            const jobEmploymentType = (job.employmentType || '').toLowerCase();
+            const jobProvince = normalizeRegionName(job.location?.province || '');
+            const salary = Number(job.salaryAmount || 0);
+
+            const matchesQuery = !q || title.includes(q) || desc.includes(q) || role.includes(q);
+            const matchesCategory = !category || job.category === category;
+            const matchesEmploymentType =
+              !employmentType || jobEmploymentType === employmentType.toLowerCase();
+            const matchesProvince = !normalizedProvince || jobProvince === normalizedProvince;
+            const matchesMin = min === null || salary >= min;
+            const matchesMax = max === null || salary <= max;
+
+            return (
+              matchesQuery &&
+              matchesCategory &&
+              matchesEmploymentType &&
+              matchesProvince &&
+              matchesMin &&
+              matchesMax
+            );
+          });
+
+          setNearbyJobs(filteredNearbyJobs);
           searchRef.current?.scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
           setNearbyError(err.message || 'Could not load nearby jobs.');

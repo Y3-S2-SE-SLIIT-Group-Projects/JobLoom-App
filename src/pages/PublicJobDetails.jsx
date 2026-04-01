@@ -17,6 +17,7 @@ import {
   FaBriefcase,
   FaDollarSign,
   FaGlobe,
+  FaFileAlt,
   FaSignInAlt,
   FaPaperPlane,
   FaUsers,
@@ -196,7 +197,7 @@ const PublicJobDetails = () => {
         </Link>
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center overflow-hidden border border-neutral-100">
               {employerLogo ? (
@@ -226,35 +227,35 @@ const PublicJobDetails = () => {
               <p className="text-sm text-subtle mt-1">{employerCompany}</p>
             </div>
           </div>
-        </div>
 
-        {/* Details bar */}
-        <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-border">
-          <div className="flex items-center gap-2 text-muted">
-            <FaBriefcase className="w-5 h-5 text-subtle" />
-            <span className="capitalize">{job.employmentType || 'Full-time'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted">
-            <FaGlobe className="w-5 h-5 text-subtle" />
-            <button
-              type="button"
-              onClick={openLocationInGoogleMaps}
-              className="text-left hover:text-primary hover:underline transition-colors"
-              title="Open location in Google Maps"
-            >
-              {locationText}
-            </button>
-          </div>
-          <div className="flex items-center gap-2 text-muted">
-            <FaDollarSign className="w-5 h-5 text-subtle" />
-            <span className="font-semibold">
-              {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
-            </span>
+          {/* Details bar */}
+          <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
+            <div className="flex items-center gap-2 text-muted">
+              <FaBriefcase className="w-5 h-5 text-subtle" />
+              <span className="capitalize">{job.employmentType || 'Full-time'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted">
+              <FaGlobe className="w-5 h-5 text-subtle" />
+              <button
+                type="button"
+                onClick={openLocationInGoogleMaps}
+                className="text-left hover:text-primary hover:underline transition-colors"
+                title="Open location in Google Maps"
+              >
+                {locationText}
+              </button>
+            </div>
+            <div className="flex items-center gap-2 text-muted">
+              <FaDollarSign className="w-5 h-5 text-subtle" />
+              <span className="font-semibold">
+                {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Job info grid */}
-        <div className="bg-surface-muted rounded-lg p-6 mb-8">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
           <h2 className="text-xl font-bold text-text-dark mb-4">JOB INFORMATION</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -297,15 +298,21 @@ const PublicJobDetails = () => {
         </div>
 
         {/* Description */}
-        <div className="mb-8">
-          <div className="prose prose-lg max-w-none text-muted">
-            {parse(job.description || 'No description provided.')}
+        <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
+          <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
+            <FaFileAlt className="w-5 h-5 text-subtle" />
+            JOB DESCRIPTION
+          </h2>
+          <div className="border-t border-neutral-100 pt-4">
+            <div className="prose prose-lg max-w-none text-muted leading-relaxed">
+              {parse(job.description || 'No description provided.')}
+            </div>
           </div>
         </div>
 
         {/* Skills */}
         {job.skillsRequired?.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-xl font-bold text-text-dark mb-4">SKILLS</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, i) => (
