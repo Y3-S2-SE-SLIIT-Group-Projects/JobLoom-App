@@ -12,7 +12,9 @@ const GivenReviewsPanel = ({ reviews, isLoading, error, userId }) => {
   if (isLoading)
     return (
       <div className="space-y-4">
-        {Array.from({ length: 3 }, (_, i) => <ReviewSkeleton key={i} />)}
+        {Array.from({ length: 3 }, (_, i) => (
+          <ReviewSkeleton key={i} />
+        ))}
       </div>
     );
 

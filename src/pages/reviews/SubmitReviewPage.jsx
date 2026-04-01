@@ -16,9 +16,18 @@ const SubmitReviewPage = () => {
   const revieweeId = searchParams.get('revieweeId') || '';
 
   const {
-    form, setField, handleChange, handleImageChange,
-    removeImage, images, imagePreviews, handleSubmit,
-    resetForm, isSubmitting, submitError, submittedReview,
+    form,
+    setField,
+    handleChange,
+    handleImageChange,
+    removeImage,
+    images,
+    imagePreviews,
+    handleSubmit,
+    resetForm,
+    isSubmitting,
+    submitError,
+    submittedReview,
   } = useReviewForm({ jobId, revieweeId });
 
   useEffect(() => {

@@ -1,8 +1,7 @@
 const CriteriaBar = ({ label, value }) => {
   const pct = (value / 5) * 100;
 
-  const color =
-    value >= 4 ? 'bg-emerald-500' : value >= 3 ? 'bg-primary' : 'bg-amber-400';
+  const color = value >= 4 ? 'bg-emerald-500' : value >= 3 ? 'bg-primary' : 'bg-amber-400';
 
   return (
     <div className="flex items-center gap-3">

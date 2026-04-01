@@ -64,7 +64,6 @@ const UserReviewsPage = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col lg:flex-row gap-6">
-
           {/* Sidebar */}
           <aside className="w-full lg:w-72 shrink-0 space-y-4">
             {statsLoading ? (
@@ -96,7 +95,9 @@ const UserReviewsPage = () => {
 
             {isLoading ? (
               <div className="space-y-4">
-                {Array.from({ length: 3 }, (_, i) => <ReviewSkeleton key={i} />)}
+                {Array.from({ length: 3 }, (_, i) => (
+                  <ReviewSkeleton key={i} />
+                ))}
               </div>
             ) : reviews.length === 0 ? (
               <EmptyState

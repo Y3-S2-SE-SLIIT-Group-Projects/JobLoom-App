@@ -9,9 +9,7 @@ const ReviewErrorState = ({ message }) => {
       <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
         <AlertCircle className="w-5 h-5 text-red-400" />
       </div>
-      <p className="text-sm text-red-600 max-w-xs">
-        {message || t('reviews.error_load_failed')}
-      </p>
+      <p className="text-sm text-red-600 max-w-xs">{message || t('reviews.error_load_failed')}</p>
     </div>
   );
 };

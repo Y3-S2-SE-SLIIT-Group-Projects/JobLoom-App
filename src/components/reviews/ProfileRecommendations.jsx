@@ -21,7 +21,11 @@ const ProfileRecommendations = () => {
   const currentUser = useSelector(state => state.user.currentUser);
   const userId = currentUser?._id ?? null;
 
-  const { reviews: received, isLoading: loadingReceived, error: errorReceived } = useUserReviews(userId);
+  const {
+    reviews: received,
+    isLoading: loadingReceived,
+    error: errorReceived,
+  } = useUserReviews(userId);
   const { reviews: given, isLoading: loadingGiven, error: errorGiven } = useSentReviews(userId);
   const { stats } = useRatingStats(userId);
 
@@ -92,11 +96,7 @@ const ProfileRecommendations = () => {
 
       {/* Tab panels */}
       <div className="px-6 py-6">
-        <div
-          role="tabpanel"
-          id="panel-received"
-          hidden={activeTab !== TABS.RECEIVED}
-        >
+        <div role="tabpanel" id="panel-received" hidden={activeTab !== TABS.RECEIVED}>
           {activeTab === TABS.RECEIVED && (
             <ReceivedReviewsPanel
               reviews={received}
@@ -108,11 +108,7 @@ const ProfileRecommendations = () => {
           )}
         </div>
 
-        <div
-          role="tabpanel"
-          id="panel-given"
-          hidden={activeTab !== TABS.GIVEN}
-        >
+        <div role="tabpanel" id="panel-given" hidden={activeTab !== TABS.GIVEN}>
           {activeTab === TABS.GIVEN && (
             <GivenReviewsPanel
               reviews={given}

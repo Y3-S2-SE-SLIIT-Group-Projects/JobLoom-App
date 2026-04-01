@@ -56,7 +56,9 @@ const ConfirmModal = ({
 
         <div className="p-6">
           <div className="flex items-start gap-3 mb-4">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDanger ? 'bg-red-50' : 'bg-primary/10'}`}>
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDanger ? 'bg-red-50' : 'bg-primary/10'}`}
+            >
               <AlertTriangle className={`w-4 h-4 ${isDanger ? 'text-red-500' : 'text-primary'}`} />
             </div>
             <div className="flex-1 pr-4">
