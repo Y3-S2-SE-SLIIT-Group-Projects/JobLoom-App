@@ -10,8 +10,16 @@ import {
   FaTimesCircle,
   FaClock,
   FaRedo,
+  FaLayerGroup,
 } from 'react-icons/fa';
 import { getAdminJobs, updateAdminJob } from '../../services/adminApi';
+import SearchInput from '../../components/ui/SearchInput';
+import FilterSelect from '../../components/ui/FilterSelect';
+import AdminStatusBadge from '../../components/ui/AdminStatusBadge';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import AdminEmptyState from '../../components/ui/AdminEmptyState';
+import AdminPagination from '../../components/ui/AdminPagination';
+import ActionButton from '../../components/ui/ActionButton';
 
 const AdminJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -95,142 +103,155 @@ const AdminJobs = () => {
   };
 
   if (error) {
-    return <div className="p-8 text-center text-error font-bold">{error}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 flex items-center justify-center">
+        <AdminEmptyState
+          title="Error Loading Jobs"
+          description={error}
+          actionLabel="Retry"
+          action={fetchJobs}
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-surface-muted bg-opacity-30 pb-12">
-      <div className="max-w-7xl mx-auto px-6 pt-8">
+    <div className="min-h-screen bg-surface-muted pb-12">
+      <div className="max-w-7xl mx-auto px-6 pt-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-extrabold text-deep-blue tracking-tight mb-2">
-              Job Management
-            </h1>
-            <p className="text-muted">
-              Monitor job postings, review activity, and manage visibility across the platform.
-            </p>
+        <div className="bg-surface border-b border-border mb-6">
+          <div className="py-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center border border-emerald-100">
+                <FaBriefcase className="text-emerald-600 w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-text-dark">Job Management</h1>
+                <p className="text-muted text-sm mt-1">Manage {pagination.total} job postings</p>
+              </div>
+            </div>
+            <ActionButton
+              variant="secondary"
+              icon={FaRedo}
+              onClick={fetchJobs}
+              loading={loading}
+              size="md"
+            >
+              Refresh
+            </ActionButton>
           </div>
-          <button
-            onClick={fetchJobs}
-            className="flex items-center gap-2 px-4 py-2 bg-surface border border-border text-muted rounded-lg hover:text-primary hover:border-primary transition-all self-start md:self-center"
-          >
-            <FaRedo className={loading ? 'animate-spin' : ''} />
-            Refresh
-          </button>
         </div>
 
-        {/* Filters bar */}
-        <div className="bg-surface p-4 rounded-xl border border-border shadow-sm mb-6 flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative flex-1 w-full">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input
-              type="text"
-              placeholder="Search by title, role or company..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg outline-none focus:ring-2 focus:ring-primary transition-all"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-            <div className="flex items-center gap-2">
-              <FaFilter className="text-muted" />
-              <select
+        {/* Filters Bar */}
+        <div className="bg-surface rounded-xl border border-border shadow-sm p-5 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <SearchInput
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search by title, role, or company..."
+                className="w-full"
+              />
+            </div>
+            <div className="flex gap-4">
+              <FilterSelect
                 value={status}
                 onChange={e => setStatus(e.target.value)}
-                className="px-4 py-2.5 border border-border rounded-lg outline-none bg-white text-sm"
-              >
-                <option value="">All Statuses</option>
-                <option value="open">Open</option>
-                <option value="filled">Filled</option>
-                <option value="closed">Closed</option>
-              </select>
+                options={[
+                  { value: '', label: 'All Statuses' },
+                  { value: 'open', label: 'Open' },
+                  { value: 'filled', label: 'Filled' },
+                  { value: 'closed', label: 'Closed' },
+                ]}
+                icon={FaCheckCircle}
+              />
+              <FilterSelect
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                options={[
+                  { value: '', label: 'All Categories' },
+                  { value: 'agriculture', label: 'Agriculture' },
+                  { value: 'construction', label: 'Construction' },
+                  { value: 'manufacturing', label: 'Manufacturing' },
+                  { value: 'IT', label: 'IT' },
+                  { value: 'healthcare', label: 'Healthcare' },
+                ]}
+                icon={FaLayerGroup}
+              />
             </div>
-            <select
-              value={category}
-              onChange={e => setCategory(e.target.value)}
-              className="px-4 py-2.5 border border-border rounded-lg outline-none bg-white text-sm"
-            >
-              <option value="">All Categories</option>
-              <option value="agriculture">Agriculture</option>
-              <option value="construction">Construction</option>
-              <option value="manufacturing">Manufacturing</option>
-              <option value="IT">IT</option>
-              <option value="healthcare">Healthcare</option>
-            </select>
           </div>
         </div>
 
         {/* Jobs Table */}
-        <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-surface-muted/50 text-muted uppercase text-[11px] font-bold tracking-wider">
-                  <th className="px-6 py-4">Job Title</th>
-                  <th className="px-6 py-4">Employer</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {loading && jobs.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-muted">
-                      Loading jobs...
-                    </td>
-                  </tr>
-                ) : jobs.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-muted">
-                      No jobs found.
-                    </td>
-                  </tr>
-                ) : (
-                  jobs.map(job => (
-                    <tr key={job._id} className="hover:bg-surface-muted/20 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                            <FaBriefcase />
+        <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
+          {loading && jobs.length === 0 ? (
+            <LoadingSpinner size="md" text="Loading jobs..." />
+          ) : jobs.length === 0 ? (
+            <AdminEmptyState
+              icon={FaBriefcase}
+              title="No Jobs Found"
+              description="Try adjusting your search or filter criteria"
+              actionLabel="Clear Filters"
+              action={() => {
+                setSearch('');
+                setStatus('');
+                setCategory('');
+              }}
+            />
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-surface-muted/50 text-muted uppercase text-xs font-bold tracking-wider border-b border-border">
+                      <th className="px-6 py-4">Job Details</th>
+                      <th className="px-6 py-4">Employer</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Category</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {jobs.map(job => (
+                      <tr
+                        key={job._id}
+                        className="hover:bg-surface-muted/20 transition-colors group"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                              <FaBriefcase className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-bold text-text-dark truncate leading-tight">
+                                {job.title}
+                              </p>
+                              <p className="text-xs text-muted truncate">{job.jobRole}</p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold text-text-dark truncate leading-tight">
-                              {job.title}
-                            </p>
-                            <p className="text-xs text-muted truncate">{job.jobRole}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <FaBuilding className="text-muted w-3 h-3" />
+                            <span className="text-sm font-medium text-muted">
+                              {job.employerId?.companyName ||
+                                (job.employerId
+                                  ? `${job.employerId.firstName} ${job.employerId.lastName}`
+                                  : 'Unknown')}
+                            </span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <FaBuilding className="text-muted w-3 h-3" />
-                          <span className="text-sm font-medium text-muted">
-                            {job.employerId?.companyName ||
-                              (job.employerId
-                                ? `${job.employerId.firstName} ${job.employerId.lastName}`
-                                : 'Unknown')}
+                        </td>
+                        <td className="px-6 py-4">
+                          <AdminStatusBadge status={job.status} type="job" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-xs px-2 py-0.5 bg-surface-muted rounded-md text-muted font-medium">
+                            {job.category}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(job.status)}
-                          <span className="text-xs font-bold uppercase tracking-wide">
-                            {job.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-xs px-2 py-1 bg-surface-muted rounded-md text-muted font-medium">
-                          {job.category}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        </td>
+                        <td className="px-6 py-4 text-right">
                           <select
-                            className="text-xs border border-border rounded px-2 py-1 bg-white outline-none cursor-pointer focus:border-primary"
+                            className="text-xs border border-border rounded px-2 py-1 bg-surface outline-none cursor-pointer focus:border-primary hover:border-primary transition-colors"
                             value={job.status}
                             disabled={updating === job._id}
                             onChange={e => handleStatusChange(job._id, e.target.value)}
@@ -239,41 +260,23 @@ const AdminJobs = () => {
                             <option value="filled">Filled</option>
                             <option value="closed">Closed</option>
                           </select>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {/* Pagination bar */}
-          <div className="p-6 border-t border-border flex items-center justify-between bg-surface-muted/10">
-            <p className="text-sm text-muted">
-              Showing <span className="font-bold text-text-dark">{jobs.length}</span> of{' '}
-              <span className="font-bold text-text-dark">{pagination.total}</span> jobs
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page <= 1 || loading}
-                className="p-2 border border-border rounded-lg text-muted hover:bg-surface disabled:opacity-30 transition-all"
-              >
-                <FaChevronLeft className="w-3" />
-              </button>
-              <span className="text-sm font-medium text-muted px-4">
-                Page {pagination.page} of {pagination.totalPages}
-              </span>
-              <button
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page >= pagination.totalPages || loading}
-                className="p-2 border border-border rounded-lg text-muted hover:bg-surface disabled:opacity-30 transition-all"
-              >
-                <FaChevronRight className="w-3" />
-              </button>
-            </div>
-          </div>
+              {/* Pagination */}
+              <AdminPagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+                totalItems={pagination.total}
+                itemsPerPage={pagination.limit}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -272,7 +272,7 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {currentUser && getDashboardPath() && !isEmployerSection && (
+              {currentUser && getDashboardPath() && !isEmployerSection && !isAdminSection && (
                 <Link
                   to={getDashboardPath()}
                   className="items-center hidden px-4 py-2 font-semibold transition-colors md:inline-flex bg-primary/10 text-primary rounded-button hover:bg-primary/20"
