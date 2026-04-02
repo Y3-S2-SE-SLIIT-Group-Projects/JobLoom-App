@@ -131,6 +131,7 @@ const Navbar = () => {
 
   const isActive = path => {
     if (path === '/employer/dashboard') return location.pathname === '/employer/dashboard';
+    if (path === '/admin/dashboard') return location.pathname === '/admin/dashboard';
     return location.pathname.startsWith(path);
   };
 
@@ -142,12 +143,6 @@ const Navbar = () => {
   const handleLogout = () => {
     logoutUser();
     navigate('/login');
-  };
-
-  const getDashboardPath = () => {
-    if (!currentUser) return null;
-    if (currentUser.role === 'employer') return '/employer/dashboard';
-    return '/my-applications';
   };
 
   const navLinkClass = active =>
@@ -169,11 +164,18 @@ const Navbar = () => {
   ];
 
   const employerNavLinks = [
-    { to: '/employer/dashboard', label: t('navbar.dashboard'), exact: true },
     { to: '/employer/my-jobs', label: t('navbar.jobs') },
     { to: '/employer/applications', label: t('navbar.applications') },
     { to: '/employer/analytics', label: t('navbar.analytics') },
   ];
+
+  const adminNavLinks = [
+    { to: '/admin/dashboard', label: t('navbar.dashboard'), exact: true },
+    { to: '/admin/users', label: t('navbar.users') || 'Users' },
+    { to: '/admin/jobs', label: t('navbar.jobs') || 'Jobs' },
+  ];
+
+  const isAdminSection = location.pathname.startsWith('/admin');
 
   return (
     <header className="sticky top-0 z-50 border-b bg-surface border-border">
@@ -194,8 +196,22 @@ const Navbar = () => {
         </Link>
 
         {/* Center nav links */}
-        {isEmployerSection && !isAuthPage ? (
-          <nav className="items-center hidden gap-8 md:flex">
+        {isAdminSection && !isAuthPage ? (
+          <nav className="hidden md:flex items-center gap-8">
+            {adminNavLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={navLinkClass(
+                  link.exact ? location.pathname === link.to : isActive(link.to)
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        ) : isEmployerSection && !isAuthPage ? (
+          <nav className="hidden md:flex items-center gap-8">
             {employerNavLinks.map(link => (
               <Link
                 key={link.to}
@@ -245,15 +261,6 @@ const Navbar = () => {
               {!isEmployerSection && currentUser?.role === 'job_seeker' && (
                 <Link to="/my-applications" className={navLinkClass(isActive('/my-applications'))}>
                   {t('navbar.my_applications')}
-                </Link>
-              )}
-
-              {currentUser && getDashboardPath() && !isEmployerSection && (
-                <Link
-                  to={getDashboardPath()}
-                  className="items-center hidden px-4 py-2 font-semibold transition-colors md:inline-flex bg-primary/10 text-primary rounded-button hover:bg-primary/20"
-                >
-                  {t('navbar.dashboard')}
                 </Link>
               )}
             </>

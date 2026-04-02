@@ -50,7 +50,9 @@ const Login = () => {
       }
 
       // Default redirect based on role
-      if (data.role === 'employer') {
+      if (data.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (data.role === 'employer') {
         navigate('/employer/dashboard');
       } else {
         navigate('/profile');
