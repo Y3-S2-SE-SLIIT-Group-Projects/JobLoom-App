@@ -5,7 +5,7 @@ const FilterSelect = ({
   onChange,
   options,
   label,
-  icon: Icon = FaFilter,
+  icon: _Icon = FaFilter,
   className = '',
 }) => {
   return (
@@ -13,7 +13,7 @@ const FilterSelect = ({
       {label && <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <Icon className="h-4 w-4 text-gray-400" />
+          <_Icon className="h-4 w-4 text-gray-400" />
         </div>
         <select
           value={value}
