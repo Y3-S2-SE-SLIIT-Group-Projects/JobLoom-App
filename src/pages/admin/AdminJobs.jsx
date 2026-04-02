@@ -89,18 +89,7 @@ const AdminJobs = () => {
     }
   };
 
-  const getStatusIcon = status => {
-    switch (status) {
-      case 'open':
-        return <FaCheckCircle className="text-green-500" />;
-      case 'closed':
-        return <FaTimesCircle className="text-red-500" />;
-      case 'filled':
-        return <FaClock className="text-orange-500" />;
-      default:
-        return null;
-    }
-  };
+  // Removed unused getStatusIcon function
 
   if (error) {
     return (
