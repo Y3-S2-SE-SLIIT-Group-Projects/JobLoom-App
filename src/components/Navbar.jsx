@@ -164,6 +164,7 @@ const Navbar = () => {
   ];
 
   const employerNavLinks = [
+    { to: '/employer/dashboard', label: t('navbar.dashboard'), exact: true },
     { to: '/employer/my-jobs', label: t('navbar.jobs') },
     { to: '/employer/applications', label: t('navbar.applications') },
     { to: '/employer/analytics', label: t('navbar.analytics') },

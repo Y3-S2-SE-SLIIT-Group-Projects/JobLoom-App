@@ -27,7 +27,7 @@ const PROVINCES = [
 
 const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData = {} }) => {
   const { t } = useTranslation();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at step 0 for role selection
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState({});
@@ -69,7 +69,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
     if (formData.password !== formData.confirmPassword)
       errs.confirmPassword = t('errors.passwords_dont_match');
 
-    if (role === 'employer' && !formData.companyName?.trim()) {
+    if (formData.role === 'employer' && !formData.companyName?.trim()) {
       errs.companyName = t('errors.company_name_required', 'Company name is required');
     }
 
@@ -90,6 +90,11 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
     if (!formData.location.province.trim())
       errs['location.province'] = t('errors.province_required');
     return errs;
+  };
+
+  const handleRoleSelection = selectedRole => {
+    setFormData(prev => ({ ...prev, role: selectedRole }));
+    setStep(1);
   };
 
   const handleNext = () => {
@@ -120,30 +125,91 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
       {/* Step indicator */}
       <div className="flex items-center gap-3 mb-6">
         <div
-          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 1 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
+          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 0 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
         >
           1
+        </div>
+        <div className={`flex-1 h-1 rounded-full ${step >= 1 ? 'bg-primary' : 'bg-neutral-200'}`} />
+        <div
+          className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 1 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
+        >
+          2
         </div>
         <div className={`flex-1 h-1 rounded-full ${step >= 2 ? 'bg-primary' : 'bg-neutral-200'}`} />
         <div
           className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${step >= 2 ? 'bg-primary text-white' : 'bg-surface-muted text-muted'}`}
         >
-          2
+          3
         </div>
       </div>
 
-      <div className="mb-6 text-center sm:text-left">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-text-dark mb-1">
-          {role === 'employer'
-            ? t('auth.employer_registration')
-            : t('auth.job_seeker_registration')}
+          {step === 0
+            ? t('auth.choose_account_type', 'Choose Account Type')
+            : formData.role === 'employer'
+              ? t('auth.employer_registration', 'Employer Registration')
+              : t('auth.job_seeker_registration', 'Job Seeker Registration')}
         </h1>
         <p className="text-muted">
-          {step === 1 ? t('auth.step_create_account_desc') : t('auth.step_location_desc')}
+          {step === 0
+            ? t('auth.step_select_role_desc', 'Select the type of account you want to create')
+            : step === 1
+              ? t('auth.step_create_account_desc', 'Fill in your account details to get started')
+              : t('auth.step_location_desc', 'Tell us where you are located')}
         </p>
       </div>
 
-      {step === 1 ? (
+      {step === 0 ? (
+        // Step 0: Role Selection
+        <div className="space-y-4">
+          <div
+            onClick={() => handleRoleSelection('job_seeker')}
+            className="group cursor-pointer p-6 border-2 border-border rounded-lg hover:border-primary transition-colors duration-200"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary">
+                <FaUser className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-text-dark mb-1">
+                  {t('auth.job_seeker', 'Job Seeker')}
+                </h3>
+                <p className="text-sm text-muted">
+                  {t(
+                    'auth.job_seeker_desc',
+                    'Find and apply for jobs, build your profile, and connect with employers'
+                  )}
+                </p>
+              </div>
+              <FaArrowRight className="w-5 h-5 text-subtle group-hover:text-primary transition-colors" />
+            </div>
+          </div>
+
+          <div
+            onClick={() => handleRoleSelection('employer')}
+            className="group cursor-pointer p-6 border-2 border-border rounded-lg hover:border-primary transition-colors duration-200"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary">
+                <FaBriefcase className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-text-dark mb-1">
+                  {t('auth.employer', 'Employer')}
+                </h3>
+                <p className="text-sm text-muted">
+                  {t(
+                    'auth.employer_desc',
+                    'Post job openings, find talented candidates, and manage applications'
+                  )}
+                </p>
+              </div>
+              <FaArrowRight className="w-5 h-5 text-subtle group-hover:text-primary transition-colors" />
+            </div>
+          </div>
+        </div>
+      ) : step === 1 ? (
         <div className="space-y-5">
           <div className="flex gap-4">
             <div className="flex-1">
@@ -179,7 +245,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
             </div>
           </div>
 
-          {role === 'employer' && (
+          {formData.role === 'employer' && (
             <div className="animate-in fade-in slide-in-from-top-2">
               <label className="block text-sm font-medium text-text-dark mb-1.5">
                 {t('auth.company_name')}
@@ -216,6 +282,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.email ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
+            {errors.email && <p className="mt-1 text-xs text-error">{errors.email}</p>}
           </div>
 
           <div>
@@ -233,6 +300,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.phone ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
+            {errors.phone && <p className="mt-1 text-xs text-error">{errors.phone}</p>}
           </div>
 
           <div>
@@ -257,6 +325,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
               </button>
             </div>
+            {errors.password && <p className="mt-1 text-xs text-error">{errors.password}</p>}
           </div>
 
           <div>
@@ -311,6 +380,9 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors['location.village'] ? 'border-error bg-error/10' : 'border-border'}`}
               />
             </div>
+            {errors['location.village'] && (
+              <p className="mt-1 text-xs text-error">{errors['location.village']}</p>
+            )}
           </div>
 
           <div>
@@ -325,6 +397,9 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
               placeholder={t('auth.district_placeholder')}
               className={`w-full px-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors['location.district'] ? 'border-error bg-error/10' : 'border-border'}`}
             />
+            {errors['location.district'] && (
+              <p className="mt-1 text-xs text-error">{errors['location.district']}</p>
+            )}
           </div>
 
           <div>
@@ -344,13 +419,16 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 </option>
               ))}
             </select>
+            {errors['location.province'] && (
+              <p className="mt-1 text-xs text-error">{errors['location.province']}</p>
+            )}
           </div>
 
           <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setStep(1)}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted rounded-lg hover:bg-surface-muted font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted rounded-lg hover:bg-surface-muted font-medium transition-colors"
             >
               <FaArrowLeft className="w-4 h-4" /> {t('common.back')}
             </button>
