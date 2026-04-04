@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useJobs } from '../../../hooks/useJobs';
 import parse from 'html-react-parser';
+import { useTranslation } from 'react-i18next';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {
@@ -22,6 +23,7 @@ import { getImageUrl } from '../../../utils/imageUrls';
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const {
     fetchJobById,
     closeJob,
@@ -82,7 +84,9 @@ const JobDetails = () => {
   };
 
   const formatDate = dateString => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    if (!dateString || Number.isNaN(date.getTime())) return t('common.invalid_date');
+    return date.toLocaleDateString(i18n.language || 'en', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -220,41 +224,41 @@ const JobDetails = () => {
         </div>
 
         <div className="bg-surface-muted rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-text-dark mb-4">JOB INFORMATION</h2>
+          <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.job_information')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted mb-1">Employer</p>
+              <p className="text-sm text-muted mb-1">{t('job.employer')}</p>
               <p className="font-medium text-text-dark">{employerCompanyName}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Category</p>
+              <p className="text-sm text-muted mb-1">{t('job.category')}</p>
               <p className="font-medium text-text-dark capitalize">{job.category}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Employment Type</p>
+              <p className="text-sm text-muted mb-1">{t('job.employment_type')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.employmentType || 'Full-time'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Positions Available</p>
+              <p className="text-sm text-muted mb-1">{t('job.positions_available')}</p>
               <p className="font-medium text-text-dark">
-                {job.positions} position{job.positions > 1 ? 's' : ''}
+                {job.positions} {job.positions === 1 ? t('job.position') : t('job.positions')}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Experience Level</p>
+              <p className="text-sm text-muted mb-1">{t('job.experience_level')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.experienceRequired || 'None'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Start Date</p>
+              <p className="text-sm text-muted mb-1">{t('job.start_date')}</p>
               <p className="font-medium text-text-dark">{formatDate(job.startDate)}</p>
             </div>
             {job.endDate && (
               <div>
-                <p className="text-sm text-muted mb-1">End Date</p>
+                <p className="text-sm text-muted mb-1">{t('job.end_date')}</p>
                 <p className="font-medium text-text-dark">{formatDate(job.endDate)}</p>
               </div>
             )}
@@ -264,18 +268,18 @@ const JobDetails = () => {
         <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
             <FaFileAlt className="w-5 h-5 text-subtle" />
-            JOB DESCRIPTION
+            {t('job.job_description')}
           </h2>
           <div className="border-t border-neutral-100 pt-4">
             <div className="prose prose-lg max-w-none text-muted leading-relaxed">
-              {job.description ? parse(job.description) : 'No description provided.'}
+              {job.description ? parse(job.description) : t('job.no_description')}
             </div>
           </div>
         </div>
 
         {job.skillsRequired && job.skillsRequired.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-text-dark mb-4">SKILLS</h2>
+            <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.skills')}</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, index) => (
                 <li key={index} className="flex items-start gap-2 text-muted">

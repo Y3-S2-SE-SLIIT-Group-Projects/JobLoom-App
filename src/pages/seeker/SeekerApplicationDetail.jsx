@@ -28,6 +28,7 @@ import {
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
 import { getSignedDownloadUrl } from '../../services/uploadApi';
+import { useTranslation } from 'react-i18next';
 
 // ── Status timeline dot colors ──────────────────────────────────────────────────
 
@@ -65,6 +66,7 @@ const isCloudinaryUrl = value =>
   (value.includes('res.cloudinary.com/') || value.includes('res.cloudinary.com\\'));
 
 const SeekerApplicationDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -330,7 +332,7 @@ const SeekerApplicationDetail = () => {
                   : getImageUrl(application.resumeUrl);
                 return (
                   <div>
-                    <p className="text-sm font-medium text-muted mb-2">Resume</p>
+                    <p className="text-sm font-medium text-muted mb-2">{t('common.resume')}</p>
                     <a
                       href={needsSigned ? '#' : resolvedUrl}
                       target="_blank"
@@ -352,7 +354,11 @@ const SeekerApplicationDetail = () => {
                       ) : (
                         <FaDownload className="w-4 h-4" />
                       )}
-                      {needsSigned ? 'Download CV' : isExternal ? 'View Resume' : 'Download CV'}
+                      {needsSigned
+                        ? t('common.download_cv')
+                        : isExternal
+                          ? t('common.view_resume')
+                          : t('common.download_cv')}
                     </a>
                   </div>
                 );
@@ -363,7 +369,9 @@ const SeekerApplicationDetail = () => {
         {/* ── Status Timeline ────────────────────────────────────────────────── */}
         {statusHistory.length > 0 && (
           <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
-            <h2 className="text-lg font-bold text-text-dark mb-4">Application Timeline</h2>
+            <h2 className="text-lg font-bold text-text-dark mb-4">
+              {t('applications.status_timeline')}
+            </h2>
             <div className="relative">
               {statusHistory.map((entry, idx) => {
                 const isLast = idx === statusHistory.length - 1;

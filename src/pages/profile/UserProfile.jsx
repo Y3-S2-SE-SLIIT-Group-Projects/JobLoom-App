@@ -374,7 +374,7 @@ const UserProfile = () => {
                     <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
                       <FaBriefcase className="w-4 h-4 text-success" />
                     </div>
-                    Work Experience
+                    {t('profile.experience')}
                   </h2>
                   {user.experience && user.experience.length > 0 ? (
                     <div className="space-y-4">
@@ -400,7 +400,7 @@ const UserProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm italic text-subtle">No experience added yet.</p>
+                    <p className="text-sm italic text-subtle">{t('profile.no_experience')}</p>
                   )}
                 </div>
 
@@ -410,7 +410,7 @@ const UserProfile = () => {
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50">
                       <FaFileAlt className="w-4 h-4 text-purple-600" />
                     </div>
-                    Uploaded CVs
+                    {t('profile.uploaded_cvs')}
                   </h2>
                   {cvDownloadError && (
                     <p className="text-sm text-red-600 mb-3">{cvDownloadError}</p>
@@ -430,7 +430,9 @@ const UserProfile = () => {
                               <p className="font-medium text-text-dark text-sm">{cv.name}</p>
                               <div className="flex items-center gap-2">
                                 {cv.isPrimary && (
-                                  <span className="text-xs text-primary font-medium">Primary</span>
+                                  <span className="text-xs text-primary font-medium">
+                                    {t('common.primary')}
+                                  </span>
                                 )}
                                 <p className="text-xs text-subtle">{formatDate(cv.createdAt)}</p>
                               </div>
@@ -442,13 +444,13 @@ const UserProfile = () => {
                             className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           >
                             <FaDownload className="w-3.5 h-3.5" />
-                            Download
+                            {t('common.download')}
                           </button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm italic text-subtle">No CVs uploaded yet.</p>
+                    <p className="text-sm italic text-subtle">{t('profile.no_cvs')}</p>
                   )}
                 </div>
               </>
@@ -459,28 +461,30 @@ const UserProfile = () => {
           <div className="space-y-4">
             {/* Account Info */}
             <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-text-dark mb-4">Account Information</h3>
+              <h3 className="font-semibold text-text-dark mb-4">
+                {t('profile.account_information')}
+              </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-surface-muted">
-                  <span className="text-sm text-muted">Member since</span>
+                  <span className="text-sm text-muted">{t('profile.member_since')}</span>
                   <span className="text-sm font-medium text-text-dark">
                     {formatDate(user.createdAt)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-surface-muted">
-                  <span className="text-sm text-muted">Account status</span>
+                  <span className="text-sm text-muted">{t('profile.account_status')}</span>
                   <span
                     className={`text-sm font-medium ${user.isActive ? 'text-success' : 'text-error'}`}
                   >
-                    {user.isActive ? 'Active' : 'Inactive'}
+                    {user.isActive ? t('common.active') : t('common.inactive')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-muted">Verification</span>
+                  <span className="text-sm text-muted">{t('profile.verification')}</span>
                   <span
                     className={`text-sm font-medium ${user.isVerified ? 'text-success' : 'text-warning'}`}
                   >
-                    {user.isVerified ? 'Verified' : 'Pending'}
+                    {user.isVerified ? t('common.verified') : t('common.pending')}
                   </span>
                 </div>
               </div>
@@ -488,28 +492,28 @@ const UserProfile = () => {
 
             {/* Quick Actions */}
             <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-text-dark mb-4">Quick Actions</h3>
+              <h3 className="font-semibold text-text-dark mb-4">{t('profile.quick_actions')}</h3>
               <div className="space-y-2">
                 <Link
                   to="/profile/edit"
                   className="flex items-center gap-3 p-3 text-muted hover:bg-surface-muted rounded-lg transition-colors w-full text-left text-sm"
                 >
                   <FaEdit className="w-4 h-4 text-primary" />
-                  Edit Profile
+                  {t('profile.edit_profile')}
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-3 p-3 text-muted hover:bg-surface-muted rounded-lg transition-colors w-full text-left text-sm"
                 >
                   <FaSignOutAlt className="w-4 h-4 text-muted" />
-                  Sign Out
+                  {t('navbar.sign_out')}
                 </button>
                 <button
                   onClick={() => setShowDeleteDialog(true)}
                   className="flex items-center w-full gap-3 p-3 text-sm text-left text-error transition-colors rounded-lg hover:bg-error/10"
                 >
                   <FaTrash className="w-4 h-4" />
-                  Delete Account
+                  {t('profile.delete_account')}
                 </button>
               </div>
             </div>
@@ -529,12 +533,11 @@ const UserProfile = () => {
               <div className="flex items-center justify-center w-10 h-10 bg-error/10 rounded-full">
                 <FaTrash className="w-5 h-5 text-error" />
               </div>
-              <h3 className="text-lg font-semibold text-text-dark">Delete Account</h3>
+              <h3 className="text-lg font-semibold text-text-dark">
+                {t('profile.delete_account')}
+              </h3>
             </div>
-            <p className="text-muted mb-4">
-              This action is <strong>permanent</strong> and cannot be undone. Enter your password to
-              confirm.
-            </p>
+            <p className="text-muted mb-4">{t('profile.delete_account_warning')}</p>
             {deleteError && (
               <div className="p-3 mb-4 border border-error/30 rounded-lg bg-error/10">
                 <p className="text-sm text-error">{deleteError}</p>
@@ -547,7 +550,7 @@ const UserProfile = () => {
                 setDeletePassword(e.target.value);
                 setDeleteError('');
               }}
-              placeholder="Enter your password"
+              placeholder={t('profile.enter_password_placeholder')}
               className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-error focus:border-transparent outline-none mb-4"
             />
             <div className="flex justify-end gap-3">
@@ -559,7 +562,7 @@ const UserProfile = () => {
                 }}
                 className="px-4 py-2 text-muted hover:bg-surface-muted rounded-lg transition-colors"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleDeleteAccount}
@@ -569,7 +572,7 @@ const UserProfile = () => {
                 {deleteLoading ? (
                   <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
                 ) : (
-                  'Delete Account'
+                  t('profile.delete_account')
                 )}
               </button>
             </div>
