@@ -29,6 +29,7 @@ import {
 } from 'react-icons/fa';
 import { getImageUrl } from '../../../utils/imageUrls';
 import { getSignedDownloadUrl } from '../../../services/uploadApi';
+import { useTranslation } from 'react-i18next';
 
 // ── Status transition rules (match backend) ─────────────────────────────────────
 
@@ -55,6 +56,7 @@ const isCloudinaryUrl = value =>
   (value.includes('res.cloudinary.com/') || value.includes('res.cloudinary.com\\'));
 
 const ApplicationDetailPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { currentUser } = useUser();
@@ -311,7 +313,7 @@ const ApplicationDetailPage = () => {
               : getImageUrl(application.resumeUrl);
             return (
               <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
-                <h2 className="mb-4 text-lg font-bold text-text-dark">Resume</h2>
+                <h2 className="mb-4 text-lg font-bold text-text-dark">{t('common.resume')}</h2>
                 <a
                   href={needsSigned ? '#' : resolvedUrl}
                   target="_blank"
@@ -333,7 +335,11 @@ const ApplicationDetailPage = () => {
                   ) : (
                     <FaDownload className="w-4 h-4" />
                   )}
-                  {needsSigned ? 'Download CV' : isExternal ? 'View resume' : 'Download CV'}
+                  {needsSigned
+                    ? t('common.download_cv')
+                    : isExternal
+                      ? t('common.view_resume')
+                      : t('common.download_cv')}
                 </a>
               </section>
             );

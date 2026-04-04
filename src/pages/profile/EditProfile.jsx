@@ -681,9 +681,7 @@ const EditProfile = () => {
                 {formData.experience.length === 0 ? (
                   <div className="text-center py-8 text-muted">
                     <FaBriefcase className="w-10 h-10 mx-auto mb-3 text-neutral-200" />
-                    <p className="text-sm">
-                      No experience added yet. Click &quot;Add Experience&quot; to get started.
-                    </p>
+                    <p className="text-sm">{t('profile.no_experience_edit_hint')}</p>
                   </div>
                 ) : (
                   <div className="space-y-4">

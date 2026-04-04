@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useJobs } from '../hooks/useJobs';
 import { useUser } from '../hooks/useUser';
+import { useTranslation } from 'react-i18next';
 import {
   loadMyApplications,
   selectHasAppliedToJob,
@@ -35,6 +36,7 @@ const PublicJobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
   const { fetchJobById, loading } = useJobs();
   const { currentUser } = useUser();
 
@@ -131,12 +133,15 @@ const PublicJobDetails = () => {
       .join(', ') ||
     'Location not specified';
 
-  const formatDate = dateString =>
-    new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    if (!dateString || Number.isNaN(date.getTime())) return t('common.invalid_date');
+    return date.toLocaleDateString(i18n.language || 'en', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
+  };
 
   const formatSalary = (amount, type, currency = 'LKR') => {
     if (!amount) return 'Salary not specified';
@@ -256,41 +261,41 @@ const PublicJobDetails = () => {
 
         {/* Job info grid */}
         <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
-          <h2 className="text-xl font-bold text-text-dark mb-4">JOB INFORMATION</h2>
+          <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.job_information')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted mb-1">Company</p>
+              <p className="text-sm text-muted mb-1">{t('job.company')}</p>
               <p className="font-medium text-text-dark">{employerCompany}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Category</p>
+              <p className="text-sm text-muted mb-1">{t('job.category')}</p>
               <p className="font-medium text-text-dark capitalize">{job.category}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Employment Type</p>
+              <p className="text-sm text-muted mb-1">{t('job.employment_type')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.employmentType || 'Full-time'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Positions Available</p>
+              <p className="text-sm text-muted mb-1">{t('job.positions_available')}</p>
               <p className="font-medium text-text-dark">
-                {job.positions} position{job.positions > 1 ? 's' : ''}
+                {job.positions} {job.positions === 1 ? t('job.position') : t('job.positions')}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Experience Level</p>
+              <p className="text-sm text-muted mb-1">{t('job.experience_level')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.experienceRequired || 'None'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Start Date</p>
+              <p className="text-sm text-muted mb-1">{t('job.start_date')}</p>
               <p className="font-medium text-text-dark">{formatDate(job.startDate)}</p>
             </div>
             {job.endDate && (
               <div>
-                <p className="text-sm text-muted mb-1">End Date</p>
+                <p className="text-sm text-muted mb-1">{t('job.end_date')}</p>
                 <p className="font-medium text-text-dark">{formatDate(job.endDate)}</p>
               </div>
             )}
@@ -301,11 +306,11 @@ const PublicJobDetails = () => {
         <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
             <FaFileAlt className="w-5 h-5 text-subtle" />
-            JOB DESCRIPTION
+            {t('job.job_description')}
           </h2>
           <div className="border-t border-neutral-100 pt-4">
             <div className="prose prose-lg max-w-none text-muted leading-relaxed">
-              {parse(job.description || 'No description provided.')}
+              {parse(job.description || t('job.no_description'))}
             </div>
           </div>
         </div>
@@ -313,7 +318,7 @@ const PublicJobDetails = () => {
         {/* Skills */}
         {job.skillsRequired?.length > 0 && (
           <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
-            <h2 className="text-xl font-bold text-text-dark mb-4">SKILLS</h2>
+            <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.skills')}</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, i) => (
                 <li key={i} className="flex items-start gap-2 text-muted">
