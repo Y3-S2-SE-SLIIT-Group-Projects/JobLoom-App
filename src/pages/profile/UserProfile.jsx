@@ -32,7 +32,7 @@ const getRoleBadge = role => {
   const styles = {
     job_seeker: 'bg-primary/20 text-primary border-primary',
     employer: 'bg-success/20 text-success border-success',
-    admin: 'bg-purple-100 text-purple-700 border-purple-200',
+    admin: 'bg-deep-blue/10 text-deep-blue border-deep-blue/20',
   };
   return styles[role] || styles.job_seeker;
 };
@@ -167,15 +167,15 @@ const UserProfile = () => {
                 <img
                   src={getImageUrl(user.profileImage)}
                   alt={`${user.firstName} ${user.lastName}`}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-border"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-border"
                   onError={e => {
                     e.currentTarget.onerror = null;
                     setImgError(true);
                   }}
                 />
               ) : (
-                <div className="w-24 h-24 bg-gradient-to-br from-primary to-deep-blue rounded-full flex items-center justify-center border-4 border-primary/20">
-                  <span className="text-3xl font-bold text-white">
+                <div className="w-24 h-24 bg-surface-muted rounded-full flex items-center justify-center border-2 border-border">
+                  <span className="text-3xl font-bold text-primary">
                     {user.role === 'employer' ? (
                       <FaBriefcase className="w-10 h-10" />
                     ) : (
@@ -196,9 +196,9 @@ const UserProfile = () => {
 
             {/* Info */}
             <div className="flex-1">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold text-text-dark mb-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-text-dark mb-1 leading-tight">
                     {user.firstName} {user.lastName}
                   </h1>
                   <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -208,7 +208,7 @@ const UserProfile = () => {
                       {getRoleLabel(user.role)}
                     </span>
                     {user.role === 'employer' && user.industry && (
-                      <span className="px-3 py-1 text-xs font-medium text-muted bg-neutral-100 border rounded-full">
+                      <span className="px-3 py-1 text-xs font-medium text-muted bg-surface-muted border border-border rounded-full">
                         <AutoTranslate>{user.industry}</AutoTranslate>
                       </span>
                     )}
@@ -245,17 +245,37 @@ const UserProfile = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex flex-shrink-0 gap-2">
+                <div className="flex flex-shrink-0 flex-wrap gap-2 sm:justify-end">
                   <Link
                     to="/profile/edit"
-                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button hover:bg-deep-blue transition-colors text-sm font-semibold"
                   >
                     <FaEdit className="w-4 h-4" />
                     {t('profile.edit_profile')}
                   </Link>
+
+                  {user.role === 'employer' && (
+                    <Link
+                      to="/employer/dashboard"
+                      className="flex items-center gap-2 px-4 py-2 border border-border text-text-dark rounded-button hover:bg-surface-muted transition-colors text-sm font-semibold"
+                    >
+                      <FaBriefcase className="w-4 h-4" />
+                      {t('navbar.dashboard')}
+                    </Link>
+                  )}
+
+                  {user.role === 'admin' && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="flex items-center gap-2 px-4 py-2 border border-border text-text-dark rounded-button hover:bg-surface-muted transition-colors text-sm font-semibold"
+                    >
+                      <FaShieldAlt className="w-4 h-4" />
+                      {t('navbar.dashboard')}
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 border border-border text-muted rounded-lg hover:bg-surface-muted transition-colors text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 border border-border text-text-dark rounded-button hover:bg-surface-muted transition-colors text-sm font-semibold"
                   >
                     <FaSignOutAlt className="w-4 h-4" />
                     {t('navbar.sign_out')}
@@ -383,7 +403,7 @@ const UserProfile = () => {
                           key={index}
                           className="flex gap-4 pb-4 border-b border-surface-muted last:border-0 last:pb-0"
                         >
-                          <div className="w-10 h-10 bg-gradient-to-br from-success to-success rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                          <div className="w-10 h-10 bg-success rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                             <FaBriefcase className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex-1">
@@ -407,14 +427,12 @@ const UserProfile = () => {
                 {/* CVs */}
                 <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
                   <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-50">
-                      <FaFileAlt className="w-4 h-4 text-purple-600" />
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                      <FaFileAlt className="w-4 h-4 text-primary" />
                     </div>
                     {t('profile.uploaded_cvs')}
                   </h2>
-                  {cvDownloadError && (
-                    <p className="text-sm text-red-600 mb-3">{cvDownloadError}</p>
-                  )}
+                  {cvDownloadError && <p className="text-sm text-error mb-3">{cvDownloadError}</p>}
                   {user.cvs && user.cvs.length > 0 ? (
                     <div className="space-y-3">
                       {user.cvs.map((cv, index) => (
