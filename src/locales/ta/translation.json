@@ -374,7 +374,7 @@
     "employer_feature_screen": "விண்ணப்பதாரர்களைத் திரையிடுங்கள் & தேர்ந்தெடுங்கள்",
     "employer_feature_analytics": "நிகழ்நேர ஆட்சேர்ப்பு பகுப்பாய்வு",
     "employer_feature_reach": "தீவு முழுவதும் விண்ணப்பதாரர்களை அடையுங்கள்",
-    "employer_feature_interview": "Calendly மூலம் நேர்காணல்களை திட்டமிடுங்கள்",
+    "employer_feature_interview": "விண்ணப்பதாரர்களுடன் நேர்காணல்களை திட்டமிடுங்கள்",
     "employer_feature_reputation": "உங்கள் முதலாளி நற்பெயரை உருவாக்குங்கள்",
     "seekers_badge": "வேலை தேடுபவர்கள்",
     "seekers_title": "உங்கள் அடுத்த வாய்ப்பு காத்திருக்கிறது",
@@ -418,8 +418,6 @@
       "info_analytics_desc": "நேரடி செயல்திறன் மற்றும் ஆட்சேர்ப்பு போக்குகளைப் பாருங்கள்.",
       "info_profile": "சுயவிவரம்",
       "info_profile_desc": "உங்கள் சுயவிவரம் மற்றும் கணக்கு அமைப்புகளைப் புதுப்பிக்கவும்.",
-      "info_calendly": "Calendly",
-      "info_calendly_desc": "நேர்காணல்களை திட்டமிட Calendly ஐ இணைக்கவும்.",
       "view_more": "மேலும் காண்க"
     },
     "jobs": {

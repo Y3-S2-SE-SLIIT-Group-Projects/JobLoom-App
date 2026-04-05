@@ -72,7 +72,7 @@ test.describe('Employer Dashboard', () => {
     });
   });
 
-  test('should show info cards (Analytics, Profile, Calendly)', async ({ page }) => {
+  test('should show info cards (Analytics, Profile)', async ({ page }) => {
     await test.step('Navigate to employer dashboard', async () => {
       await page.goto('/employer/dashboard');
       await page.waitForTimeout(2000);
@@ -81,16 +81,13 @@ test.describe('Employer Dashboard', () => {
     await test.step('Check for info card titles', async () => {
       const analytics = page.getByText('Analytics');
       const profile = page.getByText('Profile');
-      const calendly = page.getByText('Calendly');
 
       const hasAnalytics = await analytics.first().isVisible().catch(() => false);
       const hasProfile = await profile.first().isVisible().catch(() => false);
-      const hasCalendly = await calendly.first().isVisible().catch(() => false);
 
       if (hasAnalytics) {
         expect.soft(hasAnalytics, 'Analytics card present').toBeTruthy();
         expect.soft(hasProfile, 'Profile card present').toBeTruthy();
-        expect.soft(hasCalendly, 'Calendly card present').toBeTruthy();
       }
     });
 

@@ -374,7 +374,7 @@
     "employer_feature_screen": "අපේක්ෂකයින් පරීක්ෂා කර කෙටි ලේඛනගත කරන්න",
     "employer_feature_analytics": "තත්‍ය කාලීන බඳවා ගැනීමේ දත්ත විග්‍රහය",
     "employer_feature_reach": "දිවයින පුරා අපේක්ෂකයින් වෙත ළඟා වන්න",
-    "employer_feature_interview": "Calendly මගින් සම්මුඛ පරීක්ෂණ සැලසුම් කරන්න",
+    "employer_feature_interview": "අපේක්ෂකයන් සමඟ සම්මුඛ පරීක්ෂණ සැලසුම් කරන්න",
     "employer_feature_reputation": "ඔබේ සේවා යෝජක කීර්තිය ගොඩ නඟන්න",
     "seekers_badge": "රැකියා අපේක්ෂකයින්",
     "seekers_title": "ඔබේ ඊළඟ අවස්ථාව බලා සිටී",
@@ -418,8 +418,6 @@
       "info_analytics_desc": "සජීවී කාර්යසාධනය සහ බඳවාගැනීම් ප්‍රවණතා බලන්න.",
       "info_profile": "පැතිකඩ",
       "info_profile_desc": "ඔබේ පැතිකඩ සහ ගිණුම් සැකසුම් යාවත්කාලීන කරන්න.",
-      "info_calendly": "Calendly",
-      "info_calendly_desc": "සම්මුඛ පරීක්ෂණ කාලසටහන් කිරීමට Calendly සම්බන්ධ කරන්න.",
       "view_more": "තවත් බලන්න"
     },
     "jobs": {

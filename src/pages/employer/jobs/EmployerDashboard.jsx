@@ -6,7 +6,7 @@ import { useJobs } from '../../../hooks/useJobs';
 import { loadAllJobStats, selectJobStatsMap } from '../../../store/slices/applicationSlice';
 
 import DottedBackground from '../../../components/DottedBackground';
-import { FaArrowRight, FaUserCircle, FaCalendarAlt } from 'react-icons/fa';
+import { FaArrowRight, FaUserCircle } from 'react-icons/fa';
 import { C, T } from '../../dashboard/jobloomTokens';
 import createJobImg from '../../../assets/images/create-job.png';
 import myJobsImg from '../../../assets/images/employer-illustration.svg';
@@ -88,14 +88,6 @@ const EmployerDashboard = () => {
       color: 'text-muted',
       linkColor: 'text-muted',
       link: '/profile',
-    },
-    {
-      title: t('employer.dashboard.info_calendly'),
-      description: t('employer.dashboard.info_calendly_desc'),
-      icon: FaCalendarAlt,
-      color: 'text-success',
-      linkColor: 'text-success',
-      link: '/employer/settings/calendly',
     },
   ];
 

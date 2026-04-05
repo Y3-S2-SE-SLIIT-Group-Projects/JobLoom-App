@@ -389,7 +389,7 @@
     "employer_feature_screen": "Screen & shortlist applicants",
     "employer_feature_analytics": "Real-time hiring analytics",
     "employer_feature_reach": "Reach candidates island-wide",
-    "employer_feature_interview": "Schedule interviews with Calendly",
+    "employer_feature_interview": "Schedule interviews with candidates",
     "employer_feature_reputation": "Build your employer reputation",
     "seekers_badge": "Job Seekers",
     "seekers_title": "Your Next Opportunity Awaits",
@@ -433,8 +433,6 @@
       "info_analytics_desc": "View live performance and hiring trends.",
       "info_profile": "Profile",
       "info_profile_desc": "Update your profile and account settings.",
-      "info_calendly": "Calendly",
-      "info_calendly_desc": "Connect Calendly to schedule interviews.",
       "view_more": "View more"
     },
     "jobs": {

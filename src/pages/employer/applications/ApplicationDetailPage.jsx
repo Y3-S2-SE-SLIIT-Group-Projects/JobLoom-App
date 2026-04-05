@@ -16,7 +16,6 @@ import ApplicationReviewsPanel from '../../../components/reviews/ApplicationRevi
 import DottedBackground from '../../../components/DottedBackground';
 import AlertBanner from '../../../components/ui/AlertBanner';
 import Spinner from '../../../components/ui/Spinner';
-import CalendlyPopupButton from '../../../components/calendly/CalendlyPopupButton';
 import {
   FaArrowLeft,
   FaEnvelope,
@@ -405,15 +404,7 @@ const ApplicationDetailPage = () => {
 
             <AlertBanner type="error" message={scheduleError} />
 
-            {/* Calendly popup (shown when employer has Calendly connected) */}
-            <div className="mb-5">
-              <CalendlyPopupButton
-                inviteeName={getApplicantName()}
-                inviteeEmail={getApplicantEmail()}
-              />
-            </div>
-
-            {/* Manual fallback scheduler */}
+            {/* Manual interview scheduler */}
             <div className="pt-5 border-t border-neutral-100">
               <p className="mb-3 text-xs font-medium tracking-wide uppercase text-subtle">
                 Or set a date manually
