@@ -135,10 +135,12 @@ const Navbar = () => {
     return location.pathname.startsWith(path);
   };
 
-  const isEmployerSection = location.pathname.startsWith('/employer');
   const isAuthPage = ['/login', '/register', '/forgot-password', '/verify-registration'].some(p =>
     location.pathname.startsWith(p)
   );
+  const isAdminSection = location.pathname.startsWith('/admin');
+
+  const showEmployerNav = currentUser?.role === 'employer' && !isAuthPage && !isAdminSection;
 
   const handleLogout = () => {
     logoutUser();
@@ -176,8 +178,6 @@ const Navbar = () => {
     { to: '/admin/jobs', label: t('navbar.jobs') || 'Jobs' },
   ];
 
-  const isAdminSection = location.pathname.startsWith('/admin');
-
   return (
     <header className="sticky top-0 z-50 border-b bg-surface border-border">
       <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
@@ -211,7 +211,7 @@ const Navbar = () => {
               </Link>
             ))}
           </nav>
-        ) : isEmployerSection && !isAuthPage ? (
+        ) : showEmployerNav ? (
           <nav className="hidden md:flex items-center gap-8">
             {employerNavLinks.map(link => (
               <Link
@@ -250,16 +250,7 @@ const Navbar = () => {
           {/* Context-aware links */}
           {!isAuthPage && (
             <>
-              {isEmployerSection && (
-                <Link
-                  to="/"
-                  className="hidden md:inline-flex items-center px-3.5 py-2 text-muted hover:text-primary font-medium transition-colors"
-                >
-                  {t('navbar.browse_jobs') || 'Browse Jobs'}
-                </Link>
-              )}
-
-              {!isEmployerSection && currentUser?.role === 'job_seeker' && (
+              {!showEmployerNav && currentUser?.role === 'job_seeker' && (
                 <Link to="/my-applications" className={navLinkClass(isActive('/my-applications'))}>
                   {t('navbar.my_applications')}
                 </Link>
