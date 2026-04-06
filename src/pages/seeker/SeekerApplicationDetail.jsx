@@ -19,12 +19,18 @@ import {
   FaArrowLeft,
   FaBriefcase,
   FaCalendarAlt,
+  FaClock,
+  FaDownload,
   FaLink,
   FaStickyNote,
   FaSave,
   FaExclamationTriangle,
   FaMapMarkerAlt,
   FaExternalLinkAlt,
+  FaVideo,
+  FaEnvelope,
+  FaPhone,
+  FaBuilding,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
 import { getSignedDownloadUrl } from '../../services/uploadApi';
@@ -53,6 +59,7 @@ const formatDate = dateString => {
 const formatDateTime = dateString => {
   if (!dateString) return '—';
   return new Date(dateString).toLocaleDateString('en-US', {
+    weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -60,6 +67,9 @@ const formatDateTime = dateString => {
     minute: '2-digit',
   });
 };
+
+/** YYYYMMDDTHHmmssZ for Google Calendar `dates` param */
+const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
 const isCloudinaryUrl = value =>
   typeof value === 'string' &&
@@ -133,6 +143,20 @@ const SeekerApplicationDetail = () => {
     );
   };
 
+  const getCompanyDisplay = () => {
+    const e = application?.employerId;
+    if (!e || typeof e === 'string') return getEmployerName();
+    const cn = e.companyName?.trim();
+    if (cn) return cn;
+    return [e.firstName, e.lastName].filter(Boolean).join(' ') || e.email || 'Employer';
+  };
+
+  const getEmployerContactPerson = () => {
+    const e = application?.employerId;
+    if (!e || typeof e === 'string') return '';
+    return [e.firstName, e.lastName].filter(Boolean).join(' ') || '';
+  };
+
   const getSeekerName = () => {
     if (!currentUser) return 'Applicant';
     return (
@@ -204,6 +228,21 @@ const SeekerApplicationDetail = () => {
     }
   };
 
+  const openInterviewGoogleCalendar = () => {
+    if (!application?.interviewDate) return;
+    const start = new Date(application.interviewDate);
+    const end = new Date(start.getTime() + (application.interviewDuration || 30) * 60_000);
+    const title = encodeURIComponent(`Interview — ${getJobTitle()}`);
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const details = encodeURIComponent(
+      application.interviewType === 'virtual'
+        ? `Join: ${origin}/interview/${application._id}`
+        : `Location: ${application.interviewLocation || 'TBD'}`
+    );
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatGCalDate(start)}/${formatGCalDate(end)}&details=${details}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   // ── Loading / not found states ────────────────────────────────────────────────
 
   if (isLoading || !application) {
@@ -252,13 +291,49 @@ const SeekerApplicationDetail = () => {
             </span>
           </div>
           <p className="text-subtle mt-1">
-            Application for <span className="font-medium text-muted">{getEmployerName()}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <FaBuilding className="w-3.5 h-3.5 text-primary shrink-0" aria-hidden />
+              <span className="font-medium text-muted">{getCompanyDisplay()}</span>
+            </span>
+            {getEmployerContactPerson() && application?.employerId?.companyName?.trim() && (
+              <span className="block text-xs mt-1 pl-5 text-subtle">
+                Contact: {getEmployerContactPerson()}
+              </span>
+            )}
           </p>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         <AlertBanner type="error" message={error} />
+
+        {currentUser && (currentUser.email || currentUser.phone) && (
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-3">
+              Your contact on this application
+            </h2>
+            <p className="text-sm text-subtle mb-3">
+              Employers see these details with your application. Update them in your profile if
+              needed.
+            </p>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 text-sm text-muted">
+              {currentUser.email && (
+                <span className="inline-flex items-center gap-2">
+                  <FaEnvelope className="w-4 h-4 text-subtle shrink-0" aria-hidden />
+                  <a href={`mailto:${currentUser.email}`} className="text-primary hover:underline">
+                    {currentUser.email}
+                  </a>
+                </span>
+              )}
+              {currentUser.phone && (
+                <span className="inline-flex items-center gap-2">
+                  <FaPhone className="w-4 h-4 text-subtle shrink-0" aria-hidden />
+                  {currentUser.phone}
+                </span>
+              )}
+            </div>
+          </section>
+        )}
 
         {withdrawSuccess && (
           <AlertBanner
@@ -304,6 +379,39 @@ const SeekerApplicationDetail = () => {
             )}
           </div>
         </section>
+
+        {/* ── Employer & company ─────────────────────────────────────────────── */}
+        {application?.employerId && typeof application.employerId === 'object' && (
+          <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-bold text-text-dark mb-3 flex items-center gap-2">
+              <FaBuilding className="w-4 h-4 text-primary" aria-hidden />
+              Company you applied to
+            </h2>
+            <p className="text-base font-semibold text-text-dark mb-1">{getCompanyDisplay()}</p>
+            {getEmployerContactPerson() && application.employerId.companyName?.trim() && (
+              <p className="text-sm text-muted mb-3">Contact: {getEmployerContactPerson()}</p>
+            )}
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 text-sm text-muted mt-2">
+              {application.employerId.email && (
+                <span className="inline-flex items-center gap-2">
+                  <FaEnvelope className="w-4 h-4 text-subtle shrink-0" aria-hidden />
+                  <a
+                    href={`mailto:${application.employerId.email}`}
+                    className="text-primary hover:underline"
+                  >
+                    {application.employerId.email}
+                  </a>
+                </span>
+              )}
+              {application.employerId.phone && (
+                <span className="inline-flex items-center gap-2">
+                  <FaPhone className="w-4 h-4 text-subtle shrink-0" aria-hidden />
+                  {application.employerId.phone}
+                </span>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* ── Your Application ───────────────────────────────────────────────── */}
         <section className="bg-surface rounded-xl shadow-sm border border-border p-6">
@@ -416,15 +524,97 @@ const SeekerApplicationDetail = () => {
 
         {/* ── Interview Details ──────────────────────────────────────────────── */}
         {application.interviewDate && (
-          <section className="bg-surface rounded-xl shadow-sm border border-purple-200 p-6">
-            <h2 className="text-lg font-bold text-text-dark mb-3 flex items-center gap-2">
-              <FaCalendarAlt className="w-4 h-4 text-purple-500" />
-              Interview Scheduled
+          <section className="p-6 border shadow-sm bg-surface rounded-xl border-purple-200">
+            <h2 className="flex items-center gap-2 mb-4 text-lg font-bold text-text-dark">
+              {application.interviewType === 'virtual' ? (
+                <FaVideo className="w-4 h-4 text-purple-500 shrink-0" aria-hidden />
+              ) : application.interviewType === 'in_person' ? (
+                <FaMapMarkerAlt className="w-4 h-4 text-purple-500 shrink-0" aria-hidden />
+              ) : (
+                <FaCalendarAlt className="w-4 h-4 text-purple-500 shrink-0" aria-hidden />
+              )}
+              {application.interviewType === 'virtual'
+                ? t('applications.interview_virtual_title')
+                : application.interviewType === 'in_person'
+                  ? t('applications.interview_in_person_title')
+                  : t('applications.interview_scheduled')}
             </h2>
-            <p className="text-muted text-base font-medium">
-              {formatDateTime(application.interviewDate)}
-            </p>
-            <p className="text-sm text-subtle mt-1">Scheduled by {getEmployerName()}</p>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-muted">
+                <FaCalendarAlt className="w-3.5 h-3.5 shrink-0 text-subtle" aria-hidden />
+                <span className="font-medium">{formatDateTime(application.interviewDate)}</span>
+              </div>
+
+              {application.interviewDuration != null && (
+                <div className="flex items-center gap-2 text-sm text-muted">
+                  <FaClock className="w-3.5 h-3.5 shrink-0 text-subtle" aria-hidden />
+                  <span>
+                    {t('applications.interview_duration_minutes', {
+                      count: application.interviewDuration,
+                    })}
+                  </span>
+                </div>
+              )}
+
+              {application.interviewType === 'in_person' && application.interviewLocation && (
+                <>
+                  <div className="flex items-start gap-2 text-sm text-muted">
+                    <FaMapMarkerAlt
+                      className="w-3.5 h-3.5 mt-0.5 shrink-0 text-subtle"
+                      aria-hidden
+                    />
+                    <span>{application.interviewLocation}</span>
+                  </div>
+                  {application.interviewLocationNotes && (
+                    <div className="flex items-start gap-2 text-sm text-subtle">
+                      <FaStickyNote
+                        className="w-3.5 h-3.5 mt-0.5 shrink-0 text-subtle"
+                        aria-hidden
+                      />
+                      <span>{application.interviewLocationNotes}</span>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <p className="text-sm text-subtle">
+                {t('applications.interview_scheduled_by', { name: getEmployerName() })}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 pt-4 mt-4 border-t border-purple-100">
+              {application.interviewType === 'virtual' && (
+                <Link
+                  to={`/interview/${application._id}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue"
+                >
+                  <FaVideo className="w-4 h-4" aria-hidden />
+                  {t('applications.interview_join_button')}
+                </Link>
+              )}
+
+              {application.interviewType === 'in_person' && application.interviewLocation && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(application.interviewLocation)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-lg border-border text-muted hover:bg-surface-muted"
+                >
+                  <FaMapMarkerAlt className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                  {t('applications.interview_get_directions')}
+                </a>
+              )}
+
+              <button
+                type="button"
+                onClick={openInterviewGoogleCalendar}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm transition-colors text-primary hover:underline"
+              >
+                <FaCalendarAlt className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                {t('applications.interview_add_to_calendar')}
+              </button>
+            </div>
           </section>
         )}
 

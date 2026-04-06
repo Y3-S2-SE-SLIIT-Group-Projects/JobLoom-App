@@ -8,6 +8,7 @@ import {
   selectApplicationLoading,
   selectApplicationError,
 } from '../../store/slices/applicationSlice';
+import { useUser } from '../../hooks/useUser';
 import DottedBackground from '../../components/DottedBackground';
 import AlertBanner from '../../components/ui/AlertBanner';
 import { STATUS_BADGE_COLORS, STATUS_TAB_COLORS } from '../../constants/applicationStatus';
@@ -18,6 +19,9 @@ import {
   FaChevronRight,
   FaInbox,
   FaSearch,
+  FaEnvelope,
+  FaPhone,
+  FaBuilding,
 } from 'react-icons/fa';
 
 const ALL_STATUSES = [
@@ -53,6 +57,21 @@ const getEmployerName = app => {
   );
 };
 
+/** Company / organization name (falls back to contact name if no company on profile) */
+const getCompanyDisplay = app => {
+  const emp = app.employerId;
+  if (!emp || typeof emp === 'string') return getEmployerName(app);
+  const cn = emp.companyName?.trim();
+  if (cn) return cn;
+  return getEmployerName(app);
+};
+
+const getEmployerContactPerson = app => {
+  const emp = app.employerId;
+  if (!emp || typeof emp === 'string') return '';
+  return [emp.firstName, emp.lastName].filter(Boolean).join(' ') || '';
+};
+
 const getJobTitle = app => {
   const job = app.jobId;
   if (!job) return 'Unknown Job';
@@ -72,6 +91,7 @@ const JOB_STATUS_BADGE = {
 
 const MyApplications = () => {
   const dispatch = useDispatch();
+  const { currentUser } = useUser();
   const applications = useSelector(selectMyApplications);
   const pagination = useSelector(selectApplicationPagination);
   const isLoading = useSelector(selectApplicationLoading('myApplications'));
@@ -92,7 +112,12 @@ const MyApplications = () => {
   const filteredApplications = useMemo(() => {
     if (!searchQuery.trim()) return applications;
     const q = searchQuery.trim().toLowerCase();
-    return applications.filter(app => getJobTitle(app).toLowerCase().includes(q));
+    return applications.filter(app => {
+      const title = getJobTitle(app).toLowerCase();
+      const company = getCompanyDisplay(app).toLowerCase();
+      const person = getEmployerContactPerson(app).toLowerCase();
+      return title.includes(q) || company.includes(q) || person.includes(q);
+    });
   }, [applications, searchQuery]);
 
   const handleFilterChange = status => {
@@ -109,6 +134,27 @@ const MyApplications = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <h1 className="text-xl sm:text-2xl font-bold text-text-dark">My Applications</h1>
           <p className="text-sm text-subtle mt-1">Track and manage your job applications</p>
+          {currentUser && (
+            <div className="mt-4 flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-muted bg-surface-muted/80 border border-border rounded-lg px-4 py-3">
+              <span className="font-medium text-text-dark">Your profile on applications</span>
+              {currentUser.email && (
+                <span className="inline-flex items-center gap-2">
+                  <FaEnvelope className="w-3.5 h-3.5 text-subtle shrink-0" aria-hidden />
+                  <span className="text-subtle">Email</span>
+                  <a href={`mailto:${currentUser.email}`} className="text-primary hover:underline">
+                    {currentUser.email}
+                  </a>
+                </span>
+              )}
+              {currentUser.phone && (
+                <span className="inline-flex items-center gap-2">
+                  <FaPhone className="w-3.5 h-3.5 text-subtle shrink-0" aria-hidden />
+                  <span className="text-subtle">Phone</span>
+                  <span className="text-muted">{currentUser.phone}</span>
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -119,7 +165,7 @@ const MyApplications = () => {
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle" />
             <input
               type="text"
-              placeholder="Search by job title..."
+              placeholder="Search by job title or company..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm"
@@ -237,9 +283,24 @@ const MyApplications = () => {
                           )}
                         </div>
 
-                        <p className={`text-sm mb-1 ${isWithdrawn ? 'text-subtle' : 'text-muted'}`}>
-                          {getEmployerName(app)}
-                        </p>
+                        <div
+                          className={`text-sm mb-1 space-y-0.5 ${isWithdrawn ? 'text-subtle' : 'text-muted'}`}
+                        >
+                          <p className="inline-flex items-center gap-1.5 font-semibold text-text-dark">
+                            <FaBuilding className="w-3.5 h-3.5 text-primary shrink-0" aria-hidden />
+                            {getCompanyDisplay(app)}
+                          </p>
+                          {(() => {
+                            const person = getEmployerContactPerson(app);
+                            const emp = app.employerId;
+                            const hasCompany =
+                              emp && typeof emp === 'object' && emp.companyName?.trim();
+                            if (person && hasCompany) {
+                              return <p className="text-xs text-subtle pl-5">Contact: {person}</p>;
+                            }
+                            return null;
+                          })()}
+                        </div>
 
                         <div className="flex flex-wrap items-center gap-4 text-sm text-subtle">
                           <span className="flex items-center gap-1.5">
