@@ -45,6 +45,17 @@ const normalizeRegionName = value =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const isAnywhereLocation = value => {
+  const normalized = (value || '').trim().toLowerCase();
+  return (
+    normalized === '' ||
+    normalized === 'anywhere' ||
+    normalized === 'any where' ||
+    normalized === 'any location' ||
+    normalized === 'all locations'
+  );
+};
+
 // PlacesInput defined OUTSIDE Dashboard so React doesn't remount it
 const PlacesInput = ({ value, onChange, t }) => {
   const {
@@ -377,18 +388,6 @@ const CategoriesCarousel = ({ setCategory, searchRef }) => {
   );
 };
 
-const PROVINCES = [
-  'Western',
-  'Central',
-  'Southern',
-  'Northern',
-  'Eastern',
-  'North Western',
-  'North Central',
-  'Uva',
-  'Sabaragamuwa',
-];
-
 const SALARY_RANGES = [
   { label: 'Any', min: '', max: '' },
   { label: '0 – 30,000', min: '0', max: '30000' },
@@ -422,7 +421,6 @@ const Dashboard = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [category, setCategory] = useState('');
   const [employmentType, setEmploymentType] = useState('');
-  const [province, setProvince] = useState('');
   const [salaryRangeKey, setSalaryRangeKey] = useState('Any');
 
   // Nearby jobs state (overrides context jobs when set)
@@ -431,7 +429,32 @@ const Dashboard = () => {
   const [nearbyError, setNearbyError] = useState('');
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [recommendedLoading, setRecommendedLoading] = useState(false);
+  const [recommendedOpen, setRecommendedOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const filterNearbyJobs = jobsFromApi => {
+    const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
+    const q = query.trim().toLowerCase();
+    const min = selectedRange.min ? Number(selectedRange.min) : null;
+    const max = selectedRange.max ? Number(selectedRange.max) : null;
+
+    return jobsFromApi.filter(job => {
+      const title = (job.title || '').toLowerCase();
+      const desc = (job.description || '').toLowerCase();
+      const role = (job.jobRole || '').toLowerCase();
+      const jobEmploymentType = (job.employmentType || '').toLowerCase();
+      const salary = Number(job.salaryAmount || 0);
+
+      const matchesQuery = !q || title.includes(q) || desc.includes(q) || role.includes(q);
+      const matchesCategory = !category || job.category === category;
+      const matchesEmploymentType =
+        !employmentType || jobEmploymentType === employmentType.toLowerCase();
+      const matchesMin = min === null || salary >= min;
+      const matchesMax = max === null || salary <= max;
+
+      return matchesQuery && matchesCategory && matchesEmploymentType && matchesMin && matchesMax;
+    });
+  };
 
   // Google Maps loader
   useEffect(() => {
@@ -498,13 +521,12 @@ const Dashboard = () => {
     setNearbyError('');
     const page = extra.page || 1;
     const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
-    const locationParts = locationLabel
-      .split(',')
-      .map(part => part.trim())
-      .filter(Boolean);
-    const fallbackDistrict = locationParts.length > 1 ? locationParts[1] : locationParts[0];
-    const district = normalizeRegionName(locationObj?.district || fallbackDistrict || undefined);
-    const prov = normalizeRegionName(locationObj?.province || province || undefined);
+    const hasLocation = !isAnywhereLocation(locationLabel);
+    const district = hasLocation
+      ? normalizeRegionName(locationObj?.district || undefined)
+      : undefined;
+    const provRaw = hasLocation ? locationObj?.province : undefined;
+    const prov = provRaw ? normalizeRegionName(provRaw) : undefined;
 
     const filters = {
       status: 'open',
@@ -512,7 +534,7 @@ const Dashboard = () => {
       category: category || undefined,
       employmentType: employmentType || undefined,
       district,
-      province: prov,
+      ...(prov ? { province: prov } : {}),
       minSalary: selectedRange.min || undefined,
       maxSalary: selectedRange.max || undefined,
       page,
@@ -523,60 +545,52 @@ const Dashboard = () => {
 
     const exactJobs = await fetchJobs(filters);
 
-    const selectedCoordinates = locationObj?.coordinates;
-    if (Array.isArray(selectedCoordinates) && selectedCoordinates.length === 2) {
+    // If user searched by a location text but exact district/province filtering returned no jobs,
+    // fallback to point-based nearby search around that location.
+    const exactJobList = Array.isArray(exactJobs?.jobs)
+      ? exactJobs.jobs
+      : Array.isArray(exactJobs)
+        ? exactJobs
+        : [];
+    if (hasLocation && page === 1 && exactJobList.length === 0) {
       try {
-        const [lng, lat] = selectedCoordinates;
-        const nearRes = await fetch(`${API_URL}/jobs/nearby?lng=${lng}&lat=${lat}&radius=35`);
-        const nearPayload = await nearRes.json();
-        if (!nearRes.ok) throw new Error(nearPayload.message || 'Failed to fetch nearby jobs');
+        let latitude;
+        let longitude;
 
-        const nearJobs = Array.isArray(nearPayload.data?.jobs)
-          ? nearPayload.data.jobs
-          : Array.isArray(nearPayload.data)
-            ? nearPayload.data
-            : [];
+        if (Array.isArray(locationObj?.coordinates) && locationObj.coordinates.length === 2) {
+          const [lng, lat] = locationObj.coordinates;
+          latitude = Number(lat);
+          longitude = Number(lng);
+        } else {
+          const results = await getGeocode({ address: locationLabel.trim() });
+          if (results && results[0]) {
+            const { lat, lng } = await getLatLng(results[0]);
+            latitude = Number(lat);
+            longitude = Number(lng);
+          }
+        }
 
-        const q = query.trim().toLowerCase();
-        const min = selectedRange.min ? Number(selectedRange.min) : null;
-        const max = selectedRange.max ? Number(selectedRange.max) : null;
-
-        const filteredNearJobs = nearJobs.filter(job => {
-          const title = (job.title || '').toLowerCase();
-          const desc = (job.description || '').toLowerCase();
-          const role = (job.jobRole || '').toLowerCase();
-          const jobEmploymentType = (job.employmentType || '').toLowerCase();
-          const jobProvince = normalizeRegionName(job.location?.province || '');
-          const salary = Number(job.salaryAmount || 0);
-
-          const matchesQuery = !q || title.includes(q) || desc.includes(q) || role.includes(q);
-          const matchesCategory = !category || job.category === category;
-          const matchesEmploymentType =
-            !employmentType || jobEmploymentType === employmentType.toLowerCase();
-          const matchesProvince = !prov || jobProvince === prov;
-          const matchesMin = min === null || salary >= min;
-          const matchesMax = max === null || salary <= max;
-
-          return (
-            matchesQuery &&
-            matchesCategory &&
-            matchesEmploymentType &&
-            matchesProvince &&
-            matchesMin &&
-            matchesMax
+        if (latitude !== undefined && longitude !== undefined) {
+          const nearbyRes = await fetch(
+            `${API_URL}/jobs/nearby?lng=${longitude}&lat=${latitude}&radius=50`
           );
-        });
-
-        const mergedMap = new Map();
-        [...(Array.isArray(exactJobs) ? exactJobs : []), ...filteredNearJobs].forEach(job => {
-          if (job?._id) mergedMap.set(job._id, job);
-        });
-        setNearbyJobs(Array.from(mergedMap.values()));
-      } catch (err) {
-        setNearbyError(err.message || 'Could not load nearby jobs for the selected location.');
+          const nearbyPayload = await nearbyRes.json();
+          if (nearbyRes.ok) {
+            const nearbyFromApi = Array.isArray(nearbyPayload.data?.jobs)
+              ? nearbyPayload.data.jobs
+              : Array.isArray(nearbyPayload.data)
+                ? nearbyPayload.data
+                : [];
+            setNearbyJobs(filterNearbyJobs(nearbyFromApi));
+          }
+        }
+      } catch {
+        // Keep regular search results if fallback geocoding/nearby fails.
       }
     }
 
+    // Regular search should not automatically run nearby search.
+    // Nearby search is triggered explicitly via the "Find jobs near me" button.
     searchRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -591,7 +605,6 @@ const Dashboard = () => {
     setLocationObj(null);
     setCategory('');
     setEmploymentType('');
-    setProvince('');
     setSalaryRangeKey('Any');
     setNearbyJobs(null);
     setNearbyError('');
@@ -623,77 +636,85 @@ const Dashboard = () => {
     );
   })();
 
-  // Find nearby jobs using browser geolocation
-  const handleNearby = () => {
-    if (!navigator.geolocation) {
-      setNearbyError('Geolocation is not supported by your browser.');
-      return;
-    }
+  // Find nearby jobs based on selected location first, then fallback to browser geolocation.
+  const handleNearby = async () => {
+    const fetchNearbyByCoords = async (latitude, longitude) => {
+      // Backend expects query params as lat & lng
+      const res = await fetch(`${API_URL}/jobs/nearby?lng=${longitude}&lat=${latitude}&radius=50`);
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.message || 'Failed to fetch nearby jobs');
+
+      const jobsFromApi = Array.isArray(payload.data?.jobs)
+        ? payload.data.jobs
+        : Array.isArray(payload.data)
+          ? payload.data
+          : [];
+
+      return filterNearbyJobs(jobsFromApi);
+    };
+
     setNearbyLoading(true);
     setNearbyError('');
     setNearbyJobs(null);
-    navigator.geolocation.getCurrentPosition(
-      async pos => {
-        try {
-          const { latitude, longitude } = pos.coords;
-          // Backend expects query params as lat & lng
-          const res = await fetch(
-            `${API_URL}/jobs/nearby?lng=${longitude}&lat=${latitude}&radius=50`
-          );
-          const payload = await res.json();
-          if (!res.ok) throw new Error(payload.message || 'Failed to fetch nearby jobs');
 
-          const jobsFromApi = Array.isArray(payload.data?.jobs)
-            ? payload.data.jobs
-            : Array.isArray(payload.data)
-              ? payload.data
-              : [];
+    try {
+      let latitude;
+      let longitude;
 
-          const selectedRange = SALARY_RANGES.find(r => r.label === salaryRangeKey) || {};
-          const q = query.trim().toLowerCase();
-          const min = selectedRange.min ? Number(selectedRange.min) : null;
-          const max = selectedRange.max ? Number(selectedRange.max) : null;
-          const normalizedProvince = normalizeRegionName(province || '');
-
-          const filteredNearbyJobs = jobsFromApi.filter(job => {
-            const title = (job.title || '').toLowerCase();
-            const desc = (job.description || '').toLowerCase();
-            const role = (job.jobRole || '').toLowerCase();
-            const jobEmploymentType = (job.employmentType || '').toLowerCase();
-            const jobProvince = normalizeRegionName(job.location?.province || '');
-            const salary = Number(job.salaryAmount || 0);
-
-            const matchesQuery = !q || title.includes(q) || desc.includes(q) || role.includes(q);
-            const matchesCategory = !category || job.category === category;
-            const matchesEmploymentType =
-              !employmentType || jobEmploymentType === employmentType.toLowerCase();
-            const matchesProvince = !normalizedProvince || jobProvince === normalizedProvince;
-            const matchesMin = min === null || salary >= min;
-            const matchesMax = max === null || salary <= max;
-
-            return (
-              matchesQuery &&
-              matchesCategory &&
-              matchesEmploymentType &&
-              matchesProvince &&
-              matchesMin &&
-              matchesMax
-            );
-          });
-
-          setNearbyJobs(filteredNearbyJobs);
-          searchRef.current?.scrollIntoView({ behavior: 'smooth' });
-        } catch (err) {
-          setNearbyError(err.message || 'Could not load nearby jobs.');
-        } finally {
-          setNearbyLoading(false);
-        }
-      },
-      () => {
-        setNearbyError('Location access denied. Please allow location access and try again.');
-        setNearbyLoading(false);
+      // 1) Use coordinates from Google Places selection if available
+      if (Array.isArray(locationObj?.coordinates) && locationObj.coordinates.length === 2) {
+        const [lng, lat] = locationObj.coordinates;
+        latitude = Number(lat);
+        longitude = Number(lng);
       }
-    );
+
+      // 2) If user typed a location, try geocoding it before using device location
+      if (
+        (latitude === undefined || longitude === undefined) &&
+        locationLabel.trim() &&
+        !isAnywhereLocation(locationLabel)
+      ) {
+        try {
+          const results = await getGeocode({ address: locationLabel.trim() });
+          if (results && results[0]) {
+            const { lat, lng } = await getLatLng(results[0]);
+            latitude = Number(lat);
+            longitude = Number(lng);
+          }
+        } catch {
+          // Ignore and fallback to browser geolocation.
+        }
+      }
+
+      // 3) Final fallback: browser geolocation (fresh, high-accuracy)
+      if (latitude === undefined || longitude === undefined) {
+        if (!navigator.geolocation) {
+          throw new Error('Geolocation is not supported by your browser.');
+        }
+
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 15000,
+          });
+        });
+        latitude = pos.coords.latitude;
+        longitude = pos.coords.longitude;
+      }
+
+      const filteredNearbyJobs = await fetchNearbyByCoords(latitude, longitude);
+      setNearbyJobs(filteredNearbyJobs);
+      searchRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+      if (err?.code === 1) {
+        setNearbyError('Location access denied. Please allow location access and try again.');
+      } else {
+        setNearbyError(err.message || 'Could not load nearby jobs.');
+      }
+    } finally {
+      setNearbyLoading(false);
+    }
   };
 
   const isNearbyResult = nearbyJobs !== null;
@@ -1009,7 +1030,7 @@ const Dashboard = () => {
             >
               <FaSlidersH className="w-3.5 h-3.5" />
               {t('dashboard.filters_button')}
-              {(category || employmentType || province || salaryRangeKey !== 'Any') && (
+              {(category || employmentType || salaryRangeKey !== 'Any' || locationLabel) && (
                 <span className={`w-2 h-2 rounded-full ${C.bgPrimary} inline-block`} />
               )}
             </button>
@@ -1017,7 +1038,6 @@ const Dashboard = () => {
               locationLabel ||
               category ||
               employmentType ||
-              province ||
               salaryRangeKey !== 'Any' ||
               isNearbyResult) && (
               <button
@@ -1081,24 +1101,7 @@ const Dashboard = () => {
                 </select>
               </div>
 
-              {/* Province */}
-              <div>
-                <label className={`block ${T.xs} ${C.subtle} mb-1 ${T.body}`}>
-                  {t('dashboard.province_label')}
-                </label>
-                <select
-                  value={province}
-                  onChange={e => setProvince(e.target.value)}
-                  className={`w-full p-2.5 border ${C.border} rounded-lg ${T.sm} ${C.muted} ${C.bgSurface} ${T.body}`}
-                >
-                  <option value="">{t('dashboard.all_provinces')}</option>
-                  {PROVINCES.map(p => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {/* Province filter removed — use location input instead */}
 
               {/* Salary range */}
               <div>
@@ -1133,24 +1136,36 @@ const Dashboard = () => {
         {/* Results header */}
         {shouldShowRecommendations && (
           <div className="mb-6">
-            <h2 className={`${T.xl} ${T.heading} ${T.bold} ${C.text} mb-3 ${T.leadingTight}`}>
-              {t('dashboard.recommended_title')}
-            </h2>
-            {recommendedLoading && (
+            <button
+              type="button"
+              onClick={() => setRecommendedOpen(open => !open)}
+              className={`w-full flex items-center justify-between ${C.bgSurface} rounded-xl border ${C.border} px-4 py-3 mb-3 text-left hover:shadow-card transition-shadow`}
+              aria-expanded={recommendedOpen}
+            >
+              <span className={`${T.xl} ${T.heading} ${T.bold} ${C.text} ${T.leadingTight}`}>
+                {t('dashboard.recommended_title')}
+              </span>
+              <FaChevronRight
+                className={`w-4 h-4 ${C.muted} transition-transform ${recommendedOpen ? 'rotate-90' : ''}`}
+              />
+            </button>
+
+            {recommendedOpen && recommendedLoading && (
               <div
                 className={`${C.bgSurface} rounded-xl border ${C.border} p-4 ${T.sm} ${C.muted} ${T.body}`}
               >
                 {t('dashboard.recommended_loading')}
               </div>
             )}
-            {!recommendedLoading && recommendedJobs.length === 0 && (
+            {recommendedOpen && !recommendedLoading && recommendedJobs.length === 0 && (
               <div
                 className={`${C.bgSurface} rounded-xl border ${C.border} p-4 ${T.sm} ${C.muted} ${T.body}`}
               >
                 {t('dashboard.recommended_empty')}
               </div>
             )}
-            {!recommendedLoading &&
+            {recommendedOpen &&
+              !recommendedLoading &&
               recommendedJobs.length > 0 &&
               recommendedJobs.map(job => <JobCard key={`recommended-${job._id}`} job={job} />)}
           </div>

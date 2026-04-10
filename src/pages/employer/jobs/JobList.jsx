@@ -156,18 +156,23 @@ const JobList = () => {
     <DottedBackground>
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-6">
         <section
-          className={`rounded-3xl border ${C.border} ${C.bgSurface} shadow-sm overflow-hidden`}
+          className={`rounded-2xl border ${C.border} ${C.bgSurface} shadow-sm overflow-hidden`}
         >
-          <div className="p-8 md:p-10 bg-gradient-to-r from-primary/10 via-sky-light/20 to-surface">
+          <div className="p-5 md:p-6 bg-gradient-to-r from-primary/10 via-sky-light/20 to-surface">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
               <div>
-                <p className={`${T.sm} ${T.bold} tracking-widest uppercase text-primary mb-2`}>
+                <span
+                  className={`hero-badge-shimmer glass-effect inline-flex items-center gap-2 w-fit mb-2 px-3 py-1.5 ${C.primary} text-[0.62rem] ${T.bold} rounded-full tracking-widest uppercase ${T.body} border border-[color:color-mix(in_srgb,var(--color-sky-light)_60%,transparent)]`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-blue-green)] animate-pulse" />
                   {t('employer.jobs.badge')}
-                </p>
-                <h1 className={`${T['2xl']} ${T.bold} text-text-dark mb-2`}>
+                </span>
+                <h1 className={`${T.xl} md:text-[2rem] ${T.bold} text-text-dark mb-2`}>
                   {t('employer.jobs.title')}
                 </h1>
-                <p className={`${T.base} text-muted`}>{t('employer.jobs.subtitle')}</p>
+                <p className={`${T.sm} md:text-[var(--text-base)] text-muted`}>
+                  {t('employer.jobs.subtitle')}
+                </p>
               </div>
               <Link
                 to="/employer/create-job"
