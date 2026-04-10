@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../../hooks/useJobs';
 
 import DottedBackground from '../../../components/DottedBackground';
@@ -1001,6 +1002,7 @@ const PlacesAutocomplete = ({ onSelect, error, googleMapsLoaded }) => {
 };
 
 const CreateJob = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { createJob, generateJobDescription } = useJobs();
   const [loading, setLoading] = useState(false);
@@ -1330,7 +1332,7 @@ const CreateJob = () => {
       setGenerationMessage(
         usedTemplate
           ? `Description generated using template fallback${result?.reason ? ` (${result.reason})` : ''}.`
-          : 'Description generated using Cohere AI.'
+          : 'Description generated using AI.'
       );
     } catch (err) {
       setError(err.message || 'Failed to generate description.');
@@ -1585,8 +1587,10 @@ const CreateJob = () => {
     <DottedBackground>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-text-dark mb-2">Create New Job</h1>
-          <p className="text-muted">Fill in the details below to post your job opening</p>
+          <h1 className="text-3xl font-bold text-text-dark mb-2">
+            {t('employer.create_form.title')}
+          </h1>
+          <p className="text-muted">{t('employer.create_form.subtitle')}</p>
         </div>
         {error && (
           <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
@@ -1600,7 +1604,7 @@ const CreateJob = () => {
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
               <FaBriefcase className="w-5 h-5 mr-2 text-primary" />
-              Basic Information
+              {t('employer.create_form.section_basic')}
             </h2>
             <div className="space-y-4">
               <div>
@@ -1681,7 +1685,7 @@ const CreateJob = () => {
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
               <FaMapMarkerAlt className="w-5 h-5 mr-2 text-primary" />
-              Location
+              {t('employer.create_form.section_location')}
             </h2>
 
             {/* Location Type Toggle */}
@@ -1796,7 +1800,7 @@ const CreateJob = () => {
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
               <FaDollarSign className="w-5 h-5 mr-2 text-primary" />
-              Salary Information
+              {t('employer.create_form.section_salary')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -1839,7 +1843,7 @@ const CreateJob = () => {
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
               <FaUsers className="w-5 h-5 mr-2 text-info" />
-              Requirements
+              {t('employer.create_form.section_requirements')}
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2001,7 +2005,7 @@ const CreateJob = () => {
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <h2 className="text-lg font-semibold text-text-dark mb-4 flex items-center">
               <FaCalendar className="w-5 h-5 mr-2 text-info" />
-              Job Duration
+              {t('employer.create_form.section_duration')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -2041,7 +2045,9 @@ const CreateJob = () => {
           {/* Job Description */}
           <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
-              <h2 className="text-lg font-semibold text-text-dark">Job Description</h2>
+              <h2 className="text-lg font-semibold text-text-dark">
+                {t('employer.create_form.section_description')}
+              </h2>
               <button
                 type="button"
                 onClick={handleGenerateDescription}

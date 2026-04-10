@@ -142,6 +142,53 @@
     }
   }
 
+  .employer-action-card {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#ffffff, #ffffff) padding-box,
+      linear-gradient(
+          130deg,
+          var(--color-deep-blue),
+          var(--color-primary),
+          var(--color-blue-green),
+          var(--color-deep-blue)
+        )
+        border-box;
+    background-size:
+      100% 100%,
+      220% 220%;
+    animation: employer-border-shift 6s ease-in-out infinite;
+  }
+
+  .employer-card-gradient-text {
+    background: linear-gradient(
+      135deg,
+      var(--color-deep-blue) 0%,
+      var(--color-primary) 45%,
+      var(--color-blue-green) 100%
+    );
+    background-size: 210% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    animation: hero-gradient-shift 6s ease-in-out infinite;
+  }
+
+  @keyframes employer-border-shift {
+    0%,
+    100% {
+      background-position:
+        0 0,
+        0% 50%;
+    }
+    50% {
+      background-position:
+        0 0,
+        100% 50%;
+    }
+  }
+
   /* FlowOps Glass Effect */
   .glass-effect {
     background: rgba(255, 255, 255, 0.9);

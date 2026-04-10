@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useJobs } from '../../../hooks/useJobs';
 import parse from 'html-react-parser';
+import { useTranslation } from 'react-i18next';
 
 import DottedBackground from '../../../components/DottedBackground';
 import {
@@ -22,6 +23,7 @@ import { getImageUrl } from '../../../utils/imageUrls';
 const JobDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const {
     fetchJobById,
     closeJob,
@@ -82,7 +84,9 @@ const JobDetails = () => {
   };
 
   const formatDate = dateString => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const date = new Date(dateString);
+    if (!dateString || Number.isNaN(date.getTime())) return t('common.invalid_date');
+    return date.toLocaleDateString(i18n.language || 'en', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -161,9 +165,7 @@ const JobDetails = () => {
 
   return (
     <DottedBackground>
-      {/* Main Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Back Button */}
         <Link
           to={isPublicView ? '/' : '/employer/dashboard'}
           className="inline-flex items-center text-muted hover:text-info transition-colors mb-6"
@@ -172,8 +174,7 @@ const JobDetails = () => {
           {isPublicView ? 'Back to Jobs' : 'Back to Dashboard'}
         </Link>
 
-        {/* Company Logo/Header */}
-        <div className="mb-8">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center overflow-hidden border border-neutral-100">
               {job.employer?.profileImage ? (
@@ -186,10 +187,9 @@ const JobDetails = () => {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-              ) : null}
-              <FaBriefcase
-                className={`w-8 h-8 text-subtle ${job.employer?.profileImage ? 'hidden' : 'block'}`}
-              />
+              ) : (
+                <FaBriefcase className="w-8 h-8 text-subtle" />
+              )}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-text-dark mb-1">{job.title}</h1>
@@ -197,93 +197,89 @@ const JobDetails = () => {
               <p className="text-sm text-subtle mt-1">{employerCompanyName}</p>
             </div>
           </div>
+
+          <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
+            <div className="flex items-center gap-2 text-muted">
+              <FaBriefcase className="w-5 h-5 text-subtle" />
+              <span className="capitalize">{job.employmentType || 'Full-time'}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted">
+              <FaGlobe className="w-5 h-5 text-subtle" />
+              <button
+                type="button"
+                onClick={openLocationInGoogleMaps}
+                className="text-left hover:text-primary hover:underline transition-colors"
+                title="Open location in Google Maps"
+              >
+                {locationText}
+              </button>
+            </div>
+            <div className="flex items-center gap-2 text-muted">
+              <FaDollarSign className="w-5 h-5 text-subtle" />
+              <span className="font-semibold">
+                {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Job Details Bar */}
-        <div className="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-border">
-          <div className="flex items-center gap-2 text-muted">
-            <FaBriefcase className="w-5 h-5 text-subtle" />
-            <span className="capitalize">{job.employmentType || 'Full-time'}</span>
-          </div>
-          <div className="flex items-center gap-2 text-muted">
-            <FaGlobe className="w-5 h-5 text-subtle" />
-            <button
-              type="button"
-              onClick={openLocationInGoogleMaps}
-              className="text-left hover:text-primary hover:underline transition-colors"
-              title="Open location in Google Maps"
-            >
-              {locationText}
-            </button>
-          </div>
-          <div className="flex items-center gap-2 text-muted">
-            <FaDollarSign className="w-5 h-5 text-subtle" />
-            <span className="font-semibold">
-              {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
-            </span>
-          </div>
-        </div>
-
-        {/* Additional Job Information */}
         <div className="bg-surface-muted rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-text-dark mb-4">JOB INFORMATION</h2>
+          <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.job_information')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted mb-1">Employer</p>
+              <p className="text-sm text-muted mb-1">{t('job.employer')}</p>
               <p className="font-medium text-text-dark">{employerCompanyName}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Category</p>
+              <p className="text-sm text-muted mb-1">{t('job.category')}</p>
               <p className="font-medium text-text-dark capitalize">{job.category}</p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Employment Type</p>
+              <p className="text-sm text-muted mb-1">{t('job.employment_type')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.employmentType || 'Full-time'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Positions Available</p>
+              <p className="text-sm text-muted mb-1">{t('job.positions_available')}</p>
               <p className="font-medium text-text-dark">
-                {job.positions} position{job.positions > 1 ? 's' : ''}
+                {job.positions} {job.positions === 1 ? t('job.position') : t('job.positions')}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Experience Level</p>
+              <p className="text-sm text-muted mb-1">{t('job.experience_level')}</p>
               <p className="font-medium text-text-dark capitalize">
                 {job.experienceRequired || 'None'}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted mb-1">Start Date</p>
+              <p className="text-sm text-muted mb-1">{t('job.start_date')}</p>
               <p className="font-medium text-text-dark">{formatDate(job.startDate)}</p>
             </div>
             {job.endDate && (
               <div>
-                <p className="text-sm text-muted mb-1">End Date</p>
+                <p className="text-sm text-muted mb-1">{t('job.end_date')}</p>
                 <p className="font-medium text-text-dark">{formatDate(job.endDate)}</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Job Description */}
         <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
             <FaFileAlt className="w-5 h-5 text-subtle" />
-            JOB DESCRIPTION
+            {t('job.job_description')}
           </h2>
           <div className="border-t border-neutral-100 pt-4">
             <div className="prose prose-lg max-w-none text-muted leading-relaxed">
-              {job.description ? parse(job.description) : 'No description provided.'}
+              {job.description ? parse(job.description) : t('job.no_description')}
             </div>
           </div>
         </div>
 
-        {/* Requirements */}
         {job.skillsRequired && job.skillsRequired.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-text-dark mb-4">SKILLS</h2>
+            <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.skills')}</h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, index) => (
                 <li key={index} className="flex items-start gap-2 text-muted">
@@ -295,7 +291,6 @@ const JobDetails = () => {
           </div>
         )}
 
-        {/* Action Buttons (only visible to employers) */}
         {!isPublicView && (
           <div className="flex flex-wrap gap-4 pt-6 border-t border-border">
             <button
@@ -332,7 +327,6 @@ const JobDetails = () => {
         )}
       </div>
 
-      {/* Confirmation Dialog */}
       {showConfirmDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-surface rounded-xl max-w-md w-full p-6">

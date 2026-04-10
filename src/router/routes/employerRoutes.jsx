@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 import ProtectedRoute from '../../components/auth/ProtectedRoute';
+import Analytics from '../../pages/employer/jobs/Analytics';
 
 const EmployerDashboard = lazy(() => import('../../pages/employer/jobs/EmployerDashboard'));
 const CreateJob = lazy(() => import('../../pages/employer/jobs/CreateJob'));
 const JobList = lazy(() => import('../../pages/employer/jobs/JobList'));
 const JobDetails = lazy(() => import('../../pages/employer/jobs/JobDetails'));
 const EditJob = lazy(() => import('../../pages/employer/jobs/EditJob'));
-const Analytics = lazy(() => import('../../pages/employer/jobs/Analytics'));
 const EmployerApplications = lazy(
   () => import('../../pages/employer/applications/EmployerApplications')
 );
@@ -16,8 +16,6 @@ const JobApplicationsList = lazy(
 const ApplicationDetailPage = lazy(
   () => import('../../pages/employer/applications/ApplicationDetailPage')
 );
-const CalendlySettings = lazy(() => import('../../pages/employer/settings/CalendlySettings'));
-const CalendlyCallback = lazy(() => import('../../pages/auth/CalendlyCallback'));
 
 const employerRoutes = [
   {
@@ -89,22 +87,6 @@ const employerRoutes = [
     element: (
       <ProtectedRoute allowedRoles={['employer']}>
         <ApplicationDetailPage />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: 'employer/settings/calendly',
-    element: (
-      <ProtectedRoute allowedRoles={['employer']}>
-        <CalendlySettings />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: 'auth/calendly/callback',
-    element: (
-      <ProtectedRoute allowedRoles={['employer']}>
-        <CalendlyCallback />
       </ProtectedRoute>
     ),
   },

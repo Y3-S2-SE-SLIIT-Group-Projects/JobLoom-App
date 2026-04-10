@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "test": "npx playwright test",
     "test:e2e": "npx playwright test",
+    "test:e2e:interview": "npx playwright test e2e/interview-scheduling.spec.ts --workers=1",
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:debug": "npx playwright test --debug",
     "test:e2e:ui": "npx playwright test --ui",
@@ -55,10 +56,12 @@
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hot-toast": "^2.6.0",
     "react-i18next": "^16.5.4",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
+    "recharts": "^3.8.1",
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {
@@ -70,6 +73,7 @@
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.24",
     "eslint": "^9.39.1",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
