@@ -36,6 +36,7 @@ const JobDetails = () => {
   const [error, setError] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState('');
+  const [toast, setToast] = useState(null);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isPublicView = searchParams.get('public') === 'true';
@@ -61,6 +62,12 @@ const JobDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = window.setTimeout(() => setToast(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
   const handleAction = action => {
     setActionType(action);
     setShowConfirmDialog(true);
@@ -70,15 +77,18 @@ const JobDetails = () => {
     try {
       if (actionType === 'close') {
         await closeJob(job._id);
+        setToast({ type: 'success', message: 'Job closed successfully.' });
       } else if (actionType === 'filled') {
         await markJobAsFilled(job._id);
+        setToast({ type: 'success', message: 'Job marked as filled successfully.' });
       } else if (actionType === 'delete') {
         await deleteJob(job._id);
+        setToast({ type: 'success', message: 'Job deleted successfully.' });
       }
       setShowConfirmDialog(false);
-      navigate('/employer/my-jobs');
+      window.setTimeout(() => navigate('/employer/my-jobs'), 800);
     } catch (err) {
-      setError(err.message || 'Action failed');
+      setToast({ type: 'error', message: err.message || 'Action failed' });
       setShowConfirmDialog(false);
     }
   };
@@ -232,7 +242,9 @@ const JobDetails = () => {
             </div>
             <div>
               <p className="text-sm text-muted mb-1">{t('job.category')}</p>
-              <p className="font-medium text-text-dark capitalize">{job.category}</p>
+              <p className="font-medium text-text-dark capitalize">
+                {job.categoryLabel || job.category}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted mb-1">{t('job.employment_type')}</p>
@@ -349,6 +361,19 @@ const JobDetails = () => {
                 Confirm
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed left-4 bottom-4 z-[60] max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+          <div
+            className={`px-4 py-3 rounded-lg shadow-lg flex items-start gap-2 text-white ${
+              toast.type === 'success' ? 'bg-success' : 'bg-error'
+            }`}
+          >
+            <FaTimesCircle className="w-4 h-4 mt-0.5" />
+            <span className="text-sm leading-relaxed">{toast.message}</span>
           </div>
         </div>
       )}
