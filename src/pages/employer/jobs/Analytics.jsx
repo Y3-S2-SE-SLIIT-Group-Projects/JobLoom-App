@@ -2,15 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../../hooks/useJobs';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import {
-  FaBriefcase,
-  FaFileAlt,
-  FaUsers,
-  FaCheckCircle,
-  FaChartLine,
-  FaSyncAlt,
-  FaExclamationTriangle,
-} from 'react-icons/fa';
+import { FaChartLine, FaSyncAlt, FaExclamationTriangle } from 'react-icons/fa';
 
 import DottedBackground from '../../../components/DottedBackground';
 import { C, T } from '../../dashboard/jobloomTokens';
@@ -42,26 +34,18 @@ const Analytics = () => {
     {
       label: t('employer.analytics.total_jobs'),
       value: stats?.totalJobs,
-      icon: FaBriefcase,
-      color: 'from-primary to-deep-blue',
     },
     {
       label: t('employer.analytics.active_openings'),
       value: stats?.openJobs,
-      icon: FaFileAlt,
-      color: 'from-info to-primary',
     },
     {
       label: t('employer.analytics.total_applicants'),
       value: stats?.totalApplicants,
-      icon: FaUsers,
-      color: 'from-success to-info',
     },
     {
       label: t('employer.analytics.positions_filled'),
       value: stats?.filledJobs,
-      icon: FaCheckCircle,
-      color: 'from-warning to-success',
     },
   ];
 
@@ -97,13 +81,19 @@ const Analytics = () => {
   return (
     <DottedBackground>
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
-        <div className={`rounded-3xl border ${C.border} ${C.bgSurface} shadow-sm overflow-hidden`}>
-          <div className="p-8 md:p-10 bg-gradient-to-r from-primary/10 via-sky-light/20 to-surface">
-            <h1 className="text-4xl font-bold text-text-dark mb-2 flex items-center gap-3">
-              <FaChartLine className="text-primary" />
+        <div className={`rounded-2xl border ${C.border} ${C.bgSurface} shadow-sm overflow-hidden`}>
+          <div className="p-5 md:p-6 bg-gradient-to-r from-primary/10 via-sky-light/20 to-surface">
+            <span
+              className={`hero-badge-shimmer glass-effect inline-flex items-center gap-2 w-fit mb-2 px-3 py-1.5 ${C.primary} text-[0.62rem] ${T.bold} rounded-full tracking-widest uppercase ${T.body} border border-[color:color-mix(in_srgb,var(--color-sky-light)_60%,transparent)]`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-blue-green)] animate-pulse" />
+              {t('employer.dashboard.badge')}
+            </span>
+            <h1 className="text-2xl md:text-[2rem] font-bold text-text-dark mb-2 flex items-center gap-3">
+              <FaChartLine className="employer-card-gradient-text" />
               {t('employer.analytics.title')}
             </h1>
-            <p className="text-lg text-muted">{t('employer.analytics.subtitle')}</p>
+            <p className="text-sm md:text-base text-muted">{t('employer.analytics.subtitle')}</p>
           </div>
         </div>
 
@@ -130,32 +120,30 @@ const Analytics = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {statsCards.map((stat, index) => {
-            const IconComponent = stat.icon;
             return (
               <div
                 key={index}
-                className="bg-surface rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-all"
+                className="employer-action-card rounded-xl shadow-sm p-6 hover:shadow-md transition-all"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div
-                    className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center shadow-lg`}
-                  >
-                    <IconComponent className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <p className="text-sm text-muted mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-text-dark">{renderStatValue(stat.value)}</p>
+                <p className="text-sm employer-card-gradient-text mb-1" style={{ opacity: 0.9 }}>
+                  {stat.label}
+                </p>
+                <p className="text-3xl font-bold employer-card-gradient-text">
+                  {renderStatValue(stat.value)}
+                </p>
               </div>
             );
           })}
         </div>
 
-        <div className="bg-surface rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-xl font-bold text-text-dark mb-4">
+        <div className="employer-action-card rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-bold employer-card-gradient-text mb-4">
             {t('employer.analytics.snapshot_title')}
           </h2>
           {!loading && !hasStats && !error && (
-            <p className="text-muted text-sm mb-4">{t('employer.analytics.no_data')}</p>
+            <p className="text-sm mb-4 employer-card-gradient-text" style={{ opacity: 0.8 }}>
+              {t('employer.analytics.no_data')}
+            </p>
           )}
           <div className="h-80">
             {hasChartData ? (
@@ -169,7 +157,7 @@ const Analytics = () => {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center rounded-lg bg-surface-muted text-muted">
+              <div className="h-full flex items-center justify-center rounded-lg bg-[color:color-mix(in_srgb,var(--color-sky-light)_20%,transparent)] employer-card-gradient-text">
                 {loading ? t('employer.analytics.loading_chart') : t('employer.analytics.no_chart')}
               </div>
             )}

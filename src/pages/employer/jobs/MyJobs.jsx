@@ -14,6 +14,8 @@ import {
   Trash2,
   Filter,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 const MyJobs = () => {
@@ -24,6 +26,8 @@ const MyJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [actionType, setActionType] = useState('');
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const jobsPerPage = 8;
 
   const loadJobs = async () => {
     try {
@@ -42,6 +46,10 @@ const MyJobs = () => {
 
   const filteredJobs =
     filterStatus === 'all' ? jobs : jobs.filter(job => job.status === filterStatus);
+
+  const totalPages = Math.max(1, Math.ceil(filteredJobs.length / jobsPerPage));
+  const startIndex = (currentPage - 1) * jobsPerPage;
+  const paginatedJobs = filteredJobs.slice(startIndex, startIndex + jobsPerPage);
 
   const handleAction = (job, action) => {
     setSelectedJob(job);
@@ -87,6 +95,21 @@ const MyJobs = () => {
 
   const formatSalary = (amount, type) => {
     return `LKR ${amount.toLocaleString()} / ${type}`;
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus, jobs.length]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const changePage = newPage => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+    setCurrentPage(newPage);
   };
 
   return (
@@ -188,7 +211,7 @@ const MyJobs = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {filteredJobs.map(job => (
+                  {paginatedJobs.map(job => (
                     <tr key={job._id} className="hover:bg-surface-muted/40 transition-colors">
                       <td className="px-4 py-3">
                         <Link
@@ -235,6 +258,35 @@ const MyJobs = () => {
                   ))}
                 </tbody>
               </table>
+
+              {filteredJobs.length > jobsPerPage && (
+                <div className="px-4 py-4 border-t border-border bg-surface flex items-center justify-between">
+                  <div className="text-sm text-muted">
+                    Showing {paginatedJobs.length} of {filteredJobs.length} jobs
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => changePage(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-sm text-muted hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Prev
+                    </button>
+                    <div className="text-sm text-muted px-2">
+                      Page {currentPage} of {totalPages}
+                    </div>
+                    <button
+                      onClick={() => changePage(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border bg-surface text-sm text-muted hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

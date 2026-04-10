@@ -136,6 +136,7 @@ const Navbar = () => {
   };
 
   const isEmployerSection = location.pathname.startsWith('/employer');
+  const isEmployerUser = currentUser?.role === 'employer';
   const isAuthPage = ['/login', '/register', '/forgot-password', '/verify-registration'].some(p =>
     location.pathname.startsWith(p)
   );
@@ -250,12 +251,14 @@ const Navbar = () => {
           {/* Context-aware links */}
           {!isAuthPage && (
             <>
-              {isEmployerSection && (
+              {isEmployerUser && !isAdminSection && (
                 <Link
-                  to="/"
+                  to={isEmployerSection ? '/' : '/employer/dashboard'}
                   className="hidden md:inline-flex items-center px-3.5 py-2 text-muted hover:text-primary font-medium transition-colors"
                 >
-                  {t('navbar.browse_jobs') || 'Browse Jobs'}
+                  {isEmployerSection
+                    ? t('navbar.browse_jobs') || 'Browse Jobs'
+                    : t('navbar.dashboard') || 'Dashboard'}
                 </Link>
               )}
 

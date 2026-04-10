@@ -1332,7 +1332,7 @@ const CreateJob = () => {
       setGenerationMessage(
         usedTemplate
           ? `Description generated using template fallback${result?.reason ? ` (${result.reason})` : ''}.`
-          : 'Description generated using Cohere AI.'
+          : 'Description generated using AI.'
       );
     } catch (err) {
       setError(err.message || 'Failed to generate description.');

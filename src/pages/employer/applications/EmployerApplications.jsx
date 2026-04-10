@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useJobs } from '../../../hooks/useJobs';
 import {
   loadAllJobStats,
@@ -9,7 +10,8 @@ import {
 } from '../../../store/slices/applicationSlice';
 
 import DottedBackground from '../../../components/DottedBackground';
-import { FaBriefcase, FaClipboardList, FaEye, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaBriefcase, FaEye, FaSearch, FaFilter } from 'react-icons/fa';
+import { C, T } from '../../dashboard/jobloomTokens';
 
 const STATUS_BADGE = {
   open: 'bg-success/20 text-success border-success',
@@ -27,6 +29,7 @@ const STAT_COLORS = {
 
 const EmployerApplications = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { fetchMyJobs, loading: jobsLoading } = useJobs();
   const jobStatsMap = useSelector(selectJobStatsMap);
   const statsLoading = useSelector(selectApplicationLoading('allJobStats'));
@@ -74,14 +77,20 @@ const EmployerApplications = () => {
 
   return (
     <DottedBackground>
-      {/* Header */}
-      <div className="bg-surface border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex items-center gap-3 mb-2">
-            <FaClipboardList className="w-7 h-7 text-primary" />
-            <h1 className="text-3xl font-bold text-text-dark">Applications</h1>
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className={`rounded-2xl border ${C.border} ${C.bgSurface} shadow-sm overflow-hidden`}>
+          <div className="p-5 md:p-6 bg-gradient-to-r from-primary/10 via-sky-light/20 to-surface">
+            <span
+              className={`hero-badge-shimmer glass-effect inline-flex items-center gap-2 w-fit mb-2 px-3 py-1.5 ${C.primary} text-[0.62rem] ${T.bold} rounded-full tracking-widest uppercase ${T.body} border border-[color:color-mix(in_srgb,var(--color-sky-light)_60%,transparent)]`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[color:var(--color-blue-green)] animate-pulse" />
+              {t('employer.dashboard.badge')}
+            </span>
+            <h1 className={`${T.xl} md:text-[2rem] ${T.bold} text-text-dark mb-2`}>Applications</h1>
+            <p className={`${T.sm} md:text-[var(--text-base)] text-muted`}>
+              Review and manage applications across all your job postings.
+            </p>
           </div>
-          <p className="text-muted">Review and manage applications across all your job postings.</p>
         </div>
       </div>
 
