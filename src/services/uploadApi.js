@@ -15,17 +15,33 @@ export async function uploadFile({ file, folder }) {
   formData.append('file', file);
   if (folder) formData.append('folder', folder);
 
-  const response = await fetch(`${API_URL}/upload`, {
-    method: 'POST',
-    body: formData,
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 90000);
 
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data?.message || 'Upload failed');
+  try {
+    const response = await fetch(`${API_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+      signal: controller.signal,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.message || 'Upload failed');
+    }
+
+    return data;
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw new Error('Upload timed out. Please try again.');
+    }
+    if (err instanceof TypeError && /failed to fetch/i.test(err.message)) {
+      throw new Error('Upload failed: network/CORS issue or backend is unreachable.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return data;
 }
 
 /**

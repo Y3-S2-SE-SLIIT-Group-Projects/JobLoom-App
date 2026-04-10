@@ -11,6 +11,13 @@ const Register = () => {
   const { registerUser, loading } = useUser();
   const [apiError, setApiError] = useState('');
 
+  const getErrorMessage = err => {
+    if (typeof err === 'string') return err;
+    return (
+      err?.message || t('errors.registration_failed', 'Registration failed. Please try again.')
+    );
+  };
+
   const handleSubmit = async submitData => {
     try {
       setApiError('');
@@ -18,9 +25,7 @@ const Register = () => {
       // Redirect to OTP verification with phone number
       navigate('/verify-registration', { state: { phone: submitData.phone } });
     } catch (err) {
-      setApiError(
-        err.message || t('errors.registration_failed', 'Registration failed. Please try again.')
-      );
+      setApiError(getErrorMessage(err));
     }
   };
 

@@ -21,20 +21,22 @@ const PhoneStep = ({ onNext, loading }) => {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
+  const normalizePhone = value => value.replace(/\D/g, '').slice(0, 10);
+
   const handleSubmit = async e => {
     e.preventDefault();
     if (!phone.trim()) {
       setError(t('errors.phone_required'));
       return;
     }
-    const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
-    if (!phoneRegex.test(phone.trim().replace(/\s/g, ''))) {
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
       setError(t('errors.invalid_phone'));
       return;
     }
     try {
-      await forgotPassword(phone.trim());
-      onNext(phone.trim());
+      await forgotPassword(phone);
+      onNext(phone);
     } catch (err) {
       setError(err.message || t('errors.otp_send_failed'));
     }
@@ -60,15 +62,18 @@ const PhoneStep = ({ onNext, loading }) => {
 
       <div>
         <label className="block text-sm font-medium text-text-dark mb-1.5">
-          {t('auth.phone_number')}
+          {t('auth.phone_number')} <span className="text-error">*</span>
         </label>
         <div className="relative">
           <FaPhone className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
           <input
             type="tel"
             value={phone}
+            inputMode="numeric"
+            maxLength={10}
+            pattern="\d{10}"
             onChange={e => {
-              setPhone(e.target.value);
+              setPhone(normalizePhone(e.target.value));
               setError('');
             }}
             placeholder={t('auth.phone_placeholder')}
