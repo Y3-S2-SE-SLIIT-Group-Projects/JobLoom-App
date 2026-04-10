@@ -7,12 +7,18 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach JWT token from localStorage on every request
+// Attach JWT token and low-data-mode header on every request
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  const lowData = localStorage.getItem('jobloom_low_data_mode') === 'true';
+  if (lowData) {
+    config.headers['X-Low-Data'] = '1';
+  }
+
   return config;
 });
 
@@ -20,6 +26,10 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   error => {
+    if (!navigator.onLine || error.code === 'ERR_NETWORK') {
+      return Promise.reject(new Error('OFFLINE'));
+    }
+
     const message =
       error.response?.data?.message ||
       error.response?.data?.error ||

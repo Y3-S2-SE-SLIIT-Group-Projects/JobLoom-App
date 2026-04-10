@@ -1,4 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  cacheJobListings,
+  getCachedJobListings,
+  cacheJobDetail,
+  getCachedJobDetail,
+  setMeta,
+  getMeta,
+} from '../../offline';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -54,21 +62,49 @@ const getAuthHeaders = (includeContentType = false) => {
 export const fetchJobsThunk = createAsyncThunk(
   'jobs/fetchJobs',
   async (customFilters = {}, { getState, rejectWithValue }) => {
+    const mergedFilters = { ...getState().jobs.filters, ...customFilters };
+
+    const lowData = localStorage.getItem('jobloom_low_data_mode') === 'true';
+    if (lowData && !mergedFilters.limit) {
+      mergedFilters.limit = 5;
+    }
+
+    const queryString = buildQueryParams(mergedFilters);
+
     try {
-      const mergedFilters = { ...getState().jobs.filters, ...customFilters };
-      const queryString = buildQueryParams(mergedFilters);
-      const response = await fetch(`${API_URL}/jobs?${queryString}`);
+      const headers = {};
+      if (lowData) headers['X-Low-Data'] = '1';
+
+      const response = await fetch(`${API_URL}/jobs?${queryString}`, { headers });
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch jobs');
       }
 
-      return {
-        jobs: data?.data?.jobs || [],
-        pagination: data?.data?.pagination || null,
-      };
+      const jobs = data?.data?.jobs || [];
+      const pagination = data?.data?.pagination || null;
+
+      cacheJobListings(jobs).catch(() => {});
+      if (pagination) setMeta('jobs_pagination', pagination).catch(() => {});
+
+      return { jobs, pagination };
     } catch (err) {
+      if (!navigator.onLine || err.message === 'Failed to fetch') {
+        try {
+          const cached = await getCachedJobListings();
+          const cachedPagination = await getMeta('jobs_pagination');
+          if (cached.length > 0) {
+            return {
+              jobs: cached,
+              pagination: cachedPagination || null,
+              fromCache: true,
+            };
+          }
+        } catch {
+          // IndexedDB also failed
+        }
+      }
       return rejectWithValue(err.message || 'Failed to fetch jobs');
     }
   }
@@ -85,8 +121,18 @@ export const fetchJobByIdThunk = createAsyncThunk(
         throw new Error(data.message || 'Failed to fetch job');
       }
 
-      return data.data;
+      const job = data.data;
+      cacheJobDetail(job).catch(() => {});
+      return job;
     } catch (err) {
+      if (!navigator.onLine || err.message === 'Failed to fetch') {
+        try {
+          const cached = await getCachedJobDetail(jobId);
+          if (cached) return { ...cached, fromCache: true };
+        } catch {
+          // IndexedDB also failed
+        }
+      }
       return rejectWithValue(err.message || 'Failed to fetch job');
     }
   }

@@ -13,6 +13,7 @@ import parse from 'html-react-parser';
 
 import DottedBackground from '../components/DottedBackground';
 import ApplyModal from '../components/applications/ApplyModal';
+import SkillGapModal from '../components/SkillGapModal';
 import {
   FaArrowLeft,
   FaBriefcase,
@@ -23,6 +24,7 @@ import {
   FaPaperPlane,
   FaUsers,
   FaCheckCircle,
+  FaChartBar,
 } from 'react-icons/fa';
 import { getImageUrl } from '../utils/imageUrls';
 
@@ -46,6 +48,7 @@ const PublicJobDetails = () => {
   const [job, setJob] = useState(null);
   const [error, setError] = useState('');
   const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [skillGapModalOpen, setSkillGapModalOpen] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Load applied job IDs for "already applied" persistence (job seeker only)
@@ -82,7 +85,7 @@ const PublicJobDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // ── Derived values ──────────────────────────────────────────
+  // Derived values
   const isGuest = !currentUser;
   const isSeeker = currentUser?.role === 'job_seeker';
   const isOwner =
@@ -162,7 +165,7 @@ const PublicJobDetails = () => {
     if (mapsUrl) window.open(mapsUrl, '_blank', 'noopener,noreferrer');
   };
 
-  // ── Loading / Error states ──────────────────────────────────
+  // Loading / Error states
   if (loading || isInitialLoading) {
     return (
       <div className="min-h-screen bg-surface flex items-center justify-center">
@@ -188,7 +191,7 @@ const PublicJobDetails = () => {
     );
   }
 
-  // ── Render ──────────────────────────────────────────────────
+  // Render
   return (
     <DottedBackground>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-8">
@@ -312,10 +315,21 @@ const PublicJobDetails = () => {
 
         {/* Description */}
         <div className="mb-6 sm:mb-8 bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4 flex items-center gap-2">
-            <FaFileAlt className="w-5 h-5 text-subtle shrink-0" />
-            {t('job.job_description')}
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-text-dark flex items-center gap-2">
+              <FaFileAlt className="w-5 h-5 text-subtle shrink-0" />
+              {t('job.job_description')}
+            </h2>
+            {isSeeker && (
+              <button
+                onClick={() => setSkillGapModalOpen(true)}
+                className="w-full sm:w-auto justify-center px-4 py-2 min-h-[40px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
+              >
+                <FaChartBar className="w-4 h-4 shrink-0" />
+                {t('skill_gap.analyze_with_my_cv')}
+              </button>
+            )}
+          </div>
           <div className="border-t border-neutral-100 pt-4 overflow-x-auto">
             <div className="prose prose-sm sm:prose-lg max-w-none text-muted leading-relaxed [&_img]:max-w-full [&_pre]:max-w-full [&_table]:block [&_table]:overflow-x-auto sm:[&_table]:table">
               {parse(job.description || t('job.no_description'))}
@@ -340,7 +354,7 @@ const PublicJobDetails = () => {
           </div>
         )}
 
-        {/* ── CTA Section ──────────────────────────────────────── */}
+        {/* CTA Section */}
         <div className="pt-4 sm:pt-6 border-t border-border">
           {/* Guest → Login to Apply */}
           {isGuest && (
@@ -360,6 +374,13 @@ const PublicJobDetails = () => {
                 <FaCheckCircle className="w-5 h-5 text-success shrink-0" />
                 You have already applied
               </div>
+              <button
+                onClick={() => setSkillGapModalOpen(true)}
+                className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
+              >
+                <FaChartBar className="w-5 h-5 shrink-0" />
+                {t('skill_gap.analyze_with_my_cv')}
+              </button>
               <Link
                 to="/my-applications"
                 className="text-sm text-primary hover:underline font-medium text-center sm:text-left py-1"
@@ -371,13 +392,22 @@ const PublicJobDetails = () => {
 
           {/* Job seeker → Apply (only when job is open and hasn't applied) */}
           {isSeeker && job.status === 'open' && !hasApplied && (
-            <button
-              onClick={() => setApplyModalOpen(true)}
-              className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
-            >
-              <FaPaperPlane className="w-5 h-5 shrink-0" />
-              {t('applications.apply_now')}
-            </button>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
+              <button
+                onClick={() => setApplyModalOpen(true)}
+                className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
+              >
+                <FaPaperPlane className="w-5 h-5 shrink-0" />
+                {t('applications.apply_now')}
+              </button>
+              <button
+                onClick={() => setSkillGapModalOpen(true)}
+                className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
+              >
+                <FaChartBar className="w-5 h-5 shrink-0" />
+                {t('skill_gap.analyze_with_my_cv')}
+              </button>
+            </div>
           )}
 
           {/* Employer (own job) → Manage Applications */}
@@ -397,6 +427,14 @@ const PublicJobDetails = () => {
       <ApplyModal
         isOpen={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
+        jobId={job._id}
+        jobTitle={job.title}
+      />
+
+      {/* Skill Gap Analysis Modal */}
+      <SkillGapModal
+        isOpen={skillGapModalOpen}
+        onClose={() => setSkillGapModalOpen(false)}
         jobId={job._id}
         jobTitle={job.title}
       />
