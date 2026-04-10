@@ -34,7 +34,7 @@ import { getImageUrl } from '../../../utils/imageUrls';
 import { getSignedDownloadUrl } from '../../../services/uploadApi';
 import { useTranslation } from 'react-i18next';
 
-// ── Status transition rules (match backend) ─────────────────────────────────────
+// Status transition rules (match backend)
 
 const STATUS_TRANSITIONS = {
   pending: ['reviewed', 'shortlisted', 'accepted', 'rejected'],

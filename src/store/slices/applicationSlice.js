@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { applicationApi } from '../../services/applicationApi';
+import { enqueue } from '../../offline';
 
-// ─── Async Thunks ──────────────────────────────────────────────────────────────
+// Async Thunks
 
 export const submitApplication = createAsyncThunk(
   'applications/submit',
@@ -10,6 +11,20 @@ export const submitApplication = createAsyncThunk(
       const { data: res } = await applicationApi.apply(data);
       return res.data?.application ?? res.data ?? res;
     } catch (err) {
+      if (!navigator.onLine || err.message === 'OFFLINE') {
+        const queued = await enqueue({
+          type: 'application/submit',
+          payload: data,
+          meta: { jobId: data.jobId },
+        });
+        return {
+          _id: `offline_${queued.id}`,
+          jobId: data.jobId,
+          status: 'queued_offline',
+          coverLetter: data.coverLetter,
+          queuedAt: queued.createdAt,
+        };
+      }
       return rejectWithValue(err.message);
     }
   }
@@ -63,7 +78,7 @@ export const updateApplicationNotes = createAsyncThunk(
   }
 );
 
-// ── Employer thunks ─────────────────────────────────────────────────────────────
+// Employer thunks
 
 export const loadJobApplications = createAsyncThunk(
   'applications/loadForJob',
@@ -324,7 +339,7 @@ const applicationSlice = createSlice({
         state.error.jobApplications = payload;
       });
 
-    // ── loadJobStats ──
+    // loadJobStats
     builder
       .addCase(loadJobStats.pending, state => {
         state.loading.jobStats = true;
@@ -340,7 +355,7 @@ const applicationSlice = createSlice({
         state.error.jobStats = payload;
       });
 
-    // ── loadAllJobStats ──
+    // loadAllJobStats
     builder
       .addCase(loadAllJobStats.pending, state => {
         state.loading.allJobStats = true;
@@ -357,7 +372,7 @@ const applicationSlice = createSlice({
         state.error.allJobStats = payload;
       });
 
-    // ── updateApplicationStatus ──
+    // updateApplicationStatus
     builder
       .addCase(updateApplicationStatus.pending, state => {
         state.loading.updateStatus = true;
@@ -377,7 +392,7 @@ const applicationSlice = createSlice({
         state.error.updateStatus = payload;
       });
 
-    // ── scheduleInterview ──
+    // scheduleInterview
     builder
       .addCase(scheduleInterview.pending, state => {
         state.loading.scheduleInterview = true;
@@ -397,7 +412,7 @@ const applicationSlice = createSlice({
         state.error.scheduleInterview = payload;
       });
 
-    // ── cancelInterview ──
+    // cancelInterview
     builder
       .addCase(cancelInterview.pending, state => {
         state.loading.cancelInterview = true;
@@ -417,7 +432,7 @@ const applicationSlice = createSlice({
         state.error.cancelInterview = payload;
       });
 
-    // ── loadInterviewJoinContext ──
+    // loadInterviewJoinContext
     builder
       .addCase(loadInterviewJoinContext.pending, state => {
         state.loading.interviewJoinContext = true;
@@ -433,7 +448,7 @@ const applicationSlice = createSlice({
         state.error.interviewJoinContext = payload;
       });
 
-    // ── updateApplicationNotes ──
+    // updateApplicationNotes
     builder
       .addCase(updateApplicationNotes.pending, state => {
         state.loading.updateNotes = true;

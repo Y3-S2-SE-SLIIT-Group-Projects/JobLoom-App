@@ -32,6 +32,7 @@
   "navbar": {
     "dashboard": "ප්‍රධාන පුවරුව",
     "jobs": "රැකියා",
+    "my_jobs": "මගේ රැකියා",
     "users": "පරිශීලකයින්",
     "applications": "අයදුම්පත්",
     "analytics": "දත්ත විග්‍රහය",
@@ -43,7 +44,11 @@
     "sign_out": "ඉවත් වන්න",
     "home": "මුල් පිටුව",
     "about": "අපි ගැන",
-    "explore": "ගවේෂණය"
+    "explore": "ගවේෂණය",
+    "low_data": "අඩු දත්ත",
+    "low_data_on": "අඩු දත්ත ප්‍රකාරය සක්‍රීයයි",
+    "low_data_off": "අඩු දත්ත ප්‍රකාරය සක්‍රීය කරන්න",
+    "low_data_toggle": "අඩු දත්ත ප්‍රකාරය මාරු කරන්න"
   },
   "applications": {
     "my_applications_title": "මගේ අයදුම්පත්",
