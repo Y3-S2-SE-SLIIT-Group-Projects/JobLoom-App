@@ -17,9 +17,9 @@ const AlertBanner = ({ type = 'info', message, onDismiss }) => {
 
   return (
     <div
-      className={`flex items-start justify-between gap-2 border rounded-lg px-4 py-3 text-sm ${TYPE_CLASSES[type]}`}
+      className={`flex min-w-0 max-w-full items-start justify-between gap-2 border rounded-lg px-4 py-3 text-sm ${TYPE_CLASSES[type]}`}
     >
-      <span>{message}</span>
+      <span className="min-w-0 break-words">{message}</span>
       {onDismiss && (
         <button
           type="button"

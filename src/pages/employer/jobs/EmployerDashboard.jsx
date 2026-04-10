@@ -6,11 +6,11 @@ import { useJobs } from '../../../hooks/useJobs';
 import { loadAllJobStats, selectJobStatsMap } from '../../../store/slices/applicationSlice';
 
 import DottedBackground from '../../../components/DottedBackground';
-import { FaArrowRight } from 'react-icons/fa';
 import { C, T } from '../../dashboard/jobloomTokens';
 import createJobImg from '../../../assets/images/create-job.svg';
 import myJobsImg from '../../../assets/images/employer-illustration.svg';
 import applicationListImg from '../../../assets/images/application-list.svg';
+import profileImg from '../../../assets/images/profile.svg';
 
 const EmployerDashboard = () => {
   const dispatch = useDispatch();
@@ -53,7 +53,7 @@ const EmployerDashboard = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const quickActions = [
+  const leftCards = [
     {
       title: t('employer.dashboard.quick_create_job'),
       description: t('employer.dashboard.quick_create_job_desc'),
@@ -66,26 +66,20 @@ const EmployerDashboard = () => {
       link: '/employer/my-jobs',
       image: myJobsImg,
     },
+  ];
+
+  const rightCards = [
+    {
+      title: t('employer.dashboard.info_profile'),
+      description: t('employer.dashboard.info_profile_desc'),
+      link: '/profile',
+      image: profileImg,
+    },
     {
       title: t('employer.dashboard.quick_applications'),
       description: t('employer.dashboard.quick_applications_desc'),
       link: '/employer/applications',
       image: applicationListImg,
-    },
-  ];
-
-  const infoCards = [
-    {
-      title: t('employer.dashboard.info_profile'),
-      description: t('employer.dashboard.info_profile_desc'),
-      link: '/profile',
-      accent: '#D86C2A',
-    },
-    {
-      title: t('employer.dashboard.info_calendly'),
-      description: t('employer.dashboard.info_calendly_desc'),
-      link: '/employer/settings/calendly',
-      accent: '#D86C2A',
     },
   ];
 
@@ -107,34 +101,65 @@ const EmployerDashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {quickActions.map((action, index) => {
-              const isApplications = action.link === '/employer/applications';
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {leftCards.map((card, index) => (
+              <Link
+                key={index}
+                to={card.link}
+                className="block employer-action-card rounded-2xl shadow-lg p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
+              >
+                <div className="flex items-start gap-6">
+                  <div className="w-36 h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity">
+                      {card.title}
+                    </h3>
+                    <p
+                      className="mb-4 text-lg employer-card-gradient-text"
+                      style={{ opacity: 0.9 }}
+                    >
+                      {card.description}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="space-y-6">
+            {rightCards.map((card, index) => {
+              const isApplications = card.link === '/employer/applications';
               const description =
                 isApplications && totalApplications > 0
                   ? t('employer.dashboard.quick_applications_desc_count', {
                       count: totalApplications,
                     })
-                  : action.description;
+                  : card.description;
 
               return (
                 <Link
                   key={index}
-                  to={action.link}
+                  to={card.link}
                   className="block employer-action-card rounded-2xl shadow-lg p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
                 >
                   <div className="flex items-start gap-6">
                     <div className="w-36 h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img
-                        src={action.image}
-                        alt={action.title}
+                        src={card.image}
+                        alt={card.title}
                         className="w-full h-full object-contain"
                       />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity">
-                        {action.title}
+                        {card.title}
                       </h3>
                       <p
                         className="mb-4 text-lg employer-card-gradient-text"
@@ -142,42 +167,6 @@ const EmployerDashboard = () => {
                       >
                         {description}
                       </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="space-y-4">
-            {infoCards.map((card, index) => {
-              return (
-                <Link
-                  key={index}
-                  to={card.link}
-                  className="block employer-action-card rounded-xl shadow-sm p-6 hover:shadow-md transition-all cursor-pointer group"
-                >
-                  <div className="flex items-start">
-                    <div className="flex-1">
-                      <h4
-                        className="font-semibold mb-1"
-                        style={card.accent ? { color: card.accent } : undefined}
-                      >
-                        {card.title}
-                      </h4>
-                      <p
-                        className="text-sm mb-3"
-                        style={card.accent ? { color: card.accent, opacity: 0.9 } : undefined}
-                      >
-                        {card.description}
-                      </p>
-                      <div
-                        className="flex items-center font-medium text-sm group-hover:translate-x-1 transition-transform"
-                        style={card.accent ? { color: card.accent } : undefined}
-                      >
-                        {t('employer.dashboard.view_more')}
-                        <FaArrowRight className="w-4 h-4 ml-1" />
-                      </div>
                     </div>
                   </div>
                 </Link>
