@@ -275,7 +275,9 @@ const PublicJobDetails = () => {
             </div>
             <div>
               <p className="text-sm text-muted mb-1">{t('job.category')}</p>
-              <p className="font-medium text-text-dark capitalize">{job.category}</p>
+              <p className="font-medium text-text-dark capitalize">
+                {job.categoryLabel || job.category}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted mb-1">{t('job.employment_type')}</p>

@@ -73,6 +73,37 @@ const JOB_CATEGORIES = [
   { value: 'other', label: 'Other' },
 ];
 
+const normalizeText = value =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const resolveCategoryValue = input => {
+  const raw = String(input || '').trim();
+  if (!raw) return '';
+
+  const exactValue = JOB_CATEGORIES.find(cat => cat.value.toLowerCase() === raw.toLowerCase());
+  if (exactValue) return exactValue.value;
+
+  const exactLabel = JOB_CATEGORIES.find(cat => cat.label.toLowerCase() === raw.toLowerCase());
+  if (exactLabel) return exactLabel.value;
+
+  const normalizedRaw = normalizeText(raw);
+  const normalizedMatch = JOB_CATEGORIES.find(cat => {
+    const valueNorm = normalizeText(cat.value);
+    const labelNorm = normalizeText(cat.label);
+    return (
+      valueNorm === normalizedRaw ||
+      labelNorm === normalizedRaw ||
+      valueNorm.startsWith(normalizedRaw) ||
+      labelNorm.startsWith(normalizedRaw)
+    );
+  });
+
+  return normalizedMatch ? normalizedMatch.value : '';
+};
+
 // Skill sets per category  (advanced + simple basics merged)
 const CATEGORY_SKILLS = {
   agriculture: [
@@ -1007,9 +1038,11 @@ const CreateJob = () => {
   const { createJob, generateJobDescription } = useJobs();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
   const [skillInput, setSkillInput] = useState('');
+  const [categoryInput, setCategoryInput] = useState('');
   const [skillDropdownOpen, setSkillDropdownOpen] = useState(false);
   const [useMapLocation, setUseMapLocation] = useState(false);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
@@ -1068,6 +1101,18 @@ const CreateJob = () => {
   const [errors, setErrors] = useState({});
   const todayDate = new Date().toISOString().split('T')[0];
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  useEffect(() => {
+    if (!error) return undefined;
+    const timer = window.setTimeout(() => setError(''), 4500);
+    return () => window.clearTimeout(timer);
+  }, [error]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = window.setTimeout(() => setToast(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   // Load Google Maps script
   useEffect(() => {
@@ -1289,9 +1334,13 @@ const CreateJob = () => {
     setIsGeneratingDescription(true);
 
     try {
+      const rawCategory = String(categoryInput || formData.category || '').trim();
+      const resolvedCategory = resolveCategoryValue(rawCategory);
+      const categoryForGeneration = resolvedCategory || (rawCategory ? 'other' : '');
+
       const missingFields = [];
       if (!formData.title?.trim()) missingFields.push('Job Title');
-      if (!formData.category) missingFields.push('Category');
+      if (!categoryForGeneration) missingFields.push('Category');
       if (!formData.jobRole?.trim()) missingFields.push('Job Role');
       if (!formData.employmentType) missingFields.push('Employment Type');
       if (!formData.skillsRequired?.length) missingFields.push('Required Skills');
@@ -1315,7 +1364,7 @@ const CreateJob = () => {
 
       const result = await generateJobDescription({
         title: formData.title,
-        category: formData.category,
+        category: categoryForGeneration,
         jobRole: formData.jobRole,
         employmentType: formData.employmentType,
         salaryType: formData.salaryType,
@@ -1510,6 +1559,15 @@ const CreateJob = () => {
         }
       });
 
+      const rawCategory = String(categoryInput || formData.category || '').trim();
+      const resolvedCategory = resolveCategoryValue(rawCategory);
+      if (rawCategory) {
+        cleanedFormData.category = resolvedCategory || 'other';
+        if (!resolvedCategory) {
+          cleanedFormData.categoryLabel = rawCategory;
+        }
+      }
+
       // Ensure skillsRequired is explicitly included if it has items
       // This is a safety check to ensure it's not lost in the cleaning process
       if (
@@ -1574,9 +1632,13 @@ const CreateJob = () => {
       console.log('Skills being sent:', cleanSubmitData.skillsRequired);
       console.log('Original formData skills:', formData.skillsRequired);
       await createJob(cleanSubmitData);
-      navigate('/employer/my-jobs');
+      setToast({ type: 'success', message: 'Job created successfully.' });
+      window.setTimeout(() => navigate('/employer/my-jobs'), 800);
     } catch (err) {
-      setError(err.message || 'Failed to create job. Please try again.');
+      setToast({
+        type: 'error',
+        message: err.message || 'Failed to create job. Please try again.',
+      });
       scrollToTop();
     } finally {
       setLoading(false);
@@ -1592,10 +1654,26 @@ const CreateJob = () => {
           </h1>
           <p className="text-muted">{t('employer.create_form.subtitle')}</p>
         </div>
+
         {error && (
-          <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
-            <FaTimes className="w-5 h-5 mr-2" />
-            {error}
+          <div className="fixed left-4 bottom-4 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+            <div className="bg-error text-white px-4 py-3 rounded-lg shadow-lg flex items-start gap-2">
+              <FaTimes className="w-4 h-4 mt-0.5" />
+              <span className="text-sm leading-relaxed">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {toast && (
+          <div className="fixed left-4 bottom-4 z-[60] max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+            <div
+              className={`px-4 py-3 rounded-lg shadow-lg flex items-start gap-2 text-white ${
+                toast.type === 'success' ? 'bg-success' : 'bg-error'
+              }`}
+            >
+              <FaTimes className="w-4 h-4 mt-0.5" />
+              <span className="text-sm leading-relaxed">{toast.message}</span>
+            </div>
           </div>
         )}
 
@@ -1623,19 +1701,31 @@ const CreateJob = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-1">Category</label>
-                  <select
+                  <input
+                    type="text"
                     name="category"
-                    value={formData.category}
-                    onChange={handleChange}
+                    list="job-categories"
+                    value={categoryInput}
+                    onChange={e => {
+                      const inputValue = e.target.value;
+                      const resolvedValue = resolveCategoryValue(inputValue);
+
+                      setCategoryInput(inputValue);
+                      setFormData(prev => ({ ...prev, category: resolvedValue || inputValue }));
+                      if (errors.category) {
+                        setErrors(prev => ({ ...prev, category: '' }));
+                      }
+                    }}
                     className={`w-full px-4 py-2 border ${errors.category ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
-                  >
-                    <option value="">Select a category</option>
+                    placeholder="Type or select category"
+                  />
+                  <datalist id="job-categories">
                     {JOB_CATEGORIES.map(cat => (
-                      <option key={cat.value} value={cat.value}>
+                      <option key={cat.value} value={cat.label}>
                         {cat.label}
                       </option>
                     ))}
-                  </select>
+                  </datalist>
                   {errors.category && <p className="mt-1 text-sm text-error">{errors.category}</p>}
                 </div>
 
@@ -2061,6 +2151,16 @@ const CreateJob = () => {
             <p className="text-sm text-muted mb-3">
               Use the details above, then generate and edit the description before creating the job.
             </p>
+
+            <div className="mb-3 p-3 bg-info/10 border border-info/30 rounded-lg">
+              <p className="text-sm text-info font-medium mb-1">
+                Required fields for auto-generate:
+              </p>
+              <p className="text-sm text-muted">
+                Job Title, Category, Job Role, Employment Type, Salary Amount, Required Skills, and
+                Location (district/province or map address).
+              </p>
+            </div>
 
             {generationMessage && (
               <div className="mb-3 p-3 bg-success/10 text-success border border-success/30 rounded-lg text-sm">
