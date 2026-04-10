@@ -134,7 +134,31 @@ export const scheduleInterview = createAsyncThunk(
   }
 );
 
-// ─── Initial State ─────────────────────────────────────────────────────────────
+export const cancelInterview = createAsyncThunk(
+  'applications/cancelInterview',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data: res } = await applicationApi.cancelInterview(id);
+      return res.data?.application ?? res.data ?? res;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const loadInterviewJoinContext = createAsyncThunk(
+  'applications/loadInterviewJoinContext',
+  async (applicationId, { rejectWithValue }) => {
+    try {
+      const { data } = await applicationApi.getInterviewJoinContext(applicationId);
+      return data.data ?? data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+// Initial State
 
 const initialState = {
   myApplications: [],
@@ -144,6 +168,8 @@ const initialState = {
   jobStatsMap: {},
   pagination: null,
   jobAppsPagination: null,
+  /** Jitsi join payload from GET /applications/:id/interview-join-context */
+  interviewJoinContext: null,
 
   loading: {
     submit: false,
@@ -154,6 +180,8 @@ const initialState = {
     allJobStats: false,
     updateStatus: false,
     scheduleInterview: false,
+    cancelInterview: false,
+    interviewJoinContext: false,
     withdraw: false,
     updateNotes: false,
   },
@@ -167,6 +195,8 @@ const initialState = {
     allJobStats: null,
     updateStatus: null,
     scheduleInterview: null,
+    cancelInterview: null,
+    interviewJoinContext: null,
     withdraw: null,
     updateNotes: null,
   },
@@ -176,7 +206,7 @@ const initialState = {
   appliedJobIdsLoaded: false,
 };
 
-// ─── Slice ─────────────────────────────────────────────────────────────────────
+// Slice
 
 const applicationSlice = createSlice({
   name: 'applications',
@@ -193,7 +223,7 @@ const applicationSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    // ── submitApplication ──
+    // submitApplication
     builder
       .addCase(submitApplication.pending, state => {
         state.loading.submit = true;
@@ -212,7 +242,7 @@ const applicationSlice = createSlice({
         state.error.submit = payload;
       });
 
-    // ── loadMyApplications ──
+    // loadMyApplications
     builder
       .addCase(loadMyApplications.pending, state => {
         state.loading.myApplications = true;
@@ -224,7 +254,7 @@ const applicationSlice = createSlice({
         state.pagination = payload.pagination ?? null;
         // Update appliedJobIds only when fetching a large unfiltered set (for "already applied" persistence)
         const hasNoStatusFilter = !meta?.arg?.status || meta.arg.status === 'all';
-        const isLargeFetch = (meta?.arg?.limit ?? 0) >= 200;
+        const isLargeFetch = (meta?.arg?.limit ?? 0) >= 100;
         if (hasNoStatusFilter && isLargeFetch) {
           state.appliedJobIds = (payload.applications ?? [])
             .map(a => (typeof a.jobId === 'object' ? a.jobId._id : a.jobId))
@@ -237,7 +267,7 @@ const applicationSlice = createSlice({
         state.error.myApplications = payload;
       });
 
-    // ── loadApplicationById ──
+    // loadApplicationById
     builder
       .addCase(loadApplicationById.pending, state => {
         state.loading.currentApplication = true;
@@ -252,7 +282,7 @@ const applicationSlice = createSlice({
         state.error.currentApplication = payload;
       });
 
-    // ── withdrawApplication ──
+    // withdrawApplication
     builder
       .addCase(withdrawApplication.pending, state => {
         state.loading.withdraw = true;
@@ -278,7 +308,7 @@ const applicationSlice = createSlice({
         state.error.withdraw = payload;
       });
 
-    // ── loadJobApplications ──
+    // loadJobApplications
     builder
       .addCase(loadJobApplications.pending, state => {
         state.loading.jobApplications = true;
@@ -367,6 +397,42 @@ const applicationSlice = createSlice({
         state.error.scheduleInterview = payload;
       });
 
+    // ── cancelInterview ──
+    builder
+      .addCase(cancelInterview.pending, state => {
+        state.loading.cancelInterview = true;
+        state.error.cancelInterview = null;
+      })
+      .addCase(cancelInterview.fulfilled, (state, { payload }) => {
+        state.loading.cancelInterview = false;
+        state.jobApplications = state.jobApplications.map(a =>
+          a._id === payload._id ? payload : a
+        );
+        if (state.currentApplication?._id === payload._id) {
+          state.currentApplication = payload;
+        }
+      })
+      .addCase(cancelInterview.rejected, (state, { payload }) => {
+        state.loading.cancelInterview = false;
+        state.error.cancelInterview = payload;
+      });
+
+    // ── loadInterviewJoinContext ──
+    builder
+      .addCase(loadInterviewJoinContext.pending, state => {
+        state.loading.interviewJoinContext = true;
+        state.error.interviewJoinContext = null;
+        state.interviewJoinContext = null;
+      })
+      .addCase(loadInterviewJoinContext.fulfilled, (state, { payload }) => {
+        state.loading.interviewJoinContext = false;
+        state.interviewJoinContext = payload;
+      })
+      .addCase(loadInterviewJoinContext.rejected, (state, { payload }) => {
+        state.loading.interviewJoinContext = false;
+        state.error.interviewJoinContext = payload;
+      });
+
     // ── updateApplicationNotes ──
     builder
       .addCase(updateApplicationNotes.pending, state => {
@@ -390,7 +456,7 @@ const applicationSlice = createSlice({
 export const { clearSubmitError, clearLastSubmitted, resetApplicationState } =
   applicationSlice.actions;
 
-// ─── Selectors ─────────────────────────────────────────────────────────────────
+// Selectors
 
 export const selectMyApplications = state => state.applications.myApplications;
 export const selectJobApplications = state => state.applications.jobApplications;
@@ -407,5 +473,6 @@ export const selectAppliedJobIds = state => state.applications.appliedJobIds;
 export const selectAppliedJobIdsLoaded = state => state.applications.appliedJobIdsLoaded;
 export const selectHasAppliedToJob = jobId => state =>
   state.applications.appliedJobIds.includes(jobId);
+export const selectInterviewJoinContext = state => state.applications.interviewJoinContext;
 
 export default applicationSlice.reducer;

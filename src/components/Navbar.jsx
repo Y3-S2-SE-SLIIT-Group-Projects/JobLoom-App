@@ -140,6 +140,9 @@ const Navbar = () => {
   const isAuthPage = ['/login', '/register', '/forgot-password', '/verify-registration'].some(p =>
     location.pathname.startsWith(p)
   );
+  const isAdminSection = location.pathname.startsWith('/admin');
+
+  const showEmployerNav = currentUser?.role === 'employer' && !isAuthPage && !isAdminSection;
 
   const handleLogout = () => {
     logoutUser();
@@ -177,8 +180,6 @@ const Navbar = () => {
     { to: '/admin/jobs', label: t('navbar.jobs') || 'Jobs' },
   ];
 
-  const isAdminSection = location.pathname.startsWith('/admin');
-
   return (
     <header className="sticky top-0 z-50 border-b bg-surface border-border">
       <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
@@ -212,7 +213,7 @@ const Navbar = () => {
               </Link>
             ))}
           </nav>
-        ) : isEmployerSection && !isAuthPage ? (
+        ) : showEmployerNav ? (
           <nav className="hidden md:flex items-center gap-8">
             {employerNavLinks.map(link => (
               <Link

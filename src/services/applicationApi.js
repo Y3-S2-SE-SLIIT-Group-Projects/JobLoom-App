@@ -16,5 +16,9 @@ export const applicationApi = {
   getJobApplications: (jobId, params) => api.get(`/applications/job/${jobId}`, { params }),
   getJobStats: jobId => api.get(`/applications/job/${jobId}/stats`),
   updateStatus: (id, data) => api.patch(`/applications/${id}/status`, data),
-  scheduleInterview: (id, data) => api.patch(`/applications/${id}/interview-date`, data),
+  scheduleInterview: (id, data) => api.patch(`/applications/${id}/interview`, data),
+  cancelInterview: id => api.delete(`/applications/${id}/interview`),
+
+  // ── Interview (employer + seeker — join context for Jitsi) ──
+  getInterviewJoinContext: id => api.get(`/applications/${id}/interview-join-context`),
 };

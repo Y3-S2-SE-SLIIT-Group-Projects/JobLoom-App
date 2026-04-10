@@ -51,7 +51,7 @@ const PublicJobDetails = () => {
   // Load applied job IDs for "already applied" persistence (job seeker only)
   useEffect(() => {
     if (currentUser?.role === 'job_seeker' && !appliedLoaded) {
-      dispatch(loadMyApplications({ limit: 200 }));
+      dispatch(loadMyApplications({ limit: 100 }));
     }
   }, [currentUser?.role, appliedLoaded, dispatch]);
 
@@ -191,20 +191,20 @@ const PublicJobDetails = () => {
   // ── Render ──────────────────────────────────────────────────
   return (
     <DottedBackground>
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-8">
         {/* Back */}
         <Link
           to="/"
-          className="inline-flex items-center text-muted hover:text-info transition-colors mb-6"
+          className="inline-flex items-center text-muted hover:text-info transition-colors mb-4 sm:mb-6 text-sm sm:text-base"
         >
-          <FaArrowLeft className="w-5 h-5 mr-2" />
+          <FaArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
           Back to Jobs
         </Link>
 
         {/* Header */}
-        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-neutral-100 rounded-lg flex items-center justify-center overflow-hidden border border-neutral-100">
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 mb-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-neutral-100 rounded-lg flex items-center justify-center overflow-hidden border border-neutral-100 shrink-0">
               {employerLogo ? (
                 <img
                   src={getImageUrl(employerLogo)}
@@ -216,43 +216,47 @@ const PublicJobDetails = () => {
                   }}
                 />
               ) : (
-                <FaBriefcase className="w-8 h-8 text-subtle" />
+                <FaBriefcase className="w-7 h-7 sm:w-8 sm:h-8 text-subtle" />
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-text-dark">{job.title}</h1>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-text-dark break-words">
+                  {job.title}
+                </h1>
                 <span
-                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_COLORS[job.status] || 'bg-neutral-100 text-text-dark'}`}
+                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize w-fit ${STATUS_COLORS[job.status] || 'bg-neutral-100 text-text-dark'}`}
                 >
                   {job.status}
                 </span>
               </div>
-              <p className="text-lg text-muted">{job.jobRole || 'Job Position'}</p>
-              <p className="text-sm text-subtle mt-1">{employerCompany}</p>
+              <p className="text-base sm:text-lg text-muted mt-1 break-words">
+                {job.jobRole || 'Job Position'}
+              </p>
+              <p className="text-sm text-subtle mt-1 break-words">{employerCompany}</p>
             </div>
           </div>
 
           {/* Details bar */}
-          <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-border">
-            <div className="flex items-center gap-2 text-muted">
-              <FaBriefcase className="w-5 h-5 text-subtle" />
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-x-6 sm:gap-y-3 pt-4 border-t border-border">
+            <div className="flex items-start gap-2 text-muted min-w-0 sm:items-center">
+              <FaBriefcase className="w-5 h-5 text-subtle shrink-0 mt-0.5 sm:mt-0" />
               <span className="capitalize">{job.employmentType || 'Full-time'}</span>
             </div>
-            <div className="flex items-center gap-2 text-muted">
-              <FaGlobe className="w-5 h-5 text-subtle" />
+            <div className="flex items-start gap-2 text-muted min-w-0 sm:items-center sm:max-w-full">
+              <FaGlobe className="w-5 h-5 text-subtle shrink-0 mt-0.5 sm:mt-0" />
               <button
                 type="button"
                 onClick={openLocationInGoogleMaps}
-                className="text-left hover:text-primary hover:underline transition-colors"
+                className="text-left hover:text-primary hover:underline transition-colors break-words"
                 title="Open location in Google Maps"
               >
                 {locationText}
               </button>
             </div>
-            <div className="flex items-center gap-2 text-muted">
-              <FaDollarSign className="w-5 h-5 text-subtle" />
-              <span className="font-semibold">
+            <div className="flex items-start gap-2 text-muted min-w-0 sm:items-center">
+              <FaDollarSign className="w-5 h-5 text-subtle shrink-0 mt-0.5 sm:mt-0" />
+              <span className="font-semibold break-words">
                 {formatSalary(job.salaryAmount, job.salaryType, job.currency)}
               </span>
             </div>
@@ -260,12 +264,14 @@ const PublicJobDetails = () => {
         </div>
 
         {/* Job info grid */}
-        <div className="bg-surface rounded-xl shadow-sm border border-border p-6 mb-8">
-          <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.job_information')}</h2>
+        <div className="bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4">
+            {t('job.job_information')}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-muted mb-1">{t('job.company')}</p>
-              <p className="font-medium text-text-dark">{employerCompany}</p>
+              <p className="font-medium text-text-dark break-words">{employerCompany}</p>
             </div>
             <div>
               <p className="text-sm text-muted mb-1">{t('job.category')}</p>
@@ -303,13 +309,13 @@ const PublicJobDetails = () => {
         </div>
 
         {/* Description */}
-        <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-xl font-bold text-text-dark mb-4 flex items-center gap-2">
-            <FaFileAlt className="w-5 h-5 text-subtle" />
+        <div className="mb-6 sm:mb-8 bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4 flex items-center gap-2">
+            <FaFileAlt className="w-5 h-5 text-subtle shrink-0" />
             {t('job.job_description')}
           </h2>
-          <div className="border-t border-neutral-100 pt-4">
-            <div className="prose prose-lg max-w-none text-muted leading-relaxed">
+          <div className="border-t border-neutral-100 pt-4 overflow-x-auto">
+            <div className="prose prose-sm sm:prose-lg max-w-none text-muted leading-relaxed [&_img]:max-w-full [&_pre]:max-w-full [&_table]:block [&_table]:overflow-x-auto sm:[&_table]:table">
               {parse(job.description || t('job.no_description'))}
             </div>
           </div>
@@ -317,13 +323,15 @@ const PublicJobDetails = () => {
 
         {/* Skills */}
         {job.skillsRequired?.length > 0 && (
-          <div className="mb-8 bg-surface rounded-xl shadow-sm border border-border p-6">
-            <h2 className="text-xl font-bold text-text-dark mb-4">{t('job.skills')}</h2>
+          <div className="mb-6 sm:mb-8 bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4">
+              {t('job.skills')}
+            </h2>
             <ul className="space-y-2">
               {job.skillsRequired.map((skill, i) => (
                 <li key={i} className="flex items-start gap-2 text-muted">
                   <span className="text-success mt-1">•</span>
-                  <span>{skill}</span>
+                  <span className="break-words">{skill}</span>
                 </li>
               ))}
             </ul>
@@ -331,28 +339,28 @@ const PublicJobDetails = () => {
         )}
 
         {/* ── CTA Section ──────────────────────────────────────── */}
-        <div className="pt-6 border-t border-border">
+        <div className="pt-4 sm:pt-6 border-t border-border">
           {/* Guest → Login to Apply */}
           {isGuest && (
             <button
               onClick={() => navigate('/login', { state: { from: `/jobs/${id}` } })}
-              className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium flex items-center gap-2"
+              className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
             >
-              <FaSignInAlt className="w-5 h-5" />
+              <FaSignInAlt className="w-5 h-5 shrink-0" />
               Login to Apply
             </button>
           )}
 
           {/* Job seeker → Already applied (show regardless of job status) */}
           {isSeeker && hasApplied && (
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex px-6 py-3 bg-neutral-100 text-muted rounded-lg font-medium items-center gap-2">
-                <FaCheckCircle className="w-5 h-5 text-success" />
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
+              <div className="inline-flex w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-neutral-100 text-muted rounded-lg font-medium items-center gap-2">
+                <FaCheckCircle className="w-5 h-5 text-success shrink-0" />
                 You have already applied
               </div>
               <Link
                 to="/my-applications"
-                className="text-sm text-primary hover:underline font-medium"
+                className="text-sm text-primary hover:underline font-medium text-center sm:text-left py-1"
               >
                 View My Applications
               </Link>
@@ -363,10 +371,10 @@ const PublicJobDetails = () => {
           {isSeeker && job.status === 'open' && !hasApplied && (
             <button
               onClick={() => setApplyModalOpen(true)}
-              className="px-6 py-3 bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-medium flex items-center gap-2"
+              className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
             >
-              <FaPaperPlane className="w-5 h-5" />
-              Apply Now
+              <FaPaperPlane className="w-5 h-5 shrink-0" />
+              {t('applications.apply_now')}
             </button>
           )}
 
@@ -374,9 +382,9 @@ const PublicJobDetails = () => {
           {isOwner && (
             <Link
               to={`/employer/applications/job/${job._id}`}
-              className="inline-flex px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium items-center gap-2"
+              className="w-full sm:w-auto justify-center inline-flex px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium items-center gap-2"
             >
-              <FaUsers className="w-5 h-5" />
+              <FaUsers className="w-5 h-5 shrink-0" />
               Manage Applications
             </Link>
           )}
