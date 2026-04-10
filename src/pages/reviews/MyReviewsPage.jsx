@@ -147,7 +147,7 @@ const MyReviewsPage = () => {
           <main className="flex-1 min-w-0">
             {/* Tab switcher */}
             <div className="flex gap-1 p-1 mb-5 bg-white border border-gray-100 rounded-xl w-fit">
-              {TABS.map(({ key, labelKey }) => {
+              {TABS.map(({ key, labelKey, icon: Icon }) => {
                 const count =
                   key === 'received' ? receivedPagination?.total : sentPagination?.total;
                 const isActive = activeTab === key;

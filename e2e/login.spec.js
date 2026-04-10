@@ -34,14 +34,13 @@ test.describe('Login Functionality (Member 1)', () => {
   test('should show validation errors on registration', async ({ page }) => {
     await page.goto('/register');
 
-    // Step 1: Attempt to go to next step without filling anything
-    // The first button in Step 1 is "Next" (not submit type)
-    await page.click('text=Next');
+    // Step 1: Choose account type, then attempt to go next without filling required fields
+    await page.getByRole('heading', { name: /job seeker/i }).click();
+    await page.getByRole('button', { name: /next/i }).click();
 
     // Verify that validation messages appear (Functional correctness)
-    // Enhanced selector to be more robust across different form fields
-    const errors = page.locator('.text-sm.text-red-500, .text-xs.text-red-600, .text-red-600');
-    await expect(errors.first()).toBeVisible();
+    await expect(page.getByText(/first name is required/i)).toBeVisible();
+    await expect(page.getByText(/email is required/i)).toBeVisible();
   });
 
   test('should validate empty fields', async ({ page }) => {
@@ -90,8 +89,10 @@ test.describe('Login Functionality (Member 1) - Authenticated', () => {
     // App receives mocked 200, Redux sets state, Login.jsx navigates to /employer/dashboard
     await expect(page).toHaveURL(/.*employer\/dashboard/, { timeout: 10000 });
 
-    await expect(page.locator('h1')).toHaveText('Dashboard');
-    await expect(page.locator('text=Your central control surface')).toBeVisible();
-    await expect(page.locator('text=Create New Job')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      /manage jobs, track hiring, and move faster/i
+    );
+    await expect(page.getByText(/everything important in one place/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /create new job/i })).toBeVisible();
   });
 });
