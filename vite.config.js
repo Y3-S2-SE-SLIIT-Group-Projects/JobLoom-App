@@ -60,6 +60,13 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setupTests.js',
+    include: ['src/**/*.test.{js,jsx,ts,tsx}', 'src/**/*.spec.{js,jsx,ts,tsx}'],
+    exclude: ['e2e/**', 'tests/**', 'node_modules/**'],
+  },
   build: {
     rollupOptions: {
       output: {

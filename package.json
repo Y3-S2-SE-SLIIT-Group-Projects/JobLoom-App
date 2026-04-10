@@ -12,6 +12,8 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "preview": "vite preview",
     "test": "npx playwright test",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:e2e": "npx playwright test",
     "test:e2e:interview": "npx playwright test e2e/interview-scheduling.spec.ts --workers=1",
     "test:e2e:headed": "npx playwright test --headed",
@@ -72,6 +74,8 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -83,10 +87,12 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "husky": "^8.0.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.19",
     "vite": "^7.3.1",
+    "vitest": "^4.1.4",
     "wait-on": "^9.0.4"
   }
 }
