@@ -64,7 +64,7 @@ const INTERVIEW_DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
 const ApplicationDetailPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { currentUser } = useUser();
@@ -141,7 +141,9 @@ const ApplicationDetailPage = () => {
 
   const getScheduleFormBlockedMessage = () => {
     if (application?.status !== 'shortlisted') {
-      return t('applications.interview_schedule_requires_shortlist');
+      return t('applications.interview_schedule_requires_shortlist', {
+        status: t('applications.status_shortlisted'),
+      });
     }
     if (hasActiveInterview && !rescheduleMode) {
       return t('applications.interview_schedule_locked_active');
@@ -155,7 +157,11 @@ const ApplicationDetailPage = () => {
 
   const handleStartReschedule = () => {
     if (application?.status !== 'shortlisted') {
-      toast.error(t('applications.interview_schedule_requires_shortlist'));
+      toast.error(
+        t('applications.interview_schedule_requires_shortlist', {
+          status: t('applications.status_shortlisted'),
+        })
+      );
       return;
     }
     setRescheduleMode(true);
@@ -164,9 +170,13 @@ const ApplicationDetailPage = () => {
 
   const getApplicantName = () => {
     const s = application?.jobSeekerId;
-    if (!s) return 'Unknown';
+    if (!s) return t('employer.applications.detail_unknown_applicant');
     if (typeof s === 'string') return s;
-    return [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email || 'Unknown';
+    return (
+      [s.firstName, s.lastName].filter(Boolean).join(' ') ||
+      s.email ||
+      t('employer.applications.detail_unknown_applicant')
+    );
   };
 
   const getApplicantEmail = () => {
@@ -201,14 +211,18 @@ const ApplicationDetailPage = () => {
 
   const getEmployerName = () => {
     const e = application?.employerId;
-    if (!e) return 'Employer';
-    if (typeof e === 'string') return 'Employer';
-    return [e.firstName, e.lastName].filter(Boolean).join(' ') || e.email || 'Employer';
+    if (!e) return t('employer.applications.detail_employer_name');
+    if (typeof e === 'string') return t('employer.applications.detail_employer_name');
+    return (
+      [e.firstName, e.lastName].filter(Boolean).join(' ') ||
+      e.email ||
+      t('employer.applications.detail_employer_name')
+    );
   };
 
   const formatDate = dateString => {
-    if (!dateString) return '—';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    if (!dateString) return '\u2014';
+    return new Date(dateString).toLocaleDateString(i18n.language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -223,11 +237,18 @@ const ApplicationDetailPage = () => {
     setStatusSuccess('');
     if (!application || !selectedStatus) return;
     if (selectedStatus === application.status) {
-      setStatusError('Select a different status to update.');
+      setStatusError(t('employer.applications.detail_status_same_error'));
       return;
     }
     if (!allowedNextStatuses.includes(selectedStatus)) {
-      setStatusError(`Cannot transition from ${application.status} to ${selectedStatus}.`);
+      setStatusError(
+        t('employer.applications.detail_status_transition_error', {
+          from: t(`applications.status_${application.status}`, {
+            defaultValue: application.status,
+          }),
+          to: t(`applications.status_${selectedStatus}`, { defaultValue: selectedStatus }),
+        })
+      );
       return;
     }
     try {
@@ -237,11 +258,11 @@ const ApplicationDetailPage = () => {
           data: { status: selectedStatus, employerNotes: employerNotes.trim() || undefined },
         })
       ).unwrap();
-      setStatusSuccess('Status updated successfully.');
+      setStatusSuccess(t('employer.applications.detail_status_update_success'));
       const jid = getJobId();
       if (jid) dispatch(loadJobStats(jid));
     } catch (err) {
-      setStatusError(err.message || 'Failed to update status.');
+      setStatusError(err.message || t('employer.applications.detail_status_update_failed'));
     }
   };
 
@@ -326,12 +347,12 @@ const ApplicationDetailPage = () => {
             <Spinner size="lg" />
           ) : (
             <div className="text-center">
-              <p className="mb-4 text-muted">Application not found.</p>
+              <p className="mb-4 text-muted">{t('employer.applications.detail_not_found')}</p>
               <Link
                 to="/employer/applications"
                 className="font-medium text-primary hover:underline"
               >
-                Back to Applications
+                {t('employer.applications.back_to_all')}
               </Link>
             </div>
           )}
@@ -344,35 +365,37 @@ const ApplicationDetailPage = () => {
     <DottedBackground>
       {/* Header */}
       <div className="border-b bg-surface border-border">
-        <div className="max-w-4xl px-6 py-8 mx-auto">
+        <div className="max-w-5xl lg:max-w-6xl px-4 sm:px-6 py-4 sm:py-6 md:py-8 mx-auto">
           <Link
             to={backHref}
             className="inline-flex items-center mb-4 text-sm transition-colors text-subtle hover:text-primary"
           >
             <FaArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('common.back')}
           </Link>
 
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-text-dark">{getApplicantName()}</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-text-dark">{getApplicantName()}</h1>
             <span
               className={`px-3 py-1 text-xs font-medium rounded-full border capitalize ${STATUS_BADGE[application.status] || 'bg-neutral-100 text-muted'}`}
             >
-              {application.status}
+              {t(`applications.status_${application.status}`, { defaultValue: application.status })}
             </span>
           </div>
           <p className="mt-1 text-subtle">
-            Application for <span className="font-medium text-muted">{getJobTitle()}</span>
+            {t('employer.applications.detail_application_for', { job: getJobTitle() || '\u2014' })}
           </p>
         </div>
       </div>
 
-      <div className="max-w-4xl px-6 py-8 mx-auto space-y-8">
+      <div className="max-w-5xl lg:max-w-6xl px-4 sm:px-6 py-4 sm:py-6 md:py-8 mx-auto space-y-5 sm:space-y-8">
         <AlertBanner type="error" message={error} />
 
         {/* Applicant info */}
-        <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
-          <h2 className="mb-4 text-lg font-bold text-text-dark">Applicant</h2>
+        <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border">
+          <h2 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-text-dark">
+            {t('employer.applications.detail_applicant_heading')}
+          </h2>
           <div className="space-y-3">
             {getApplicantEmail() && (
               <div className="flex items-center gap-2 text-muted">
@@ -384,11 +407,17 @@ const ApplicationDetailPage = () => {
             )}
             <div className="flex items-center gap-2 text-muted">
               <FaCalendarAlt className="w-4 h-4 text-subtle" />
-              <span>Applied {formatDate(application.appliedAt || application.createdAt)}</span>
+              <span>
+                {t('employer.applications.detail_applied_on', {
+                  date: formatDate(application.appliedAt || application.createdAt),
+                })}
+              </span>
             </div>
             {application.jobSeekerId?.skills?.length > 0 && (
               <div>
-                <p className="mb-2 text-sm font-medium text-muted">Skills</p>
+                <p className="mb-2 text-sm font-medium text-muted">
+                  {t('employer.applications.detail_skills_label')}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {application.jobSeekerId.skills.map((skill, i) => (
                     <span
@@ -406,9 +435,13 @@ const ApplicationDetailPage = () => {
 
         {/* Cover letter */}
         {application.coverLetter && (
-          <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
-            <h2 className="mb-4 text-lg font-bold text-text-dark">Cover Letter</h2>
-            <p className="whitespace-pre-wrap text-muted">{application.coverLetter}</p>
+          <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border">
+            <h2 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-text-dark">
+              {t('employer.applications.detail_cover_letter')}
+            </h2>
+            <p className="whitespace-pre-wrap text-sm sm:text-base text-muted">
+              {application.coverLetter}
+            </p>
           </section>
         )}
 
@@ -421,8 +454,10 @@ const ApplicationDetailPage = () => {
               ? application.resumeUrl
               : getImageUrl(application.resumeUrl);
             return (
-              <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
-                <h2 className="mb-4 text-lg font-bold text-text-dark">{t('common.resume')}</h2>
+              <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border">
+                <h2 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-text-dark">
+                  {t('common.resume')}
+                </h2>
                 <a
                   href={needsSigned ? '#' : resolvedUrl}
                   target="_blank"
@@ -455,8 +490,10 @@ const ApplicationDetailPage = () => {
           })()}
 
         {/* Status update & employer notes */}
-        <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
-          <h2 className="mb-4 text-lg font-bold text-text-dark">Status & Notes</h2>
+        <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border">
+          <h2 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-text-dark">
+            {t('employer.applications.detail_status_notes')}
+          </h2>
 
           <AlertBanner type="error" message={statusError} />
           <AlertBanner type="success" message={statusSuccess} />
@@ -464,14 +501,14 @@ const ApplicationDetailPage = () => {
           <form onSubmit={handleUpdateStatus} className="space-y-4">
             <div>
               <label className="block mb-1 text-sm font-medium text-muted">
-                Employer notes (internal)
+                {t('employer.applications.detail_employer_notes_label')}
               </label>
               <textarea
                 value={employerNotes}
                 onChange={e => setEmployerNotes(e.target.value)}
                 rows={4}
                 maxLength={500}
-                placeholder="Private notes about this applicant…"
+                placeholder={t('employer.applications.detail_employer_notes_placeholder')}
                 className="w-full px-4 py-3 text-sm border rounded-lg outline-none resize-none border-border focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               <p className="mt-1 text-xs text-subtle">{employerNotes.length}/500</p>
@@ -479,27 +516,31 @@ const ApplicationDetailPage = () => {
 
             {canChangeStatus && (
               <div>
-                <label className="block mb-2 text-sm font-medium text-muted">Update status</label>
-                <div className="flex flex-wrap items-center gap-3">
+                <label className="block mb-2 text-sm font-medium text-muted">
+                  {t('employer.applications.detail_update_status_label')}
+                </label>
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
                   <select
                     value={selectedStatus}
                     onChange={e => setSelectedStatus(e.target.value)}
-                    className="px-4 py-2 text-sm border rounded-lg outline-none border-border focus:ring-2 focus:ring-primary"
+                    className="w-full sm:w-auto px-4 py-2.5 text-sm border rounded-lg outline-none border-border focus:ring-2 focus:ring-primary"
                   >
-                    <option value={application.status}>— Keep current —</option>
+                    <option value={application.status}>
+                      {t('employer.applications.detail_keep_current')}
+                    </option>
                     {allowedNextStatuses.map(s => (
                       <option key={s} value={s}>
-                        {s}
+                        {t(`applications.status_${s}`, { defaultValue: s })}
                       </option>
                     ))}
                   </select>
                   <button
                     type="submit"
                     disabled={statusLoading || selectedStatus === application.status}
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                   >
                     {statusLoading ? <Spinner size="sm" /> : <FaSave className="w-4 h-4" />}
-                    Update Status
+                    {t('employer.applications.detail_update_status_button')}
                   </button>
                 </div>
               </div>
@@ -511,10 +552,10 @@ const ApplicationDetailPage = () => {
         {showInterviewSection && (
           <section
             id="schedule-interview"
-            className="p-6 border shadow-sm bg-surface rounded-xl border-border"
+            className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border"
           >
-            <h2 className="flex items-center gap-2 mb-6 text-lg font-bold text-text-dark">
-              <FaCalendarAlt className="w-5 h-5 text-primary" aria-hidden />
+            <h2 className="flex items-center gap-2 mb-4 sm:mb-6 text-base sm:text-lg font-bold text-text-dark">
+              <FaCalendarAlt className="w-5 h-5 text-primary shrink-0" aria-hidden />
               {t('applications.interview_schedule_button')}
             </h2>
 
@@ -601,7 +642,7 @@ const ApplicationDetailPage = () => {
                 </div>
 
                 {interviewType === 'in_person' && (
-                  <div className="p-4 space-y-4 rounded-xl border bg-neutral-50/80 border-border">
+                  <div className="p-3 sm:p-4 space-y-4 rounded-xl border bg-neutral-50/80 border-border">
                     <div>
                       <label className="block mb-1 text-sm font-medium text-muted">
                         {t('applications.interview_location_label')}{' '}
@@ -655,7 +696,7 @@ const ApplicationDetailPage = () => {
             </div>
 
             {application.interviewDate && application.interviewType && (
-              <div className="p-4 mt-6 border rounded-lg bg-success/5 border-success/20">
+              <div className="p-3 sm:p-4 mt-4 sm:mt-6 border rounded-lg bg-success/5 border-success/20">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
@@ -693,7 +734,9 @@ const ApplicationDetailPage = () => {
                     )}
                     {application.interviewType === 'virtual' && application.jitsiRoomName && (
                       <p className="mt-2 font-mono text-xs break-all text-muted">
-                        Room: {application.jitsiRoomName}
+                        {t('employer.applications.detail_room_label', {
+                          room: application.jitsiRoomName,
+                        })}
                       </p>
                     )}
                     {application.interviewLocation && (
@@ -705,11 +748,11 @@ const ApplicationDetailPage = () => {
                       </p>
                     )}
                   </div>
-                  <div className="flex flex-col gap-2 sm:items-end shrink-0">
+                  <div className="flex flex-col gap-2 w-full sm:w-auto sm:items-end shrink-0">
                     {application.interviewType === 'virtual' && (
                       <Link
                         to={`/interview/${application._id}`}
-                        className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue w-full sm:w-auto"
                       >
                         <FaVideo className="w-4 h-4 shrink-0" aria-hidden />
                         {t('applications.interview_join_button')}
@@ -718,7 +761,7 @@ const ApplicationDetailPage = () => {
                     <button
                       type="button"
                       onClick={openInterviewGoogleCalendar}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors text-primary hover:underline sm:self-end"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors text-primary hover:underline w-full sm:w-auto"
                     >
                       <FaCalendarAlt className="w-3.5 h-3.5 shrink-0" aria-hidden />
                       {t('applications.interview_add_to_calendar')}
@@ -726,7 +769,7 @@ const ApplicationDetailPage = () => {
                     <button
                       type="button"
                       onClick={handleStartReschedule}
-                      className="self-start text-sm font-medium transition-colors sm:self-end text-primary hover:underline"
+                      className="text-sm font-medium transition-colors text-primary hover:underline text-center sm:text-right"
                     >
                       {t('applications.interview_reschedule_button')}
                     </button>
@@ -734,7 +777,7 @@ const ApplicationDetailPage = () => {
                       type="button"
                       onClick={handleCancelInterview}
                       disabled={cancelInterviewLoading}
-                      className="inline-flex items-center gap-2 self-start text-sm font-medium transition-colors sm:self-end text-error/90 hover:text-error hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors text-error/90 hover:text-error hover:underline disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                     >
                       {cancelInterviewLoading ? <Spinner size="sm" /> : null}
                       {t('applications.interview_cancel_button')}
@@ -748,7 +791,7 @@ const ApplicationDetailPage = () => {
 
         {/* Reviews panel (when accepted) */}
         {application.status === 'accepted' && currentUser && (
-          <section className="p-6 border shadow-sm bg-surface rounded-xl border-border">
+          <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-border overflow-hidden">
             <ApplicationReviewsPanel
               jobId={getJobId()}
               employerId={getEmployerId()}

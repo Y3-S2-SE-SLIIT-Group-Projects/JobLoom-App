@@ -158,7 +158,7 @@ export const loadInterviewJoinContext = createAsyncThunk(
   }
 );
 
-// ─── Initial State ─────────────────────────────────────────────────────────────
+// Initial State
 
 const initialState = {
   myApplications: [],
@@ -206,7 +206,7 @@ const initialState = {
   appliedJobIdsLoaded: false,
 };
 
-// ─── Slice ─────────────────────────────────────────────────────────────────────
+// Slice
 
 const applicationSlice = createSlice({
   name: 'applications',
@@ -223,7 +223,7 @@ const applicationSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    // ── submitApplication ──
+    // submitApplication
     builder
       .addCase(submitApplication.pending, state => {
         state.loading.submit = true;
@@ -242,7 +242,7 @@ const applicationSlice = createSlice({
         state.error.submit = payload;
       });
 
-    // ── loadMyApplications ──
+    // loadMyApplications
     builder
       .addCase(loadMyApplications.pending, state => {
         state.loading.myApplications = true;
@@ -254,7 +254,7 @@ const applicationSlice = createSlice({
         state.pagination = payload.pagination ?? null;
         // Update appliedJobIds only when fetching a large unfiltered set (for "already applied" persistence)
         const hasNoStatusFilter = !meta?.arg?.status || meta.arg.status === 'all';
-        const isLargeFetch = (meta?.arg?.limit ?? 0) >= 200;
+        const isLargeFetch = (meta?.arg?.limit ?? 0) >= 100;
         if (hasNoStatusFilter && isLargeFetch) {
           state.appliedJobIds = (payload.applications ?? [])
             .map(a => (typeof a.jobId === 'object' ? a.jobId._id : a.jobId))
@@ -267,7 +267,7 @@ const applicationSlice = createSlice({
         state.error.myApplications = payload;
       });
 
-    // ── loadApplicationById ──
+    // loadApplicationById
     builder
       .addCase(loadApplicationById.pending, state => {
         state.loading.currentApplication = true;
@@ -282,7 +282,7 @@ const applicationSlice = createSlice({
         state.error.currentApplication = payload;
       });
 
-    // ── withdrawApplication ──
+    // withdrawApplication
     builder
       .addCase(withdrawApplication.pending, state => {
         state.loading.withdraw = true;
@@ -308,7 +308,7 @@ const applicationSlice = createSlice({
         state.error.withdraw = payload;
       });
 
-    // ── loadJobApplications ──
+    // loadJobApplications
     builder
       .addCase(loadJobApplications.pending, state => {
         state.loading.jobApplications = true;
@@ -456,7 +456,7 @@ const applicationSlice = createSlice({
 export const { clearSubmitError, clearLastSubmitted, resetApplicationState } =
   applicationSlice.actions;
 
-// ─── Selectors ─────────────────────────────────────────────────────────────────
+// Selectors
 
 export const selectMyApplications = state => state.applications.myApplications;
 export const selectJobApplications = state => state.applications.jobApplications;
