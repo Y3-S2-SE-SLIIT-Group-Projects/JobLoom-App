@@ -28,6 +28,7 @@ const SubmitReviewPage = () => {
     isSubmitting,
     submitError,
     submittedReview,
+    effectiveRating,
   } = useReviewForm({ jobId, revieweeId });
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const SubmitReviewPage = () => {
     return () => clearTimeout(timer);
   }, [submittedReview, navigate, resetForm]);
 
-  const canSubmit = form.rating > 0 && form.revieweeId && form.jobId && !isSubmitting;
+  const canSubmit = effectiveRating > 0 && form.revieweeId && form.jobId && !isSubmitting;
 
   if (submittedReview) return <ReviewSuccessScreen />;
 
