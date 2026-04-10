@@ -313,10 +313,21 @@ const PublicJobDetails = () => {
 
         {/* Description */}
         <div className="mb-6 sm:mb-8 bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4 flex items-center gap-2">
-            <FaFileAlt className="w-5 h-5 text-subtle shrink-0" />
-            {t('job.job_description')}
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-text-dark flex items-center gap-2">
+              <FaFileAlt className="w-5 h-5 text-subtle shrink-0" />
+              {t('job.job_description')}
+            </h2>
+            {isSeeker && (
+              <button
+                onClick={() => setSkillGapModalOpen(true)}
+                className="w-full sm:w-auto justify-center px-4 py-2 min-h-[40px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
+              >
+                <FaChartBar className="w-4 h-4 shrink-0" />
+                {t('skill_gap.analyze_with_my_cv')}
+              </button>
+            )}
+          </div>
           <div className="border-t border-neutral-100 pt-4 overflow-x-auto">
             <div className="prose prose-sm sm:prose-lg max-w-none text-muted leading-relaxed [&_img]:max-w-full [&_pre]:max-w-full [&_table]:block [&_table]:overflow-x-auto sm:[&_table]:table">
               {parse(job.description || t('job.no_description'))}
@@ -366,7 +377,7 @@ const PublicJobDetails = () => {
                 className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
               >
                 <FaChartBar className="w-5 h-5 shrink-0" />
-                Analyze with my CV
+                {t('skill_gap.analyze_with_my_cv')}
               </button>
               <Link
                 to="/my-applications"
@@ -392,7 +403,7 @@ const PublicJobDetails = () => {
                 className="w-full sm:w-auto justify-center px-6 py-3 min-h-[44px] bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium inline-flex items-center gap-2"
               >
                 <FaChartBar className="w-5 h-5 shrink-0" />
-                Analyze with my CV
+                {t('skill_gap.analyze_with_my_cv')}
               </button>
             </div>
           )}

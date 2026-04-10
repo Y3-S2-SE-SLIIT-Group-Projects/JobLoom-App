@@ -688,5 +688,21 @@
     "security_short": "Security",
     "sales_short": "Sales",
     "customer_service_short": "Service"
+  },
+  "skill_gap": {
+    "kicker": "AI Skill Gap Analysis",
+    "title_fallback": "Analyze your CV",
+    "error_failed": "Analysis failed. Please try again.",
+    "no_cvs_title": "No CVs uploaded",
+    "no_cvs_desc": "Upload a CV in your profile to use this feature.",
+    "select_cv": "Select a CV to analyze",
+    "match_score": "Match Score",
+    "missing_skills": "Missing Skills",
+    "recommended_skills": "Recommended Skills to Learn",
+    "great_match": "Great match! Your CV aligns well with this job's requirements.",
+    "analyzing": "Analyzing...",
+    "analyze": "Analyze",
+    "analyze_with_my_cv": "Analyze with my CV",
+    "analyze_another": "Analyze Another CV"
   }
 }
