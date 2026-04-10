@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import * as reviewApi from '../../services/reviewApi';
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+// Helpers
 
 /** Decode JWT payload from localStorage to get the current user's ID. */
 export const getCurrentUserId = () => {
@@ -15,7 +15,7 @@ export const getCurrentUserId = () => {
   }
 };
 
-// ─── Async Thunks ──────────────────────────────────────────────────────────────
+// Async Thunks
 
 export const loadUserReviews = createAsyncThunk(
   'reviews/loadUserReviews',
@@ -113,7 +113,7 @@ export const flagReview = createAsyncThunk(
   }
 );
 
-// ─── Initial State ─────────────────────────────────────────────────────────────
+// Initial State
 
 const initialState = {
   userReviews: [],
@@ -123,7 +123,7 @@ const initialState = {
   pagination: null,
   sentPagination: null,
 
-  // ── UI State (moved from local useState) ──────────────────────────────────
+  // UI State (moved from local useState)
   ui: {
     activeTab: 'received', // 'received' | 'sent'
     reviewerType: '', // '' | 'employer' | 'job_seeker'
@@ -157,7 +157,7 @@ const initialState = {
   lastSubmittedReview: null,
 };
 
-// ─── Slice ─────────────────────────────────────────────────────────────────────
+// Slice
 
 const reviewSlice = createSlice({
   name: 'reviews',
@@ -173,7 +173,7 @@ const reviewSlice = createSlice({
       return initialState;
     },
 
-    // ── UI Reducers ───────────────────────────────────────────────────────────
+    // UI Reducers
     setActiveTab(state, { payload }) {
       state.ui.activeTab = payload;
       state.ui.reviewerType = '';
@@ -193,7 +193,7 @@ const reviewSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    // ── loadUserReviews ──
+    // loadUserReviews
     builder
       .addCase(loadUserReviews.pending, state => {
         state.loading.userReviews = true;
@@ -209,7 +209,7 @@ const reviewSlice = createSlice({
         state.error.userReviews = payload;
       });
 
-    // ── loadRatingStats ──
+    // loadRatingStats
     builder
       .addCase(loadRatingStats.pending, state => {
         state.loading.ratingStats = true;
@@ -224,7 +224,7 @@ const reviewSlice = createSlice({
         state.error.ratingStats = payload;
       });
 
-    // ── loadJobReviews ──
+    // loadJobReviews
     builder
       .addCase(loadJobReviews.pending, state => {
         state.loading.jobReviews = true;
@@ -239,7 +239,7 @@ const reviewSlice = createSlice({
         state.error.jobReviews = payload;
       });
 
-    // ── submitReview ──
+    // submitReview
     builder
       .addCase(submitReview.pending, state => {
         state.loading.submit = true;
@@ -259,7 +259,7 @@ const reviewSlice = createSlice({
         state.error.submit = payload;
       });
 
-    // ── loadSentReviews ──
+    // loadSentReviews
     builder
       .addCase(loadSentReviews.pending, state => {
         state.loading.sentReviews = true;
@@ -275,7 +275,7 @@ const reviewSlice = createSlice({
         state.error.sentReviews = payload;
       });
 
-    // ── editReview ──
+    // editReview
     builder
       .addCase(editReview.pending, state => {
         state.loading.edit = true;
@@ -292,7 +292,7 @@ const reviewSlice = createSlice({
         state.error.edit = payload;
       });
 
-    // ── removeReview ──
+    // removeReview
     builder
       .addCase(removeReview.pending, state => {
         state.loading.delete = true;
@@ -309,7 +309,7 @@ const reviewSlice = createSlice({
         state.error.delete = payload;
       });
 
-    // ── flagReview ──
+    // flagReview
     builder
       .addCase(flagReview.pending, state => {
         state.loading.report = true;
@@ -335,7 +335,7 @@ export const {
   setPage,
 } = reviewSlice.actions;
 
-// ─── Selectors ─────────────────────────────────────────────────────────────────
+// Selectors
 
 export const selectUserReviews = state => state.reviews.userReviews;
 export const selectSentReviews = state => state.reviews.sentReviews;

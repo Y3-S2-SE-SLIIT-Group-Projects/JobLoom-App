@@ -45,6 +45,8 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
     ...initialData,
   });
 
+  const normalizePhone = value => value.replace(/\D/g, '').slice(0, 10);
+
   const handleChange = e => {
     const { name, value } = e.target;
     if (name.startsWith('location.')) {
@@ -52,7 +54,8 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
       setFormData(prev => ({ ...prev, location: { ...prev.location, [key]: value } }));
       if (errors[`location.${key}`]) setErrors(prev => ({ ...prev, [`location.${key}`]: '' }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      const nextValue = name === 'phone' ? normalizePhone(value) : value;
+      setFormData(prev => ({ ...prev, [name]: nextValue }));
       if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
@@ -73,9 +76,8 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
       errs.companyName = t('errors.company_name_required', 'Company name is required');
     }
 
-    // Phone validation (Sri Lanka format or general)
-    const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+    const phoneRegex = /^\d{10}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
       errs.phone = t('errors.invalid_phone', 'Please enter a valid phone number');
     }
 
@@ -214,7 +216,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
           <div className="flex gap-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-text-dark mb-1.5">
-                {t('auth.first_name')}
+                {t('auth.first_name')} <span className="text-error">*</span>
               </label>
               <div className="relative">
                 <FaUser className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -231,7 +233,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-text-dark mb-1.5">
-                {t('auth.last_name')}
+                {t('auth.last_name')} <span className="text-error">*</span>
               </label>
               <input
                 type="text"
@@ -248,7 +250,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
           {formData.role === 'employer' && (
             <div className="animate-in fade-in slide-in-from-top-2">
               <label className="block text-sm font-medium text-text-dark mb-1.5">
-                {t('auth.company_name')}
+                {t('auth.company_name')} <span className="text-error">*</span>
               </label>
               <div className="relative">
                 <FaBriefcase className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -269,7 +271,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.email')}
+              {t('auth.email')} <span className="text-error">*</span>
             </label>
             <div className="relative">
               <FaEnvelope className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -287,7 +289,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.phone_number')}
+              {t('auth.phone_number')} <span className="text-error">*</span>
             </label>
             <div className="relative">
               <FaPhone className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -296,6 +298,9 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                inputMode="numeric"
+                maxLength={10}
+                pattern="\d{10}"
                 placeholder={t('auth.phone_placeholder')}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg outline-none transition-colors focus:ring-2 focus:ring-primary focus:border-transparent ${errors.phone ? 'border-error bg-error/10' : 'border-border'}`}
               />
@@ -305,7 +310,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.password')}
+              {t('auth.password')} <span className="text-error">*</span>
             </label>
             <div className="relative">
               <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -330,7 +335,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.confirm_password')}
+              {t('auth.confirm_password')} <span className="text-error">*</span>
             </label>
             <div className="relative">
               <FaLock className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -367,7 +372,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.village_town')}
+              {t('auth.village_town')} <span className="text-error">*</span>
             </label>
             <div className="relative">
               <FaMapMarkerAlt className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -387,7 +392,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.district')}
+              {t('auth.district')} <span className="text-error">*</span>
             </label>
             <input
               type="text"
@@ -404,7 +409,7 @@ const RegistrationForm = ({ role = 'job_seeker', onSubmit, loading, initialData 
 
           <div>
             <label className="block text-sm font-medium text-text-dark mb-1.5">
-              {t('auth.province')}
+              {t('auth.province')} <span className="text-error">*</span>
             </label>
             <select
               name="location.province"

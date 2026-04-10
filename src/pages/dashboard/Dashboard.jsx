@@ -422,6 +422,7 @@ const Dashboard = () => {
   const [category, setCategory] = useState('');
   const [employmentType, setEmploymentType] = useState('');
   const [salaryRangeKey, setSalaryRangeKey] = useState('Any');
+  const [dateSort, setDateSort] = useState('newest');
 
   // Nearby jobs state (overrides context jobs when set)
   const [nearbyJobs, setNearbyJobs] = useState(null);
@@ -533,6 +534,8 @@ const Dashboard = () => {
       search: query || undefined,
       category: category || undefined,
       employmentType: employmentType || undefined,
+      sortBy: 'createdAt',
+      sortOrder: dateSort === 'oldest' ? 'asc' : 'desc',
       district,
       ...(prov ? { province: prov } : {}),
       minSalary: selectedRange.min || undefined,
@@ -606,6 +609,7 @@ const Dashboard = () => {
     setCategory('');
     setEmploymentType('');
     setSalaryRangeKey('Any');
+    setDateSort('newest');
     setNearbyJobs(null);
     setNearbyError('');
     setCurrentPage(1);
@@ -630,10 +634,15 @@ const Dashboard = () => {
   const displayJobs = (() => {
     const baseData = nearbyJobs !== null ? nearbyJobs : jobs;
     const base = Array.isArray(baseData) ? baseData : [];
-    if (!employmentType) return base;
-    return base.filter(
-      j => (j.employmentType || '').toLowerCase() === employmentType.toLowerCase()
-    );
+    const typeFiltered = !employmentType
+      ? base
+      : base.filter(j => (j.employmentType || '').toLowerCase() === employmentType.toLowerCase());
+
+    return [...typeFiltered].sort((a, b) => {
+      const aTime = new Date(a.createdAt || 0).getTime();
+      const bTime = new Date(b.createdAt || 0).getTime();
+      return dateSort === 'oldest' ? aTime - bTime : bTime - aTime;
+    });
   })();
 
   // Find nearby jobs based on selected location first, then fallback to browser geolocation.
@@ -1118,6 +1127,19 @@ const Dashboard = () => {
                       {r.label}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              {/* Date sort */}
+              <div>
+                <label className={`block ${T.xs} ${C.subtle} mb-1 ${T.body}`}>Date</label>
+                <select
+                  value={dateSort}
+                  onChange={e => setDateSort(e.target.value)}
+                  className={`w-full p-2.5 border ${C.border} rounded-lg ${T.sm} ${C.muted} ${C.bgSurface} ${T.body}`}
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
                 </select>
               </div>
             </div>

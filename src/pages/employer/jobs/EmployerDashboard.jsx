@@ -107,22 +107,22 @@ const EmployerDashboard = () => {
               <Link
                 key={index}
                 to={card.link}
-                className="block employer-action-card rounded-2xl shadow-lg p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
+                className="block employer-action-card rounded-2xl shadow-lg p-5 sm:p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
               >
-                <div className="flex items-start gap-6">
-                  <div className="w-36 h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                  <div className="w-full max-w-[9rem] sm:w-36 aspect-square sm:h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden mx-auto sm:mx-0">
                     <img
                       src={card.image}
                       alt={card.title}
                       className="w-full h-full object-contain"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xl sm:text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity break-words leading-snug">
                       {card.title}
                     </h3>
                     <p
-                      className="mb-4 text-lg employer-card-gradient-text"
+                      className="mb-0 sm:mb-4 text-base sm:text-lg employer-card-gradient-text break-words leading-relaxed"
                       style={{ opacity: 0.9 }}
                     >
                       {card.description}
@@ -147,22 +147,22 @@ const EmployerDashboard = () => {
                 <Link
                   key={index}
                   to={card.link}
-                  className="block employer-action-card rounded-2xl shadow-lg p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
+                  className="block employer-action-card rounded-2xl shadow-lg p-5 sm:p-8 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group overflow-hidden"
                 >
-                  <div className="flex items-start gap-6">
-                    <div className="w-36 h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                  <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                    <div className="w-full max-w-[9rem] sm:w-36 aspect-square sm:h-36 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform overflow-hidden mx-auto sm:mx-0">
                       <img
                         src={card.image}
                         alt={card.title}
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl sm:text-2xl font-bold employer-card-gradient-text mb-2 transition-opacity break-words leading-snug">
                         {card.title}
                       </h3>
                       <p
-                        className="mb-4 text-lg employer-card-gradient-text"
+                        className="mb-0 sm:mb-4 text-base sm:text-lg employer-card-gradient-text break-words leading-relaxed"
                         style={{ opacity: 0.9 }}
                       >
                         {description}

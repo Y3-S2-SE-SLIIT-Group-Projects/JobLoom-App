@@ -19,6 +19,11 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
 
+  const getErrorMessage = err => {
+    if (typeof err === 'string') return err;
+    return err?.message || t('errors.login_failed');
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!formData.email.trim()) newErrors.email = t('errors.email_required');
@@ -58,7 +63,7 @@ const Login = () => {
         navigate('/profile');
       }
     } catch (err) {
-      setApiError(err.message || t('errors.login_failed'));
+      setApiError(getErrorMessage(err));
     }
   };
 
@@ -86,7 +91,7 @@ const Login = () => {
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-medium text-text-dark mb-1.5">
-                    {t('auth.email')}
+                    {t('auth.email')} <span className="text-error">*</span>
                   </label>
                   <div className="relative">
                     <FaEnvelope className="absolute w-4 h-4 text-subtle -translate-y-1/2 left-3 top-1/2" />
@@ -108,7 +113,7 @@ const Login = () => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-sm font-medium text-text-dark">
-                      {t('auth.password')}
+                      {t('auth.password')} <span className="text-error">*</span>
                     </label>
                     <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                       {t('auth.forgot_password')}

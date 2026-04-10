@@ -73,6 +73,37 @@ const JOB_CATEGORIES = [
   { value: 'other', label: 'Other' },
 ];
 
+const normalizeText = value =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+const resolveCategoryValue = input => {
+  const raw = String(input || '').trim();
+  if (!raw) return '';
+
+  const exactValue = JOB_CATEGORIES.find(cat => cat.value.toLowerCase() === raw.toLowerCase());
+  if (exactValue) return exactValue.value;
+
+  const exactLabel = JOB_CATEGORIES.find(cat => cat.label.toLowerCase() === raw.toLowerCase());
+  if (exactLabel) return exactLabel.value;
+
+  const normalizedRaw = normalizeText(raw);
+  const normalizedMatch = JOB_CATEGORIES.find(cat => {
+    const valueNorm = normalizeText(cat.value);
+    const labelNorm = normalizeText(cat.label);
+    return (
+      valueNorm === normalizedRaw ||
+      labelNorm === normalizedRaw ||
+      valueNorm.startsWith(normalizedRaw) ||
+      labelNorm.startsWith(normalizedRaw)
+    );
+  });
+
+  return normalizedMatch ? normalizedMatch.value : '';
+};
+
 const COMMON_JOB_ROLES = [
   'Farm Worker',
   'Supervisor',
@@ -210,6 +241,8 @@ const EditJob = () => {
   const [loading, setLoading] = useState(false);
   const [loadingJob, setLoadingJob] = useState(true);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState(null);
+  const [categoryInput, setCategoryInput] = useState('');
   const [skillInput, setSkillInput] = useState('');
   const [useMapLocation, setUseMapLocation] = useState(false);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
@@ -218,6 +251,7 @@ const EditJob = () => {
     title: '',
     description: '',
     category: '',
+    categoryLabel: '',
     jobRole: '',
     employmentType: '',
     location: {
@@ -240,6 +274,18 @@ const EditJob = () => {
   const [errors, setErrors] = useState({});
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  useEffect(() => {
+    if (!error) return undefined;
+    const timer = window.setTimeout(() => setError(''), 4500);
+    return () => window.clearTimeout(timer);
+  }, [error]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = window.setTimeout(() => setToast(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
   const loadJob = async () => {
     try {
       setLoadingJob(true);
@@ -250,6 +296,7 @@ const EditJob = () => {
         title: job.title || '',
         description: job.description || '',
         category: job.category || '',
+        categoryLabel: job.categoryLabel || '',
         jobRole: job.jobRole || '',
         employmentType: job.employmentType || '',
         location: {
@@ -268,6 +315,7 @@ const EditJob = () => {
         startDate: job.startDate ? job.startDate.split('T')[0] : '',
         endDate: job.endDate ? job.endDate.split('T')[0] : '',
       });
+      setCategoryInput(job.categoryLabel || job.category || '');
 
       // Set map location if coordinates exist
       if (job.location?.coordinates || job.location?.fullAddress) {
@@ -530,10 +578,25 @@ const EditJob = () => {
         }
       });
 
+      const rawCategory = String(categoryInput || formData.category || '').trim();
+      const resolvedCategory = resolveCategoryValue(rawCategory);
+      if (rawCategory) {
+        cleanedSubmitData.category = resolvedCategory || 'other';
+        if (!resolvedCategory) {
+          cleanedSubmitData.categoryLabel = rawCategory;
+        } else {
+          delete cleanedSubmitData.categoryLabel;
+        }
+      }
+
       await updateJob(id, cleanedSubmitData);
-      navigate(`/employer/jobs/${id}`);
+      setToast({ type: 'success', message: 'Job updated successfully.' });
+      window.setTimeout(() => navigate(`/employer/jobs/${id}`), 800);
     } catch (err) {
-      setError(err.message || 'Failed to update job. Please try again.');
+      setToast({
+        type: 'error',
+        message: err.message || 'Failed to update job. Please try again.',
+      });
       scrollToTop();
     } finally {
       setLoading(false);
@@ -563,9 +626,24 @@ const EditJob = () => {
           <p className="text-muted">Update job details below</p>
         </div>
         {error && (
-          <div className="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-lg flex items-center">
-            <FaTimes className="w-5 h-5 mr-2" />
-            {error}
+          <div className="fixed left-4 bottom-4 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+            <div className="bg-error text-white px-4 py-3 rounded-lg shadow-lg flex items-start gap-2">
+              <FaTimes className="w-4 h-4 mt-0.5" />
+              <span className="text-sm leading-relaxed">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {toast && (
+          <div className="fixed left-4 bottom-4 z-[60] max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+            <div
+              className={`px-4 py-3 rounded-lg shadow-lg flex items-start gap-2 text-white ${
+                toast.type === 'success' ? 'bg-success' : 'bg-error'
+              }`}
+            >
+              <FaTimes className="w-4 h-4 mt-0.5" />
+              <span className="text-sm leading-relaxed">{toast.message}</span>
+            </div>
           </div>
         )}
 
@@ -593,19 +671,31 @@ const EditJob = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-muted mb-1">Category *</label>
-                  <select
+                  <input
+                    type="text"
                     name="category"
-                    value={formData.category}
-                    onChange={handleChange}
+                    list="job-categories"
+                    value={categoryInput}
+                    onChange={e => {
+                      const inputValue = e.target.value;
+                      const resolvedValue = resolveCategoryValue(inputValue);
+
+                      setCategoryInput(inputValue);
+                      setFormData(prev => ({ ...prev, category: resolvedValue || inputValue }));
+                      if (errors.category) {
+                        setErrors(prev => ({ ...prev, category: '' }));
+                      }
+                    }}
                     className={`w-full px-4 py-2 border ${errors.category ? 'border-error' : 'border-border'} rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition`}
-                  >
-                    <option value="">Select a category</option>
+                    placeholder="Type or select category"
+                  />
+                  <datalist id="job-categories">
                     {JOB_CATEGORIES.map(cat => (
-                      <option key={cat.value} value={cat.value}>
+                      <option key={cat.value} value={cat.label}>
                         {cat.label}
                       </option>
                     ))}
-                  </select>
+                  </datalist>
                   {errors.category && <p className="mt-1 text-sm text-error">{errors.category}</p>}
                 </div>
 

@@ -81,11 +81,11 @@ const JobCard = ({ job }) => {
   return (
     <div
       onClick={handleClick}
-      className={`${C.bgSurface} rounded-xl shadow-sm border ${C.border} p-5 mb-4 cursor-pointer hover:shadow-md transition-shadow`}
+      className={`${C.bgSurface} rounded-xl shadow-sm border ${C.border} p-4 sm:p-5 mb-4 cursor-pointer hover:shadow-md transition-shadow`}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
         <div
-          className={`w-14 h-14 ${C.bgNeutral100} rounded-md flex items-center justify-center ${T.xl} ${T.bold} ${C.muted} overflow-hidden border ${C.border}`}
+          className={`w-12 h-12 sm:w-14 sm:h-14 ${C.bgNeutral100} rounded-md flex items-center justify-center ${T.xl} ${T.bold} ${C.muted} overflow-hidden border ${C.border} mx-auto sm:mx-0`}
         >
           {logo ? (
             <img
@@ -101,27 +101,33 @@ const JobCard = ({ job }) => {
             <span>{companyInitial}</span>
           )}
         </div>
-        <div className="flex-1">
-          <h3 className={`${T.lg} ${T.heading} ${T.bold} ${C.text} ${T.leadingTight}`}>
+        <div className="flex-1 min-w-0">
+          <h3 className={`${T.lg} ${T.heading} ${T.bold} ${C.text} ${T.leadingTight} break-words`}>
             {job?.title}
           </h3>
-          <div className={`${T.sm} ${C.subtle} mt-1 ${T.body}`}>{companyName}</div>
-          <div className={`flex items-center gap-4 ${T.sm} ${C.subtle} mt-3 ${T.body}`}>
-            <div className="flex items-center gap-2">
+          <div className={`${T.sm} ${C.subtle} mt-1 ${T.body} break-words`}>{companyName}</div>
+          <div
+            className={`flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 ${T.sm} ${C.subtle} mt-3 ${T.body}`}
+          >
+            <div className="flex items-start gap-2 min-w-0">
               <FaMapMarkerAlt />
-              <span>{formatLocation()}</span>
+              <span className="break-words">{formatLocation()}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2 min-w-0">
               <FaDollarSign />
-              <span>{formatSalary()}</span>
+              <span className="break-words">{formatSalary()}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2 min-w-0">
               <FaBriefcase />
-              <span>{job?.type || 'Full-Time'}</span>
+              <span className="break-words">{job?.type || 'Full-Time'}</span>
             </div>
           </div>
         </div>
-        <div className={`${T.sm} ${C.subtle} shrink-0 ${T.body}`}>{created}</div>
+        <div
+          className={`${T.sm} ${C.subtle} shrink-0 ${T.body} self-start sm:self-auto whitespace-nowrap`}
+        >
+          {created}
+        </div>
       </div>
     </div>
   );

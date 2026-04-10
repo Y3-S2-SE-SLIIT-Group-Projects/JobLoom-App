@@ -90,6 +90,7 @@ const EditProfile = () => {
   const [apiError, setApiError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -131,13 +132,16 @@ const EditProfile = () => {
     setCurrentRole(currentUser?.role || 'job_seeker');
   }, [currentUser]);
 
+  const normalizePhone = value => value.replace(/\D/g, '').slice(0, 10);
+
   const handleChange = e => {
     const { name, value } = e.target;
     if (name.startsWith('location.')) {
       const key = name.split('.')[1];
       setFormData(prev => ({ ...prev, location: { ...prev.location, [key]: value } }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      const nextValue = name === 'phone' ? normalizePhone(value) : value;
+      setFormData(prev => ({ ...prev, [name]: nextValue }));
     }
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     setApiError('');
@@ -202,8 +206,8 @@ const EditProfile = () => {
     if (!formData.lastName.trim()) errs.lastName = t('errors.last_name_required');
     if (!formData.phone.trim()) errs.phone = t('errors.phone_required');
     else {
-      const phoneRegex = /^(\+94|0)?7[0-9]{8}$/;
-      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      const phoneRegex = /^\d{10}$/;
+      if (!phoneRegex.test(formData.phone)) {
         errs.phone = t('errors.invalid_phone');
       }
     }
@@ -222,6 +226,8 @@ const EditProfile = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -230,6 +236,7 @@ const EditProfile = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const updates = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -271,8 +278,10 @@ const EditProfile = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setTimeout(() => navigate('/profile'), 1500);
     } catch (err) {
-      setApiError(err.message || 'Failed to update profile');
+      setApiError((typeof err === 'string' ? err : err?.message) || 'Failed to update profile');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -438,7 +447,10 @@ const EditProfile = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+94 77 123 4567"
+                    inputMode="numeric"
+                    maxLength={10}
+                    pattern="\d{10}"
+                    placeholder="0771234567"
                     className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${errors.phone ? 'border-error bg-error/10' : 'border-border'}`}
                   />
                 </div>
@@ -758,7 +770,9 @@ const EditProfile = () => {
                 </h2>
 
                 <div
-                  onClick={() => cvInputRef.current?.click()}
+                  onClick={() => {
+                    if (!isSubmitting) cvInputRef.current?.click();
+                  }}
                   className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
                 >
                   <FaFileUpload className="w-10 h-10 mx-auto mb-3 text-neutral-300" />
@@ -817,11 +831,14 @@ const EditProfile = () => {
             </Link>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || isSubmitting}
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-deep-blue transition-colors font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+              {loading || isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                  {t('common.uploading', 'Uploading...')}
+                </>
               ) : (
                 <>
                   <FaSave className="w-4 h-4" />

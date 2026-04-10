@@ -12,6 +12,8 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,md,json}\" \"*.{js,json,md}\"",
     "preview": "vite preview",
     "test": "npx playwright test",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:e2e": "npx playwright test",
     "test:e2e:interview": "npx playwright test e2e/interview-scheduling.spec.ts --workers=1",
     "test:e2e:headed": "npx playwright test --headed",
@@ -53,6 +55,7 @@
     "html-react-parser": "^5.2.17",
     "i18next": "^25.8.13",
     "i18next-browser-languagedetector": "^8.2.1",
+    "idb": "^8.0.3",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -62,11 +65,17 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
     "recharts": "^3.8.1",
-    "use-places-autocomplete": "^4.0.1"
+    "use-places-autocomplete": "^4.0.1",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -78,10 +87,12 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "husky": "^8.0.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.19",
     "vite": "^7.3.1",
+    "vitest": "^4.1.4",
     "wait-on": "^9.0.4"
   }
 }

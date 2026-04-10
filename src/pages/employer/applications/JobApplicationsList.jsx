@@ -56,7 +56,7 @@ const STAT_TAB_COLORS = {
   withdrawn: 'border-neutral-500 text-subtle',
 };
 
-// ── Component
+// Component
 
 const JobApplicationsList = () => {
   const { t, i18n } = useTranslation();
@@ -154,7 +154,7 @@ const JobApplicationsList = () => {
     setCurrentPage(1);
   };
 
-  // ── Render
+  // Render
   return (
     <DottedBackground>
       {/* Header */}
