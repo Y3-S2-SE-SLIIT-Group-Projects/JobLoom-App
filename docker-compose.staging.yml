@@ -10,6 +10,8 @@ services:
       target: production
       args:
         - NODE_ENV=staging
+        - VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}
+        - VITE_JITSI_DOMAIN=${VITE_JITSI_DOMAIN}
     ports:
       - '8081:80'
     environment:
