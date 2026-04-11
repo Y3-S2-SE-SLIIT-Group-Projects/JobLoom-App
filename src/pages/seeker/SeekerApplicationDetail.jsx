@@ -320,11 +320,14 @@ const SeekerApplicationDetail = () => {
   const jobId = getJobId();
   const statusHistory = application.statusHistory || [];
 
+  const isAccepted = application.status === 'accepted';
+
   const detailTabs = [
     { id: 'overview', label: t('applications.detail_tab_overview', 'Overview') },
     { id: 'application', label: t('applications.detail_tab_application', 'Application') },
     { id: 'status', label: t('applications.detail_tab_status', 'Status & interview') },
     { id: 'more', label: t('applications.detail_tab_more', 'Notes & actions') },
+    ...(isAccepted ? [{ id: 'review', label: t('applications.detail_tab_review', 'Review') }] : []),
   ];
 
   const resumeBlock =
@@ -993,21 +996,28 @@ const SeekerApplicationDetail = () => {
                     )}
                   </section>
                 )}
+              </div>
+            )}
 
-                {application.status === 'accepted' && currentUser && (
-                  <section className="bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-5 overflow-hidden">
-                    <ApplicationReviewsPanel
-                      jobId={getJobId()}
-                      employerId={getEmployerId()}
-                      jobSeekerId={getJobSeekerId()}
-                      currentUserId={currentUser._id}
-                      applicationStatus={application.status}
-                      employerName={getEmployerName()}
-                      seekerName={getSeekerName()}
-                      jobTitle={getJobTitle()}
-                    />
-                  </section>
-                )}
+            {activeTab === 'review' && isAccepted && currentUser && (
+              <div
+                role="tabpanel"
+                id="seeker-app-panel-review"
+                aria-labelledby="seeker-app-tab-review"
+                className="space-y-4 sm:space-y-5 scroll-mt-28 lg:scroll-mt-8"
+              >
+                <section className="bg-surface rounded-xl shadow-sm border border-border p-4 sm:p-5 overflow-hidden">
+                  <ApplicationReviewsPanel
+                    jobId={getJobId()}
+                    employerId={getEmployerId()}
+                    jobSeekerId={getJobSeekerId()}
+                    currentUserId={currentUser._id}
+                    applicationStatus={application.status}
+                    employerName={getEmployerName()}
+                    seekerName={getSeekerName()}
+                    jobTitle={getJobTitle()}
+                  />
+                </section>
               </div>
             )}
           </div>
