@@ -7,7 +7,7 @@ test.describe('Authentication - Login Page', () => {
 
   test('should display the login form with all elements', async ({ page }) => {
     await test.step('Verify page heading', async () => {
-      const heading = page.locator('h1');
+      const heading = page.getByRole('heading', { level: 1, name: /welcome back/i });
       await expect(heading).toBeVisible();
     });
 
@@ -23,7 +23,7 @@ test.describe('Authentication - Login Page', () => {
     });
 
     await test.step('Verify submit button', async () => {
-      const submitBtn = page.locator('button[type="submit"]');
+      const submitBtn = page.getByRole('button', { name: /sign in/i });
       await expect(submitBtn).toBeVisible();
     });
 
@@ -33,7 +33,7 @@ test.describe('Authentication - Login Page', () => {
     });
 
     await test.step('Verify create account link', async () => {
-      const registerLink = page.getByRole('link', { name: /create account/i });
+      const registerLink = page.locator('main a[href="/register"]').first();
       await expect(registerLink).toBeVisible();
     });
 
@@ -51,8 +51,8 @@ test.describe('Authentication - Login Page', () => {
     });
 
     await test.step('Verify email validation error appears', async () => {
-      const emailError = page.locator('p.text-red-600').first();
-      await expect(emailError).toBeVisible();
+      await expect(page.getByText(/email is required/i)).toBeVisible();
+      await expect(page.getByText(/password is required/i)).toBeVisible();
     });
 
     await test.step('Capture validation errors screenshot', async () => {
@@ -74,8 +74,7 @@ test.describe('Authentication - Login Page', () => {
     });
 
     await test.step('Verify invalid email error appears', async () => {
-      const errorMsg = page.locator('p.text-xs.text-red-600');
-      await expect(errorMsg.first()).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText(/please enter a valid email address/i)).toBeVisible();
     });
   });
 
@@ -87,7 +86,8 @@ test.describe('Authentication - Login Page', () => {
     });
 
     await test.step('Click show password toggle', async () => {
-      const toggleBtn = page.locator('input[name="password"]')
+      const toggleBtn = page
+        .locator('input[name="password"]')
         .locator('xpath=ancestor::div[contains(@class, "relative")]')
         .locator('button');
       await toggleBtn.click();
@@ -101,7 +101,7 @@ test.describe('Authentication - Login Page', () => {
 
   test('should navigate to register page', async ({ page }) => {
     await test.step('Click create account link', async () => {
-      await page.getByRole('link', { name: /create account/i }).click();
+      await page.locator('main a[href="/register"]').first().click();
     });
 
     await test.step('Verify navigation to register page', async () => {
@@ -145,10 +145,7 @@ test.describe('Authentication - Login Page', () => {
         });
       }
 
-      expect.soft(
-        isError || true,
-        'API error should appear or request may time out'
-      ).toBeTruthy();
+      expect.soft(isError || true, 'API error should appear or request may time out').toBeTruthy();
     });
   });
 });

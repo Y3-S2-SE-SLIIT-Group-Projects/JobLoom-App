@@ -63,6 +63,7 @@ const CompleteProfile = () => {
   const [cvFiles, setCvFiles] = useState([]);
   const [apiError, setApiError] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -170,12 +171,15 @@ const CompleteProfile = () => {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     if (cvFiles.length === 0) {
       setApiError(t('errors.cv_required'));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     try {
+      setIsSubmitting(true);
       setApiError('');
       const updates = {
         skills: formData.skills,
@@ -201,8 +205,12 @@ const CompleteProfile = () => {
       await updateUserProfile(updates);
       navigate('/profile');
     } catch (err) {
-      setApiError(err.message || t('errors.registration_failed'));
+      setApiError(
+        (typeof err === 'string' ? err : err?.message) || t('errors.registration_failed')
+      );
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -502,7 +510,9 @@ const CompleteProfile = () => {
                   </p>
 
                   <div
-                    onClick={() => cvInputRef.current?.click()}
+                    onClick={() => {
+                      if (!isSubmitting) cvInputRef.current?.click();
+                    }}
                     className="border-2 border-dashed border-border rounded-2xl p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
                   >
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
@@ -564,11 +574,14 @@ const CompleteProfile = () => {
                     </button>
                     <button
                       onClick={handleSubmit}
-                      disabled={loading}
+                      disabled={loading || isSubmitting}
                       className="flex items-center gap-2 px-10 py-3 bg-success text-white rounded-lg hover:bg-deep-blue transition-colors font-bold shadow-md shadow-success/20 disabled:opacity-50"
                     >
-                      {loading ? (
-                        <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                      {loading || isSubmitting ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white rounded-full border-t-transparent animate-spin" />
+                          {t('common.uploading', 'Uploading...')}
+                        </>
                       ) : (
                         <>
                           {t('profile.complete_profile_button', 'Complete Profile')}

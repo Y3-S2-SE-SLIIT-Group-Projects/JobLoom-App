@@ -1,9 +1,72 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['logo.svg', 'vite.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+          {
+            urlPattern: /\/api\/jobs(\?.*)?$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-jobs-list',
+              expiration: { maxEntries: 50, maxAgeSeconds: 30 * 60 },
+              networkTimeoutSeconds: 5,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /\/api\/jobs\/[a-f0-9]{24}$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-job-details',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 },
+              networkTimeoutSeconds: 5,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: { maxEntries: 10, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
+      manifest: {
+        name: 'JobLoom - Local Job Opportunities',
+        short_name: 'JobLoom',
+        description: 'Find and apply for local job opportunities in rural communities',
+        theme_color: '#2563eb',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        icons: [
+          { src: '/pwa-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
+          { src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml' },
+          { src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
+        ],
+      },
+    }),
+  ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setupTests.js',
+    include: ['src/**/*.test.{js,jsx,ts,tsx}', 'src/**/*.spec.{js,jsx,ts,tsx}'],
+    exclude: ['e2e/**', 'tests/**', 'node_modules/**'],
+  },
   build: {
     rollupOptions: {
       output: {

@@ -32,10 +32,18 @@ const JobList = () => {
 
   const [jobs, setJobs] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateSort, setDateSort] = useState('newest');
   const [searchQuery, setSearchQuery] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [actionType, setActionType] = useState('');
+  const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = window.setTimeout(() => setToast(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
 
   const loadJobs = async () => {
     try {
@@ -57,15 +65,21 @@ const JobList = () => {
     }
   }, [dispatch, jobs]);
 
-  const filteredJobs = jobs.filter(job => {
-    const matchesStatus = filterStatus === 'all' || job.status === filterStatus;
-    const matchesSearch =
-      searchQuery === '' ||
-      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.description?.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredJobs = jobs
+    .filter(job => {
+      const matchesStatus = filterStatus === 'all' || job.status === filterStatus;
+      const matchesSearch =
+        searchQuery === '' ||
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesStatus && matchesSearch;
-  });
+      return matchesStatus && matchesSearch;
+    })
+    .sort((a, b) => {
+      const aTime = new Date(a.createdAt || 0).getTime();
+      const bTime = new Date(b.createdAt || 0).getTime();
+      return dateSort === 'oldest' ? aTime - bTime : bTime - aTime;
+    });
 
   const handleAction = (job, action) => {
     setSelectedJob(job);
@@ -77,10 +91,13 @@ const JobList = () => {
     try {
       if (actionType === 'close') {
         await closeJob(selectedJob._id);
+        setToast({ type: 'success', message: 'Job closed successfully.' });
       } else if (actionType === 'filled') {
         await markJobAsFilled(selectedJob._id);
+        setToast({ type: 'success', message: 'Job marked as filled successfully.' });
       } else if (actionType === 'delete') {
         await deleteJob(selectedJob._id);
+        setToast({ type: 'success', message: 'Job deleted successfully.' });
       }
 
       await loadJobs();
@@ -89,6 +106,10 @@ const JobList = () => {
       setActionType('');
     } catch (error) {
       console.error('Error performing action:', error);
+      setToast({
+        type: 'error',
+        message: error?.message || 'Action failed. Please try again.',
+      });
       setShowConfirmDialog(false);
     }
   };
@@ -210,6 +231,14 @@ const JobList = () => {
               <option value="open">{t('employer.jobs.filter_open')}</option>
               <option value="closed">{t('employer.jobs.filter_closed')}</option>
               <option value="filled">{t('employer.jobs.filter_filled')}</option>
+            </select>
+            <select
+              value={dateSort}
+              onChange={e => setDateSort(e.target.value)}
+              className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
             </select>
           </div>
         </section>
@@ -432,6 +461,19 @@ const JobList = () => {
                 {t('common.confirm')}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className="fixed left-4 bottom-4 z-[60] max-w-sm w-[calc(100%-2rem)] sm:w-auto">
+          <div
+            className={`px-4 py-3 rounded-lg shadow-lg flex items-start gap-2 text-white ${
+              toast.type === 'success' ? 'bg-success' : 'bg-error'
+            }`}
+          >
+            <FaTimesCircle className="w-4 h-4 mt-0.5" />
+            <span className="text-sm leading-relaxed">{toast.message}</span>
           </div>
         </div>
       )}

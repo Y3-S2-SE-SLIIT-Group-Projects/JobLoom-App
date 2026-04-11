@@ -220,7 +220,7 @@ const SeekerApplicationDetail = () => {
   const getJobCategory = () => {
     const j = application?.jobId;
     if (!j || typeof j !== 'object') return null;
-    return j.category || j.jobRole || null;
+    return j.categoryLabel || j.category || j.jobRole || null;
   };
 
   const getEmploymentType = () => {
