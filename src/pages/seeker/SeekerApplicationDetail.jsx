@@ -31,6 +31,7 @@ import {
   FaEnvelope,
   FaPhone,
   FaBuilding,
+  FaInfoCircle,
 } from 'react-icons/fa';
 import { getImageUrl } from '../../utils/imageUrls';
 import { getSignedDownloadUrl } from '../../services/uploadApi';
@@ -70,12 +71,25 @@ const formatDateTime = dateString => {
 /** YYYYMMDDTHHmmssZ for Google Calendar `dates` param */
 const formatGCalDate = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
-/** True after the interview window (start + duration) has ended. */
-const isInterviewPast = (interviewDate, interviewDurationMinutes) => {
-  if (!interviewDate) return false;
-  const start = new Date(interviewDate);
-  const endMs = start.getTime() + (interviewDurationMinutes ?? 30) * 60_000;
-  return Date.now() > endMs;
+const resolveInterviewDurationMinutes = interviewDurationMinutes => {
+  const n = Number(interviewDurationMinutes);
+  return Number.isFinite(n) && n > 0 ? n : 30;
+};
+
+/**
+ * upcoming — before start; active — between start and end; past — after window ended.
+ * Avoids showing “Upcoming” for hours when duration is long but the slot has already started.
+ */
+const getInterviewPhase = (interviewDate, interviewDurationMinutes) => {
+  if (!interviewDate) return 'none';
+  const startMs = new Date(interviewDate).getTime();
+  if (Number.isNaN(startMs)) return 'none';
+  const mins = resolveInterviewDurationMinutes(interviewDurationMinutes);
+  const endMs = startMs + mins * 60_000;
+  const now = Date.now();
+  if (now < startMs) return 'upcoming';
+  if (now <= endMs) return 'active';
+  return 'past';
 };
 
 const isCloudinaryUrl = value =>
@@ -104,10 +118,26 @@ const SeekerApplicationDetail = () => {
   const [withdrawSuccess, setWithdrawSuccess] = useState(false);
   const [lastLoadedId, setLastLoadedId] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [interviewTimeTick, setInterviewTimeTick] = useState(0);
 
   useEffect(() => {
     if (id) dispatch(loadApplicationById(id));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    const bump = () => setInterviewTimeTick(c => c + 1);
+    const idInterval = window.setInterval(bump, 60_000);
+    const onVis = () => {
+      if (document.visibilityState === 'visible') bump();
+    };
+    window.addEventListener('focus', bump);
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      window.clearInterval(idInterval);
+      window.removeEventListener('focus', bump);
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
 
   const scrollTabPanelIntoView = tabId => {
     if (typeof window === 'undefined' || window.matchMedia('(min-width: 1024px)').matches) return;
@@ -252,7 +282,9 @@ const SeekerApplicationDetail = () => {
   const openInterviewGoogleCalendar = () => {
     if (!application?.interviewDate) return;
     const start = new Date(application.interviewDate);
-    const end = new Date(start.getTime() + (application.interviewDuration || 30) * 60_000);
+    const end = new Date(
+      start.getTime() + resolveInterviewDurationMinutes(application.interviewDuration) * 60_000
+    );
     const title = encodeURIComponent(`Interview — ${getJobTitle()}`);
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const details = encodeURIComponent(
@@ -335,10 +367,23 @@ const SeekerApplicationDetail = () => {
       );
     })();
 
-  const interviewIsPast = isInterviewPast(application.interviewDate, application.interviewDuration);
+  void interviewTimeTick;
+  const interviewPhase = getInterviewPhase(
+    application.interviewDate,
+    application.interviewDuration
+  );
+  const interviewWindowEnded = interviewPhase === 'past';
+  const interviewStartMs = application.interviewDate
+    ? new Date(application.interviewDate).getTime()
+    : NaN;
+  const interviewDateInvalid = Boolean(application.interviewDate) && Number.isNaN(interviewStartMs);
 
-  const interviewDetailSection = application.interviewDate && (
-    <section className="p-4 sm:p-6 border shadow-sm bg-surface rounded-xl border-purple-200">
+  const interviewDetailSection = application.interviewDate && !interviewDateInvalid && (
+    <section
+      className={`p-4 sm:p-6 border shadow-sm bg-surface rounded-xl ${
+        interviewWindowEnded ? 'border-border' : 'border-purple-200'
+      }`}
+    >
       <h2 className="flex items-center gap-2 mb-3 sm:mb-4 text-base sm:text-lg font-bold text-text-dark">
         {application.interviewType === 'virtual' ? (
           <FaVideo className="w-4 h-4 text-purple-500 shrink-0" aria-hidden />
@@ -347,7 +392,7 @@ const SeekerApplicationDetail = () => {
         ) : (
           <FaCalendarAlt className="w-4 h-4 text-purple-500 shrink-0" aria-hidden />
         )}
-        {interviewIsPast
+        {interviewWindowEnded
           ? t('applications.detail_interview_past_section_heading')
           : application.interviewType === 'virtual'
             ? t('applications.interview_virtual_title')
@@ -391,9 +436,27 @@ const SeekerApplicationDetail = () => {
         <p className="text-sm text-subtle">
           {t('applications.interview_scheduled_by', { name: getEmployerName() })}
         </p>
+
+        {interviewWindowEnded && (
+          <div className="mt-4 pt-4 border-t border-border space-y-3">
+            <p className="text-sm text-muted leading-relaxed">
+              {t('applications.detail_interview_past_followup')}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('overview');
+                scrollTabPanelIntoView('overview');
+              }}
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              {t('applications.detail_interview_past_go_overview')}
+            </button>
+          </div>
+        )}
       </div>
 
-      {!interviewIsPast && (
+      {!interviewWindowEnded && (
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-purple-100">
           {application.interviewType === 'virtual' && (
             <Link
@@ -520,33 +583,64 @@ const SeekerApplicationDetail = () => {
           />
         )}
 
-        {application.interviewDate && (
+        {application.interviewDate && interviewDateInvalid && (
+          <div className="mb-4">
+            <AlertBanner type="info" message={t('applications.detail_interview_date_invalid')} />
+          </div>
+        )}
+
+        {application.interviewDate && !interviewDateInvalid && (
           <div
             role="status"
-            className="mb-4 rounded-xl border border-purple-200 bg-gradient-to-r from-purple-50/90 to-surface px-4 py-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm"
+            className={`mb-4 rounded-xl border px-4 py-3 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-sm ${
+              interviewWindowEnded
+                ? 'border-border bg-surface-muted/80'
+                : 'border-purple-200 bg-gradient-to-r from-purple-50/90 to-surface'
+            }`}
           >
             <div className="flex items-start gap-3 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <FaCalendarAlt className="w-5 h-5" aria-hidden />
+              <div
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                  interviewWindowEnded
+                    ? 'bg-amber-100 text-amber-900'
+                    : 'bg-primary/10 text-primary'
+                }`}
+              >
+                {interviewWindowEnded ? (
+                  <FaInfoCircle className="w-5 h-5" aria-hidden />
+                ) : (
+                  <FaCalendarAlt className="w-5 h-5" aria-hidden />
+                )}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-text-dark">
-                  {interviewIsPast
+                  {interviewWindowEnded
                     ? t('applications.detail_interview_past_title')
-                    : t('applications.detail_interview_upcoming', 'Upcoming interview')}
+                    : interviewPhase === 'active'
+                      ? t('applications.detail_interview_active_title')
+                      : t('applications.detail_interview_upcoming', 'Upcoming interview')}
                 </p>
                 <p className="text-xs sm:text-sm text-muted mt-0.5 line-clamp-2 sm:line-clamp-none">
-                  {formatDateTime(application.interviewDate)}
+                  {interviewWindowEnded
+                    ? t('applications.detail_interview_past_scheduled_for', {
+                        datetime: formatDateTime(application.interviewDate),
+                      })
+                    : formatDateTime(application.interviewDate)}
                 </p>
-                {interviewIsPast && (
+                {interviewWindowEnded && (
                   <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
                     {t('applications.detail_interview_past_followup')}
+                  </p>
+                )}
+                {interviewPhase === 'active' && (
+                  <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
+                    {t('applications.detail_interview_active_hint')}
                   </p>
                 )}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row flex-wrap sm:flex-nowrap gap-2 sm:items-center sm:justify-end">
-              {!interviewIsPast && application.interviewType === 'virtual' && (
+              {!interviewWindowEnded && application.interviewType === 'virtual' && (
                 <Link
                   to={`/interview/${application._id}`}
                   className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white transition-colors rounded-lg bg-primary hover:bg-deep-blue sm:min-w-0"
@@ -555,7 +649,7 @@ const SeekerApplicationDetail = () => {
                   {t('applications.interview_join_button')}
                 </Link>
               )}
-              {!interviewIsPast &&
+              {!interviewWindowEnded &&
                 application.interviewType === 'in_person' &&
                 application.interviewLocation && (
                   <a
@@ -568,16 +662,41 @@ const SeekerApplicationDetail = () => {
                     {t('applications.interview_get_directions')}
                   </a>
                 )}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('status');
-                  scrollTabPanelIntoView('status');
-                }}
-                className="text-sm font-medium text-primary hover:underline py-2 px-1 text-left sm:text-center"
-              >
-                {t('applications.detail_view_interview_tab', 'Full interview details')}
-              </button>
+              {interviewWindowEnded ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('overview');
+                      scrollTabPanelIntoView('overview');
+                    }}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white rounded-lg bg-primary hover:bg-deep-blue sm:min-w-0"
+                  >
+                    {t('applications.detail_interview_past_go_overview')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab('status');
+                      scrollTabPanelIntoView('status');
+                    }}
+                    className="text-sm font-medium text-primary hover:underline py-2 px-1 text-left sm:text-center"
+                  >
+                    {t('applications.detail_view_interview_tab', 'Full interview details')}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('status');
+                    scrollTabPanelIntoView('status');
+                  }}
+                  className="text-sm font-medium text-primary hover:underline py-2 px-1 text-left sm:text-center"
+                >
+                  {t('applications.detail_view_interview_tab', 'Full interview details')}
+                </button>
+              )}
             </div>
           </div>
         )}
